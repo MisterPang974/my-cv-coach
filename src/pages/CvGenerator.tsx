@@ -639,7 +639,7 @@ const CvGenerator = () => {
               </div>
 
               {/* Row 2.5: Background circle color (Artisan/Créatif) */}
-              {(activeLayout === "artisan" || activeLayout === "creatif" || activeLayout === "serenite") && (
+              {activeLayout && (
                 <div className="rounded-xl bg-card border border-border px-4 py-3">
                   <span className="text-xs font-semibold text-muted-foreground mb-2 block">🎨 Couleur des formes d'arrière-plan</span>
                   <div className="flex flex-wrap gap-2">
