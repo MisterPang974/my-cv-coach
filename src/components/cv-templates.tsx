@@ -180,9 +180,9 @@ const LevelBar = ({ level = 0, max = 5, color }: { level: number; max?: number; 
 
 // ─── Section heading with separator line ───────────────────────────
 const SectionHeading = ({ children, color, icon }: { children: React.ReactNode; color: string; icon?: React.ReactNode }) => (
-  <div className="mb-2.5 pb-1.5 flex items-center gap-2" style={{ borderBottom: `1.5px solid ${color}20` }}>
+  <div className="flex items-center gap-2" style={{ borderBottom: `1.5px solid ${color}20`, marginBottom: `calc(10px * var(--cv-gap-scale, 1))`, paddingBottom: `calc(6px * var(--cv-gap-scale, 1))` }}>
     {icon && <span style={{ color }}>{icon}</span>}
-    <h3 className="text-[10px] font-black uppercase tracking-[0.2em]" style={{ color }}>{children}</h3>
+    <h3 className="font-black uppercase tracking-[0.2em]" style={{ color, fontSize: `calc(10px * var(--cv-title-scale, 1))` }}>{children}</h3>
   </div>
 );
 
@@ -191,13 +191,13 @@ const DomainsBlock = ({ domains, colors, bulletStyle, bulletShape, competencyBul
   if (!domains || domains.length === 0) return null;
   const effectiveShape = competencyBulletShape || bulletShape;
   return (
-    <div className="space-y-1.5">
+    <div style={{ display: "flex", flexDirection: "column", gap: `calc(6px * var(--cv-gap-scale, 1))` }}>
       {domains.map(d => (
         <div key={d.id}>
-          <p className="text-[8px] font-bold uppercase tracking-widest mb-0.5" style={{ color: textColor || colors.accent }}>{d.label}</p>
+          <p className="font-bold uppercase tracking-widest" style={{ color: textColor || colors.accent, fontSize: `calc(8px * var(--cv-font-scale, 1))`, marginBottom: `calc(2px * var(--cv-gap-scale, 1))` }}>{d.label}</p>
           <ul style={{ margin: 0, padding: 0, listStyle: "none" }}>
             {d.items.map(item => (
-              <li key={item.id} className="flex items-center gap-1.5" style={{ color: textColor || (light ? "rgba(255,255,255,0.85)" : undefined), fontSize: "9px", lineHeight: "1.3", paddingTop: "1px", paddingBottom: "1px" }}>
+              <li key={item.id} className="flex items-center gap-1.5" style={{ color: textColor || (light ? "rgba(255,255,255,0.85)" : undefined), fontSize: `calc(9px * var(--cv-font-scale, 1))`, lineHeight: "var(--cv-line-height, 1.3)", paddingTop: `calc(1px * var(--cv-gap-scale, 1))`, paddingBottom: `calc(1px * var(--cv-gap-scale, 1))` }}>
                 <span className="flex-shrink-0 w-[12px] h-[12px] flex items-center justify-center"><ModernBullet type="technique" color={colors.accent} style={bulletStyle} shape={effectiveShape} /></span>
                 <span className="flex-1">{item.text}</span>
                 {levelDisplay === "dots" && item.level != null && <LevelDots level={item.level} color={light ? "rgba(255,255,255,0.6)" : colors.accent} />}
