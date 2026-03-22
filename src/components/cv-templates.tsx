@@ -76,13 +76,23 @@ const DeleteBtn = ({ onClick, light }: { onClick: () => void; light?: boolean })
   </button>
 );
 
-const ContactLine = ({ profile, light, colors }: { profile: CvProfile; light?: boolean; colors: Colors }) => (
-  <div className={`flex flex-wrap gap-x-4 gap-y-1 text-[10px] ${light ? "text-white/60" : "text-gray-500"}`}>
-    {profile.email && <span className="flex items-center gap-1.5"><Mail className="w-3 h-3" style={!light ? { color: colors.accent } : undefined} />{profile.email}</span>}
-    {profile.telephone && <span className="flex items-center gap-1.5"><Phone className="w-3 h-3" style={!light ? { color: colors.accent } : undefined} />{profile.telephone}</span>}
-    {profile.ville && <span className="flex items-center gap-1.5"><MapPin className="w-3 h-3" style={!light ? { color: colors.accent } : undefined} />{profile.ville}</span>}
-  </div>
-);
+const ContactLine = ({ profile, light, colors }: { profile: CvProfile; light?: boolean; colors: Colors }) => {
+  const iconColor = light ? "currentColor" : colors.accent;
+  const fullAddress = [profile.adresse, profile.codePostal, profile.ville].filter(Boolean).join(", ");
+  return (
+    <div className={`flex flex-wrap gap-x-4 gap-y-1 text-[10px] ${light ? "text-white/60" : "text-gray-500"}`}>
+      {profile.telephone && <span className="flex items-center gap-1.5"><Phone className="w-3 h-3" style={{ color: iconColor }} />{profile.telephone}</span>}
+      {profile.email && <span className="flex items-center gap-1.5"><Mail className="w-3 h-3" style={{ color: iconColor }} />{profile.email}</span>}
+      {fullAddress && <span className="flex items-center gap-1.5"><MapPin className="w-3 h-3" style={{ color: iconColor }} />{fullAddress}</span>}
+    </div>
+  );
+};
+
+const NameBlock = ({ profile, light, size = "md" }: { profile: CvProfile; light?: boolean; size?: "sm" | "md" | "lg" }) => {
+  const fullName = [profile.prenom, profile.nom].filter(Boolean).join(" ") || "Votre Nom";
+  const sizeClasses = size === "lg" ? "text-xl" : size === "md" ? "text-base" : "text-sm";
+  return <span className={`font-black leading-tight ${sizeClasses} ${light ? "text-white" : ""}`}>{fullName}</span>;
+};
 
 // ─── Organic blob SVG ──────────────────────────────────────────────
 const Blob = ({ color, className, style }: { color: string; className?: string; style?: React.CSSProperties }) => (

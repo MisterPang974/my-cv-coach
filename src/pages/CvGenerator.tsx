@@ -360,10 +360,18 @@ const CvGenerator = () => {
                   <div className="rounded-2xl bg-card p-5 shadow-sm border border-border/50 space-y-3">
                     <h3 className="font-semibold text-sm flex items-center gap-2"><User className="w-4 h-4 text-primary" />Informations personnelles</h3>
                     <div className="grid sm:grid-cols-2 gap-3">
-                      {(["nom", "email", "telephone", "ville"] as (keyof CvProfile)[]).map(f => (
-                        <input key={f} value={profile[f]} onChange={e => updateProfile(f, e.target.value)}
-                          placeholder={{ nom: "Nom complet", email: "Email", telephone: "Téléphone", ville: "Ville" }[f]}
-                          className="rounded-xl border border-input bg-background px-4 py-2.5 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring" />
+                      {([
+                        { key: "nom", placeholder: "Nom", required: true },
+                        { key: "prenom", placeholder: "Prénom", required: true },
+                        { key: "adresse", placeholder: "Adresse complète", full: true },
+                        { key: "codePostal", placeholder: "Code Postal" },
+                        { key: "ville", placeholder: "Ville", required: true },
+                        { key: "telephone", placeholder: "Téléphone", required: true },
+                        { key: "email", placeholder: "Email", required: true },
+                      ] as { key: keyof CvProfile; placeholder: string; required?: boolean; full?: boolean }[]).map(f => (
+                        <input key={f.key} value={profile[f.key]} onChange={e => updateProfile(f.key, e.target.value)}
+                          placeholder={f.placeholder + (f.required ? " *" : "")}
+                          className={`rounded-xl border border-input bg-background px-4 py-2.5 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring ${f.full ? "sm:col-span-2" : ""}`} />
                       ))}
                     </div>
                   </div>
