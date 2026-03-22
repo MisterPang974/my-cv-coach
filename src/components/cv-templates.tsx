@@ -120,9 +120,9 @@ export const ImpactTemplate = ({ profile, experienceEntries, atoutEntries, remov
             border: "1px solid rgba(255,255,255,0.12)",
             boxShadow: `0 8px 32px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.1)`,
           }}>
-          {profile.nom?.[0]?.toUpperCase() || "?"}
+          {(profile.prenom || profile.nom)?.[0]?.toUpperCase() || "?"}
         </div>
-        <h2 className="text-white text-center text-sm font-black tracking-wider uppercase">{profile.nom || "Votre Nom"}</h2>
+        <NameBlock profile={profile} light size="sm" />
         <p className="text-center text-[10px] mt-1 font-medium px-3 py-0.5 rounded-full mx-auto w-fit"
           style={{ background: `${colors.accent}30`, color: colors.accent, backdropFilter: "blur(8px)" }}>
           {profile.titre || "Titre du poste"}
@@ -195,10 +195,10 @@ export const ArtisanTemplate = ({ profile, experienceEntries, atoutEntries, remo
       <div className="absolute inset-0 opacity-[0.05]" style={{ backgroundImage: "url(\"data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='30' cy='30' r='1.5' fill='%23fff'/%3E%3C/svg%3E\")" }} />
       <div className="relative flex items-end gap-4">
         <div className="w-14 h-14 flex items-center justify-center text-white/50 text-xl font-bold" style={{ borderRadius: "50% 30% 50% 30%", background: "rgba(255,255,255,0.12)", border: "2px solid rgba(255,255,255,0.2)", boxShadow: "inset 0 2px 4px rgba(255,255,255,0.1)" }}>
-          {profile.nom?.[0]?.toUpperCase() || "?"}
+          {(profile.prenom || profile.nom)?.[0]?.toUpperCase() || "?"}
         </div>
         <div>
-          <h2 className="text-white text-lg font-bold leading-tight">{profile.nom || "Votre Nom"}</h2>
+          <NameBlock profile={profile} light size="md" />
           <p className="text-white/60 text-xs italic mt-0.5">{profile.titre || "Titre du poste"}</p>
         </div>
       </div>
@@ -266,7 +266,7 @@ export const CreatifTemplate = ({ profile, experienceEntries, atoutEntries, remo
         </div>
         <div className="w-14 h-14 rotate-6 flex items-center justify-center text-white text-lg font-black"
           style={{ borderRadius: "20px 6px 20px 6px", background: `linear-gradient(135deg, ${colors.primary}, ${colors.accent})`, boxShadow: `0 8px 24px ${colors.primary}30, 0 4px 8px ${colors.accent}20` }}>
-          {profile.nom?.[0]?.toUpperCase() || "?"}
+          {(profile.prenom || profile.nom)?.[0]?.toUpperCase() || "?"}
         </div>
       </div>
     </div>
@@ -324,7 +324,7 @@ export const MuralTemplate = ({ profile, experienceEntries, atoutEntries, remove
       {/* Geometric pattern overlay */}
       <svg className="absolute inset-0 w-full h-full opacity-[0.04]"><pattern id="grid" width="20" height="20" patternUnits="userSpaceOnUse"><rect width="20" height="20" fill="none" stroke="white" strokeWidth="0.5"/></pattern><rect width="100%" height="100%" fill="url(#grid)"/></svg>
       <div className="relative">
-        <h2 className="text-white text-xl font-black tracking-[0.1em] uppercase leading-none">{profile.nom || "VOTRE NOM"}</h2>
+        <NameBlock profile={profile} light size="lg" />
         <div className="flex items-center gap-3 mt-2">
           <span className="w-10 h-1.5" style={{ background: `linear-gradient(90deg, ${colors.accent}, transparent)`, borderRadius: "4px" }} />
           <p className="text-white/75 text-xs font-bold uppercase tracking-wider">{profile.titre || "Titre du poste"}</p>
@@ -382,7 +382,7 @@ export const MagazineTemplate = ({ profile, experienceEntries, atoutEntries, rem
     <div className="flex items-stretch relative overflow-hidden">
       <div className="flex-1 px-7 py-5 flex flex-col justify-center relative" style={{ background: `linear-gradient(135deg, ${colors.primary}, ${colors.swatch})` }}>
         <Blob color="rgba(255,255,255,0.04)" className="absolute -bottom-10 -left-10 w-32 h-32" />
-        <h2 className="text-white text-lg font-black relative z-10 leading-tight">{profile.nom || "Votre Nom"}</h2>
+        <NameBlock profile={profile} light size="md" />
         <p className="text-white/65 text-xs mt-0.5 relative z-10 font-medium">{profile.titre || "Titre du poste"}</p>
       </div>
       <div className="w-[35%] px-5 py-4 flex flex-col justify-center relative" style={{ background: `linear-gradient(135deg, ${colors.accent}, ${colors.accent}dd)`, boxShadow: `inset 4px 0 12px rgba(0,0,0,0.1)` }}>
@@ -444,10 +444,10 @@ export const MedicalTemplate = ({ profile, experienceEntries, atoutEntries, remo
       <Blob color="rgba(255,255,255,0.05)" className="absolute -bottom-12 -right-8 w-40 h-40" />
       <div className="w-14 h-14 rounded-full flex items-center justify-center text-white text-lg font-bold relative z-10"
         style={{ background: "rgba(255,255,255,0.18)", border: "2px solid rgba(255,255,255,0.25)", boxShadow: "0 4px 12px rgba(0,0,0,0.1), inset 0 1px 2px rgba(255,255,255,0.2)" }}>
-        {profile.nom?.[0]?.toUpperCase() || "?"}
+        {(profile.prenom || profile.nom)?.[0]?.toUpperCase() || "?"}
       </div>
       <div className="relative z-10">
-        <h2 className="text-white text-base font-bold">{profile.nom || "Votre Nom"}</h2>
+        <NameBlock profile={profile} light size="md" />
         <p className="text-white/70 text-xs font-medium">{profile.titre || "Titre du poste"}</p>
         <div className="mt-2"><ContactLine profile={profile} light colors={colors} /></div>
       </div>
@@ -500,7 +500,7 @@ export const FluxTemplate = ({ profile, experienceEntries, atoutEntries, removeE
       <div className="absolute top-0 right-0 w-2/5 h-full" style={{ background: `linear-gradient(135deg, ${colors.accent}, ${colors.accent}cc)`, clipPath: "polygon(25% 0, 100% 0, 100% 100%, 0% 100%)" }} />
       <Blob color="rgba(255,255,255,0.04)" className="absolute -bottom-16 left-10 w-36 h-36" />
       <div className="relative z-10">
-        <h2 className="text-white text-lg font-black uppercase tracking-[0.08em] leading-none">{profile.nom || "Votre Nom"}</h2>
+        <NameBlock profile={profile} light size="lg" />
         <p className="text-white/70 text-xs font-bold mt-1 uppercase tracking-wider">{profile.titre || "Titre du poste"}</p>
         <div className="mt-3"><ContactLine profile={profile} light colors={colors} /></div>
       </div>
@@ -570,10 +570,10 @@ export const SereniteTemplate = ({ profile, experienceEntries, atoutEntries, rem
       <Blob color="rgba(255,255,255,0.04)" className="absolute bottom-0 left-0 w-32 h-32" />
       <div className="w-16 h-16 rounded-[20px] flex items-center justify-center text-white text-xl font-bold relative z-10"
         style={{ background: "rgba(255,255,255,0.15)", backdropFilter: "blur(16px)", border: "2px solid rgba(255,255,255,0.2)", boxShadow: "0 8px 24px rgba(0,0,0,0.08), inset 0 1px 2px rgba(255,255,255,0.15)" }}>
-        {profile.nom?.[0]?.toUpperCase() || "?"}
+        {(profile.prenom || profile.nom)?.[0]?.toUpperCase() || "?"}
       </div>
       <div className="relative z-10 flex-1">
-        <h2 className="text-white text-base font-bold leading-tight">{profile.nom || "Votre Nom"}</h2>
+        <NameBlock profile={profile} light size="md" />
         <p className="text-white/65 text-xs font-medium mt-0.5">{profile.titre || "Titre du poste"}</p>
         <div className="mt-2.5"><ContactLine profile={profile} light colors={colors} /></div>
       </div>
