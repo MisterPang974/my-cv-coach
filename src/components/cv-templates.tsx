@@ -674,7 +674,7 @@ export const ImpactTemplate = ({ profile, experienceEntries, atoutEntries, remov
         {/* Expériences */}
         {professionalExperiences && professionalExperiences.length > 0 && (
           <>
-            <SectionHeading color={expTc || colors.primary} icon={<Briefcase className="w-3.5 h-3.5" />} caseStyle={caseStyle} decoration={titleDecoration} align={textAlign}>Expérience Professionnelle</SectionHeading>
+            <SectionHeading color={expTc || colors.primary} icon={<Briefcase className="w-3.5 h-3.5" / caseStyle={caseStyle} decoration={titleDecoration} align={textAlign}>} caseStyle={caseStyle} decoration={titleDecoration} align={textAlign}>Expérience Professionnelle</SectionHeading>
             <ExperiencesBlock experiences={professionalExperiences} colors={colors} bulletStyle={bulletStyle} bulletShape={bulletShape} getCompanyLogoUrl={getCompanyLogoUrl} textColor={expTc || (isDark ? "white" : undefined)} light={isDark} onRemove={removeProfessionalExperience} />
             <div style={{ marginTop: `calc(12px * var(--cv-gap-scale, 1))` }} />
           </>
@@ -683,7 +683,7 @@ export const ImpactTemplate = ({ profile, experienceEntries, atoutEntries, remov
         {/* Formation */}
         {formations && formations.length > 0 && (
           <>
-            <SectionHeading color={expTc || colors.primary} icon={<GraduationCap className="w-3.5 h-3.5" />} caseStyle={caseStyle} decoration={titleDecoration} align={textAlign}>{formationTitle || "Formation"}</SectionHeading>
+            <SectionHeading color={expTc || colors.primary} icon={<GraduationCap className="w-3.5 h-3.5" / caseStyle={caseStyle} decoration={titleDecoration} align={textAlign}>} caseStyle={caseStyle} decoration={titleDecoration} align={textAlign}>{formationTitle || "Formation"}</SectionHeading>
             <FormationBlock formations={formations} colors={colors} bulletStyle={bulletStyle} bulletShape={formationBulletShape} textColor={expTc} onRemove={removeFormation} />
             <div style={{ marginTop: `calc(12px * var(--cv-gap-scale, 1))` }} />
           </>
@@ -692,7 +692,7 @@ export const ImpactTemplate = ({ profile, experienceEntries, atoutEntries, remov
         {/* Atouts */}
         {atoutEntries.length > 0 && (
           <>
-            <SectionHeading color={expTc || colors.primary} icon={<Star className="w-3.5 h-3.5" />} caseStyle={caseStyle} decoration={titleDecoration} align={textAlign}>Atouts</SectionHeading>
+            <SectionHeading color={expTc || colors.primary} icon={<Star className="w-3.5 h-3.5" / caseStyle={caseStyle} decoration={titleDecoration} align={textAlign}>} caseStyle={caseStyle} decoration={titleDecoration} align={textAlign}>Atouts</SectionHeading>
             <ul style={{ margin: 0, padding: 0, listStyle: "none" }}>
               {atoutEntries.map(e => (
                 <li key={e.id} className="flex items-center gap-2 group/item" style={{ fontSize: "9px", lineHeight: "1.3", paddingTop: "2px", paddingBottom: "2px" }}>
@@ -707,7 +707,7 @@ export const ImpactTemplate = ({ profile, experienceEntries, atoutEntries, remov
 
         {(!competencyDomains || competencyDomains.length === 0) && experienceEntries.length > 0 && (
           <>
-            <SectionHeading color={expTc || colors.primary} icon={<Layers className="w-3.5 h-3.5" />} caseStyle={caseStyle} decoration={titleDecoration} align={textAlign}>Compétences</SectionHeading>
+            <SectionHeading color={expTc || colors.primary} icon={<Layers className="w-3.5 h-3.5" / caseStyle={caseStyle} decoration={titleDecoration} align={textAlign}>} caseStyle={caseStyle} decoration={titleDecoration} align={textAlign}>Compétences</SectionHeading>
             <ul className="space-y-0.5">{experienceEntries.map(e => (
               <li key={e.id} className="flex items-start gap-2 text-[10px] group/item" style={{ color: expTc || undefined }}>
                 <span className="mt-0.5"><ModernBullet type={e.bullet} color={shapeCol} style={bulletStyle} shape={bulletShape} /></span>
@@ -1139,7 +1139,7 @@ export const MagazineTemplate = ({ profile, experienceEntries, atoutEntries, rem
           {/* Expériences */}
           {professionalExperiences && professionalExperiences.length > 0 && (
             <>
-              <SectionHeading color={expTc || colors.primary} icon={<Briefcase className="w-3.5 h-3.5" />}>Expériences Professionnelles</SectionHeading>
+              <SectionHeading color={expTc || colors.primary} icon={<Briefcase className="w-3.5 h-3.5" / caseStyle={caseStyle} decoration={titleDecoration} align={textAlign}>}>Expériences Professionnelles</SectionHeading>
               <ExperiencesBlock experiences={professionalExperiences} colors={colors} bulletStyle={bulletStyle} bulletShape={bulletShape} getCompanyLogoUrl={getCompanyLogoUrl} textColor={expTc} onRemove={removeProfessionalExperience} />
               <div className="my-4" />
             </>
@@ -1148,7 +1148,7 @@ export const MagazineTemplate = ({ profile, experienceEntries, atoutEntries, rem
           {/* Formation */}
           {formations && formations.length > 0 && (
             <>
-              <SectionHeading color={expTc || colors.primary} icon={<GraduationCap className="w-3.5 h-3.5" />}>{formationTitle || "Formation"}</SectionHeading>
+              <SectionHeading color={expTc || colors.primary} icon={<GraduationCap className="w-3.5 h-3.5" / caseStyle={caseStyle} decoration={titleDecoration} align={textAlign}>}>{formationTitle || "Formation"}</SectionHeading>
               <FormationBlock formations={formations} colors={colors} bulletStyle={bulletStyle} bulletShape={formationBulletShape} textColor={expTc} onRemove={removeFormation} />
               <div className="my-4" />
             </>
@@ -1157,7 +1157,7 @@ export const MagazineTemplate = ({ profile, experienceEntries, atoutEntries, rem
           {/* Fallback competences if not in sidebar */}
           {!competencyDomains?.length && experienceEntries.length > 0 && (
             <>
-              <SectionHeading color={colors.primary} icon={<Layers className="w-3.5 h-3.5" />}>Compétences</SectionHeading>
+              <SectionHeading color={colors.primary} icon={<Layers className="w-3.5 h-3.5" / caseStyle={caseStyle} decoration={titleDecoration} align={textAlign}>}>Compétences</SectionHeading>
               <ul className="space-y-0.5">{experienceEntries.map(e => (
                 <li key={e.id} className="flex items-start gap-2.5 group/item py-1 text-[10px]" style={{ color: expTc || undefined }}>
                   <span className="mt-0.5"><ModernBullet type={e.bullet} color={colors.accent} style={bulletStyle} shape={bulletShape} /></span>
@@ -1497,21 +1497,21 @@ export const SereniteTemplate = ({ profile, experienceEntries, atoutEntries, rem
         <div className="flex-1 space-y-4">
           {professionalExperiences && professionalExperiences.length > 0 && (
             <div>
-              <SectionHeading color={expTc || colors.primary} icon={<Briefcase className="w-3.5 h-3.5" />}>Expérience Professionnelle</SectionHeading>
+              <SectionHeading color={expTc || colors.primary} icon={<Briefcase className="w-3.5 h-3.5" / caseStyle={caseStyle} decoration={titleDecoration} align={textAlign}>}>Expérience Professionnelle</SectionHeading>
               <ExperiencesBlock experiences={professionalExperiences} colors={colors} bulletStyle={bulletStyle} bulletShape={bulletShape} getCompanyLogoUrl={getCompanyLogoUrl} textColor={expTc} onRemove={removeProfessionalExperience} />
             </div>
           )}
 
           {formations && formations.length > 0 && (
             <div>
-              <SectionHeading color={expTc || colors.primary} icon={<GraduationCap className="w-3.5 h-3.5" />}>{formationTitle || "Formation"}</SectionHeading>
+              <SectionHeading color={expTc || colors.primary} icon={<GraduationCap className="w-3.5 h-3.5" / caseStyle={caseStyle} decoration={titleDecoration} align={textAlign}>}>{formationTitle || "Formation"}</SectionHeading>
               <FormationBlock formations={formations} colors={colors} bulletStyle={bulletStyle} bulletShape={formationBulletShape} textColor={expTc} onRemove={removeFormation} />
             </div>
           )}
 
           {!professionalExperiences?.length && !formations?.length && experienceEntries.length > 0 && (
             <div>
-              <SectionHeading color={compTc || colors.primary} icon={<Layers className="w-3.5 h-3.5" />}>Compétences</SectionHeading>
+              <SectionHeading color={compTc || colors.primary} icon={<Layers className="w-3.5 h-3.5" / caseStyle={caseStyle} decoration={titleDecoration} align={textAlign}>}>Compétences</SectionHeading>
               <ul className="space-y-0.5">{experienceEntries.map(e => (
                 <li key={e.id} className="flex items-start gap-2.5 group/item px-3 py-1.5 rounded-lg" style={{ background: `${shapeCol}04` }}>
                   <span className="mt-0.5"><ModernBullet type={e.bullet} color={shapeCol} style={bulletStyle} shape={bulletShape} /></span>
