@@ -1026,58 +1026,67 @@ export const MuralTemplate = ({ profile, experienceEntries, atoutEntries, remove
 };
 
 // ═══════════════════════════════════════════════════════════════════
-// 5. MAGAZINE — Horizontal bars + dot pattern decorative shapes
+// 5. MAGAZINE — Diagonal gradient ribbons, mosaic accents, two-tone
+//    sidebar with radial gradient glow. Modern editorial feel.
 // ═══════════════════════════════════════════════════════════════════
 export const MagazineTemplate = ({ profile, experienceEntries, atoutEntries, removeEntry, colors, bulletStyle, bulletShape, gradient, gradientTarget, bgCircleColor, textColors, titleColor, fontFamily, competencyDomains, competencyBulletShape, formationBulletShape, diversBulletShape, qualitesBulletShape, professionalExperiences, removeProfessionalExperience, formations, removeFormation, formationTitle, getCompanyLogoUrl, interests, removeInterest, interestDisplayMode, sectionOrder, qualities, removeQuality, levelDisplay }: TemplateProps) => {
   const fondStyle = useGradientBg(gradient, gradientTarget);
-  const headerTc = sectionTextColor("header", textColors, TEXT_BLACK);
-  const compTc = sectionTextColor("competences", textColors, colors.accent);
+  const headerTc = sectionTextColor("header", textColors, TEXT_WHITE);
+  const compTc = sectionTextColor("competences", textColors, "rgba(255,255,255,0.9)");
   const expTc = sectionTextColor("experiences", textColors, TEXT_BLACK);
-  const titleTc = resolveTitleTextColor(titleColor, headerTc, colors.accent);
+  const titleTc = resolveTitleTextColor(titleColor, headerTc, "white");
   const shapeCol = bgCircleColor || colors.accent;
 
   return (
     <div className="h-full flex text-[11px] leading-[1.4]" style={{ fontFamily: fontFamily || "'DM Sans', system-ui, sans-serif", ...fondStyle }}>
-      {/* LEFT SIDEBAR */}
-      <div className="w-[32%] flex flex-col relative overflow-hidden" style={{ background: `linear-gradient(180deg, ${shapeCol}12, ${shapeCol}06)`, borderRight: `1px solid ${shapeCol}15` }}>
-        {/* Decorative bars */}
-        <MagazineBars color={shapeCol} className="absolute top-0 right-0 w-8 h-full" style={{ opacity: 0.7 }} />
-        <div className="absolute bottom-12 left-4 w-6 h-6" style={{ opacity: 0.08 }}>
-          <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke={shapeCol} strokeWidth="2" /><circle cx="12" cy="12" r="4" fill={shapeCol} /></svg>
-        </div>
+      {/* LEFT SIDEBAR — full gradient with radial glow */}
+      <div className="w-[34%] flex flex-col relative overflow-hidden" style={{ background: `linear-gradient(200deg, ${colors.primary}, ${colors.accent}dd, ${shapeCol}bb)` }}>
+        {/* Radial glow orb */}
+        <div className="absolute top-[15%] left-[20%] w-32 h-32 rounded-full" style={{ background: `radial-gradient(circle, rgba(255,255,255,0.12), transparent 70%)` }} />
+        <div className="absolute bottom-[10%] right-[-10%] w-24 h-24 rounded-full" style={{ background: `radial-gradient(circle, ${shapeCol}25, transparent 70%)` }} />
+        {/* Mosaic pattern */}
+        <MagazineMosaic color="rgba(255,255,255,0.4)" className="absolute top-0 right-0 w-20 h-full" style={{ opacity: 0.5 }} />
+        
         {/* Name + Title */}
-        <div className="px-4 pt-6 pb-4">
-          <h2 className="text-[18px] font-black leading-[1.1]" style={{ color: headerTc, fontFamily }}>
+        <div className="px-5 pt-7 pb-4 relative z-10">
+          <h2 className="text-[20px] font-black uppercase leading-[1.05] tracking-tight" style={{ color: titleTc, fontFamily, textShadow: "0 2px 8px rgba(0,0,0,0.12)" }}>
             {profile.prenom && <span className="block">{profile.prenom}</span>}
-            <span className="block italic" style={{ color: colors.primary }}>{profile.nom || "Nom"}</span>
+            <span className="block">{profile.nom || "NOM"}</span>
           </h2>
-          <p className="text-[9px] font-semibold uppercase tracking-wider mt-1.5" style={{ color: titleTc }}>{profile.titre || "Titre du poste"}</p>
+          <div className="mt-2 h-[2px] w-12 rounded-full" style={{ background: `linear-gradient(90deg, rgba(255,255,255,0.6), transparent)` }} />
+          <p className="text-[9px] font-medium uppercase tracking-[0.15em] mt-2" style={{ color: `${titleTc}cc` }}>{profile.titre || "Titre du poste"}</p>
         </div>
 
-        <div className="w-[80%] mx-auto h-[1px]" style={{ background: `${colors.accent}25` }} />
-
-        <div className="px-4 py-3 space-y-3 flex-1 overflow-y-auto">
+        <div className="px-5 py-3 space-y-3 flex-1 overflow-y-auto relative z-10">
           {/* Contact */}
           <div>
-            <p className="text-[7px] uppercase tracking-[0.25em] font-bold mb-1.5" style={{ color: colors.accent }}>Contact</p>
-            <div className="space-y-1.5 text-[9px]" style={{ color: headerTc }}>
-              {profile.telephone && <div className="flex items-center gap-2"><Phone className="w-3 h-3 flex-shrink-0" style={{ color: colors.accent }} />{profile.telephone}</div>}
-              {profile.email && <div className="flex items-center gap-2"><Mail className="w-3 h-3 flex-shrink-0" style={{ color: colors.accent }} /><span className="break-all">{profile.email}</span></div>}
-              {(profile.adresse || profile.ville) && <div className="flex items-center gap-2"><MapPin className="w-3 h-3 flex-shrink-0" style={{ color: colors.accent }} />{[profile.adresse, profile.codePostal, profile.ville].filter(Boolean).join(", ")}</div>}
+            <p className="text-[7px] uppercase tracking-[0.25em] font-bold mb-1.5" style={{ color: "rgba(255,255,255,0.5)" }}>Contact</p>
+            <div className="space-y-1.5 text-[9px]" style={{ color: "rgba(255,255,255,0.85)" }}>
+              {profile.telephone && <div className="flex items-center gap-2"><Phone className="w-3 h-3 flex-shrink-0" style={{ color: "rgba(255,255,255,0.5)" }} />{profile.telephone}</div>}
+              {profile.email && <div className="flex items-center gap-2"><Mail className="w-3 h-3 flex-shrink-0" style={{ color: "rgba(255,255,255,0.5)" }} /><span className="break-all">{profile.email}</span></div>}
+              {(profile.adresse || profile.ville) && <div className="flex items-center gap-2"><MapPin className="w-3 h-3 flex-shrink-0" style={{ color: "rgba(255,255,255,0.5)" }} />{[profile.adresse, profile.codePostal, profile.ville].filter(Boolean).join(", ")}</div>}
             </div>
           </div>
 
-          <div className="w-full h-[1px]" style={{ background: `${colors.accent}15` }} />
+          <div className="w-full h-[1px]" style={{ background: "rgba(255,255,255,0.12)" }} />
+
+          {/* Compétences in sidebar with levels */}
+          {competencyDomains && competencyDomains.length > 0 && (
+            <div>
+              <p className="text-[7px] uppercase tracking-[0.25em] font-bold mb-1.5" style={{ color: "rgba(255,255,255,0.5)" }}>Compétences</p>
+              <DomainsBlock domains={competencyDomains} colors={colors} bulletStyle={bulletStyle} bulletShape={bulletShape} competencyBulletShape={competencyBulletShape} textColor="rgba(255,255,255,0.85)" light levelDisplay={levelDisplay} />
+            </div>
+          )}
 
           {/* Atouts */}
           {atoutEntries.length > 0 && (
             <div>
-              <p className="text-[7px] uppercase tracking-[0.25em] font-bold mb-1.5" style={{ color: colors.accent }}>Atouts</p>
+              <p className="text-[7px] uppercase tracking-[0.25em] font-bold mb-1.5" style={{ color: "rgba(255,255,255,0.5)" }}>Atouts</p>
               <ul style={{ margin: 0, padding: 0, listStyle: "none" }}>
                 {atoutEntries.map(e => (
-                  <li key={e.id} className="flex items-center gap-1.5 group/item" style={{ fontSize: "9px", lineHeight: "1.3", paddingTop: "1px", paddingBottom: "1px", color: compTc || TEXT_MUTED }}>
-                    <span className="flex-shrink-0 w-[10px] h-[10px] flex items-center justify-center"><ModernBullet type="action" color={colors.accent} style={bulletStyle} shape={bulletShape} /></span>
-                    <span className="flex-1">{e.selected}</span><DeleteBtn onClick={() => removeEntry(e.id)} />
+                  <li key={e.id} className="flex items-center gap-1.5 group/item" style={{ fontSize: "9px", lineHeight: "1.3", paddingTop: "1px", paddingBottom: "1px", color: "rgba(255,255,255,0.85)" }}>
+                    <span className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ background: "rgba(255,255,255,0.4)" }} />
+                    <span className="flex-1">{e.selected}</span><DeleteBtn onClick={() => removeEntry(e.id)} light />
                   </li>
                 ))}
               </ul>
@@ -1087,26 +1096,28 @@ export const MagazineTemplate = ({ profile, experienceEntries, atoutEntries, rem
           {/* Qualités */}
           {qualities && qualities.length > 0 && (
             <div>
-              <p className="text-[7px] uppercase tracking-[0.25em] font-bold mb-1.5" style={{ color: colors.accent }}>Qualités</p>
-              <QualitiesBlock qualities={qualities} colors={colors} bulletStyle={bulletStyle} bulletShape={qualitesBulletShape} textColor={compTc} onRemove={removeQuality} />
+              <p className="text-[7px] uppercase tracking-[0.25em] font-bold mb-1.5" style={{ color: "rgba(255,255,255,0.5)" }}>Qualités</p>
+              <QualitiesBlock qualities={qualities} colors={colors} bulletStyle={bulletStyle} bulletShape={qualitesBulletShape} textColor="rgba(255,255,255,0.85)" light onRemove={removeQuality} />
             </div>
           )}
 
           {/* Divers */}
           {interests && interests.length > 0 && (
             <div>
-              <p className="text-[7px] uppercase tracking-[0.25em] font-bold mb-1.5" style={{ color: colors.accent }}>Centres d'intérêt</p>
-              <InterestsBlock interests={interests} colors={colors} bulletStyle={bulletStyle} bulletShape={diversBulletShape || bulletShape} textColor={compTc} onRemove={removeInterest} displayMode="list" />
+              <p className="text-[7px] uppercase tracking-[0.25em] font-bold mb-1.5" style={{ color: "rgba(255,255,255,0.5)" }}>Centres d'intérêt</p>
+              <InterestsBlock interests={interests} colors={colors} bulletStyle={bulletStyle} bulletShape={diversBulletShape || bulletShape} textColor="rgba(255,255,255,0.85)" light onRemove={removeInterest} displayMode="list" />
             </div>
           )}
         </div>
       </div>
 
-      {/* MAIN CONTENT */}
-      <div className="flex-1 flex flex-col bg-white overflow-y-auto">
-        <div className="h-[3px]" style={{ background: `linear-gradient(90deg, ${colors.accent}, ${colors.primary})` }} />
+      {/* MAIN CONTENT — clean white with diagonal ribbon accent */}
+      <div className="flex-1 flex flex-col bg-white overflow-y-auto relative">
+        {/* Diagonal gradient ribbon at top */}
+        <MagazineRibbon color={shapeCol} className="absolute top-0 left-0 w-full h-16" />
+        <div className="h-[3px]" style={{ background: `linear-gradient(90deg, ${colors.accent}, ${colors.primary}, ${shapeCol})` }} />
 
-        <div className="flex-1 px-6 py-5">
+        <div className="flex-1 px-6 py-5 relative z-10">
           {/* Expériences */}
           {professionalExperiences && professionalExperiences.length > 0 && (
             <>
@@ -1125,17 +1136,10 @@ export const MagazineTemplate = ({ profile, experienceEntries, atoutEntries, rem
             </>
           )}
 
-          {/* Compétences with level bars */}
-          {competencyDomains && competencyDomains.length > 0 && (
-            <>
-              <SectionHeading color={compTc || colors.primary} icon={<Layers className="w-3.5 h-3.5" />}>Compétences</SectionHeading>
-              <DomainsBlock domains={competencyDomains} colors={colors} bulletStyle={bulletStyle} bulletShape={bulletShape} competencyBulletShape={competencyBulletShape} textColor={expTc} levelDisplay={levelDisplay} />
-            </>
-          )}
-
+          {/* Fallback competences if not in sidebar */}
           {!competencyDomains?.length && experienceEntries.length > 0 && (
             <>
-              <SectionHeading color={compTc || colors.primary} icon={<Layers className="w-3.5 h-3.5" />}>Compétences</SectionHeading>
+              <SectionHeading color={colors.primary} icon={<Layers className="w-3.5 h-3.5" />}>Compétences</SectionHeading>
               <ul className="space-y-0.5">{experienceEntries.map(e => (
                 <li key={e.id} className="flex items-start gap-2.5 group/item py-1 text-[10px]" style={{ color: expTc || undefined }}>
                   <span className="mt-0.5"><ModernBullet type={e.bullet} color={colors.accent} style={bulletStyle} shape={bulletShape} /></span>
