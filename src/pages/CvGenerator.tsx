@@ -579,6 +579,7 @@ const CvGenerator = () => {
                       style={{ background: p.swatch, border: p.id === "blanc" ? "2px solid hsl(0,0%,85%)" : "none" }} />
                   ))}
                 </div>
+                {activeLayout === "impact" && (
                 <div className="flex items-center gap-1.5 rounded-xl bg-card border border-border px-3 py-2">
                   <Settings2 className="w-4 h-4 text-muted-foreground" />
                   {(["left", "right", "top"] as SidebarPosition[]).map(pos => (
@@ -588,6 +589,7 @@ const CvGenerator = () => {
                     </button>
                   ))}
                 </div>
+                )}
               </div>
 
               {/* Row 2: Gradient library */}
