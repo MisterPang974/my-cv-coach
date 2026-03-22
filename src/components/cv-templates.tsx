@@ -275,7 +275,9 @@ export const ImpactTemplate = ({ profile, experienceEntries, atoutEntries, remov
         </div>
         <div className="p-3" style={{ borderRadius: "4px 16px 4px 16px", background: "rgba(255,255,255,0.06)", backdropFilter: "blur(12px)", border: "1px solid rgba(255,255,255,0.08)", boxShadow: "0 4px 16px rgba(0,0,0,0.1)" }}>
           <p className="text-[8px] text-white/35 uppercase tracking-[0.2em] font-bold mb-2" style={compTc ? { color: compTc } : undefined}>Compétences</p>
-          {experienceEntries.length > 0 ? (
+          {competencyDomains && competencyDomains.length > 0 ? (
+            <DomainsBlock domains={competencyDomains} colors={colors} bulletStyle={bulletStyle} bulletShape={bulletShape} textColor={compTc} light />
+          ) : experienceEntries.length > 0 ? (
             <ul className="space-y-1.5">{experienceEntries.map(e => (
               <li key={e.id} className="flex items-start gap-2 text-white/80 text-[10px] group/item" style={compTc ? { color: compTc } : undefined}>
                 <span className="mt-0.5"><ModernBullet type={e.bullet} color={colors.accent} style={bulletStyle} shape={bulletShape} /></span>
