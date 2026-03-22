@@ -719,6 +719,12 @@ export const CreatifTemplate = ({ profile, experienceEntries, atoutEntries, remo
           </div>
         </div>
       </div>
+      {qualities && qualities.length > 0 && (
+        <div className="px-5 py-2">
+          <p className="text-[8px] font-bold uppercase tracking-widest mb-1" style={{ color: compTc || colors.accent }}>Qualités</p>
+          <QualitiesBlock qualities={qualities} colors={colors} bulletStyle={bulletStyle} bulletShape={qualitesBulletShape} textColor={expTc} onRemove={removeQuality} />
+        </div>
+      )}
       {interests && interests.length > 0 && (
         <div className="px-5 py-2">
           <p className="text-[8px] font-bold uppercase tracking-widest mb-1" style={{ color: compTc || colors.accent }}>Divers</p>
@@ -806,6 +812,12 @@ export const MuralTemplate = ({ profile, experienceEntries, atoutEntries, remove
           ) : <p className="text-gray-400 italic text-[9px] ml-2">Ajoutez…</p>}
         </div>
       </div>
+      {qualities && qualities.length > 0 && (
+        <div className="px-5 py-2">
+          <p className="text-[8px] font-bold uppercase tracking-widest mb-1" style={{ color: compTc || colors.accent }}>Qualités</p>
+          <QualitiesBlock qualities={qualities} colors={colors} bulletStyle={bulletStyle} bulletShape={qualitesBulletShape} textColor={expTc} onRemove={removeQuality} />
+        </div>
+      )}
       {interests && interests.length > 0 && (
         <div className="px-5 py-2">
           <p className="text-[8px] font-bold uppercase tracking-widest mb-1" style={{ color: compTc || colors.accent }}>Divers</p>
@@ -903,6 +915,12 @@ export const MagazineTemplate = ({ profile, experienceEntries, atoutEntries, rem
           ) : <p className="text-gray-400 italic text-[9px]">Ajoutez des atouts…</p>}
         </div>
       </div>
+      {qualities && qualities.length > 0 && (
+        <div className="px-5 py-2">
+          <p className="text-[8px] font-bold uppercase tracking-widest mb-1" style={{ color: compTc || colors.accent }}>Qualités</p>
+          <QualitiesBlock qualities={qualities} colors={colors} bulletStyle={bulletStyle} bulletShape={qualitesBulletShape} textColor={expTc} onRemove={removeQuality} />
+        </div>
+      )}
       {interests && interests.length > 0 && (
         <div className="px-5 py-2">
           <p className="text-[8px] font-bold uppercase tracking-widest mb-1" style={{ color: compTc || colors.accent }}>Divers</p>
@@ -1096,6 +1114,12 @@ export const FluxTemplate = ({ profile, experienceEntries, atoutEntries, removeE
           ) : <p className="text-gray-400 italic text-[9px]">Ajoutez des atouts…</p>}
         </div>
       </div>
+      {qualities && qualities.length > 0 && (
+        <div className="px-5 py-2">
+          <p className="text-[8px] font-bold uppercase tracking-widest mb-1" style={{ color: compTc || colors.accent }}>Qualités</p>
+          <QualitiesBlock qualities={qualities} colors={colors} bulletStyle={bulletStyle} bulletShape={qualitesBulletShape} textColor={expTc} onRemove={removeQuality} />
+        </div>
+      )}
       {interests && interests.length > 0 && (
         <div className="px-5 py-2">
           <p className="text-[8px] font-bold uppercase tracking-widest mb-1" style={{ color: compTc || colors.accent }}>Divers</p>
@@ -1194,6 +1218,12 @@ export const SereniteTemplate = ({ profile, experienceEntries, atoutEntries, rem
           </div>
         </div>
       </div>
+      {qualities && qualities.length > 0 && (
+        <div className="px-5 py-2">
+          <p className="text-[8px] font-bold uppercase tracking-widest mb-1" style={{ color: compTc || colors.accent }}>Qualités</p>
+          <QualitiesBlock qualities={qualities} colors={colors} bulletStyle={bulletStyle} bulletShape={qualitesBulletShape} textColor={expTc} onRemove={removeQuality} />
+        </div>
+      )}
       {interests && interests.length > 0 && (
         <div className="px-5 py-2">
           <p className="text-[8px] font-bold uppercase tracking-widest mb-1" style={{ color: compTc || colors.accent }}>Divers</p>
