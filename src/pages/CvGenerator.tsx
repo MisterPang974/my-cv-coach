@@ -1,34 +1,17 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import {
-  Wand2, Copy, Check, Plus, Trash2, ArrowRight, Square, Circle,
-  User, Briefcase, Mail, Phone, MapPin, Palette, Layers, Pen, Zap,
-  Shield, Clock, Eye, Star, ChevronRight, Sparkles
+  Wand2, Copy, Check, Plus, Trash2, User, Briefcase, Palette, Star, Settings2
 } from "lucide-react";
+import { detectSector, sectorConfigs, layoutMeta, type SectorId, type LayoutId, type SidebarPosition, type BulletStyle, type SectorPalette } from "@/lib/cv-sectors";
+import { templateRegistry, ModernBullet, type TemplateProps } from "@/components/cv-templates";
 
 // ─── Types ─────────────────────────────────────────────────────────
 type BulletType = "action" | "technique" | "relationnel";
-type ThemeId = "impact" | "artisan" | "creatif";
-type ColorId = "bleu" | "emeraude" | "orange" | "anthracite";
-
 interface Transformation { text: string; bullet: BulletType; }
 interface CvEntry { id: number; input: string; selected: string; bullet: BulletType; }
 interface CvProfile { nom: string; titre: string; email: string; telephone: string; ville: string; }
-
-// ─── Themes ────────────────────────────────────────────────────────
-const themes: Record<ThemeId, { label: string; icon: React.ReactNode; desc: string }> = {
-  impact: { label: "L'Impact", icon: <Zap className="w-4 h-4" />, desc: "Moderne / Tech" },
-  artisan: { label: "L'Artisan", icon: <Pen className="w-4 h-4" />, desc: "Organique / Solide" },
-  creatif: { label: "Le Créatif", icon: <Sparkles className="w-4 h-4" />, desc: "Audacieux" },
-};
-
-const colorPalettes: Record<ColorId, { label: string; primary: string; accent: string; swatch: string }> = {
-  bleu: { label: "Bleu Profond", primary: "hsl(213, 65%, 28%)", accent: "hsl(213, 80%, 55%)", swatch: "hsl(213, 65%, 38%)" },
-  emeraude: { label: "Vert Émeraude", primary: "hsl(160, 60%, 28%)", accent: "hsl(160, 70%, 45%)", swatch: "hsl(160, 60%, 38%)" },
-  orange: { label: "Orange Brûlé", primary: "hsl(20, 75%, 35%)", accent: "hsl(24, 85%, 52%)", swatch: "hsl(20, 75%, 42%)" },
-  anthracite: { label: "Gris Anthracite", primary: "hsl(220, 10%, 22%)", accent: "hsl(220, 15%, 45%)", swatch: "hsl(220, 10%, 30%)" },
-};
 
 // ─── Transformations (Méthode Fred) ────────────────────────────────
 const transformations: Record<string, Transformation[]> = {
@@ -157,266 +140,6 @@ const findSuggestions = (input: string): Transformation[] => {
   return [];
 };
 
-// ─── Bullet SVG Icons (modern styled) ──────────────────────────────
-const ModernBullet = ({ type, color }: { type: BulletType; color: string }) => {
-  const size = 14;
-  switch (type) {
-    case "action":
-      return (
-        <svg width={size} height={size} viewBox="0 0 14 14" fill="none">
-          <path d="M3 7h6M9 4l3 3-3 3" stroke={color} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-        </svg>
-      );
-    case "technique":
-      return (
-        <svg width={size} height={size} viewBox="0 0 14 14" fill="none">
-          <rect x="2" y="2" width="10" height="10" rx="2" stroke={color} strokeWidth="1.5" fill={color} fillOpacity="0.15" />
-        </svg>
-      );
-    case "relationnel":
-      return (
-        <svg width={size} height={size} viewBox="0 0 14 14" fill="none">
-          <circle cx="7" cy="7" r="5" stroke={color} strokeWidth="1.5" fill={color} fillOpacity="0.15" />
-        </svg>
-      );
-  }
-};
-
-// ─── A4 Preview Components per Theme ───────────────────────────────
-const ImpactPreview = ({ profile, experienceEntries, atoutEntries, entries, removeEntry, colors }: any) => (
-  <div className="h-full flex text-[11px] leading-[1.6] font-sans" style={{ fontFamily: "'DM Sans', system-ui, sans-serif" }}>
-    {/* Sidebar */}
-    <div className="w-[38%] flex flex-col" style={{ background: colors.primary }}>
-      <div className="px-5 pt-8 pb-5">
-        {/* Avatar placeholder */}
-        <div className="w-16 h-16 rounded-2xl mx-auto mb-4 flex items-center justify-center text-white/30 text-2xl font-bold"
-          style={{ background: "rgba(255,255,255,0.1)", backdropFilter: "blur(10px)", border: "1px solid rgba(255,255,255,0.15)" }}>
-          {profile.nom ? profile.nom[0]?.toUpperCase() : "?"}
-        </div>
-        <h2 className="text-white text-center text-sm font-bold tracking-wide">{profile.nom || "Votre Nom"}</h2>
-        <p className="text-white/60 text-center text-[10px] mt-0.5">{profile.titre || "Titre du poste"}</p>
-      </div>
-
-      <div className="px-5 space-y-3 flex-1">
-        {/* Contact */}
-        <div className="rounded-xl p-3" style={{ background: "rgba(255,255,255,0.07)", backdropFilter: "blur(8px)" }}>
-          <p className="text-[9px] text-white/40 uppercase tracking-widest font-semibold mb-2">Contact</p>
-          <div className="space-y-1.5 text-white/70 text-[10px]">
-            {profile.email && <div className="flex items-center gap-2"><Mail className="w-3 h-3 flex-shrink-0" /><span className="truncate">{profile.email}</span></div>}
-            {profile.telephone && <div className="flex items-center gap-2"><Phone className="w-3 h-3 flex-shrink-0" /><span>{profile.telephone}</span></div>}
-            {profile.ville && <div className="flex items-center gap-2"><MapPin className="w-3 h-3 flex-shrink-0" /><span>{profile.ville}</span></div>}
-          </div>
-        </div>
-
-        {/* Atouts */}
-        <div className="rounded-xl p-3" style={{ background: "rgba(255,255,255,0.07)", backdropFilter: "blur(8px)" }}>
-          <p className="text-[9px] text-white/40 uppercase tracking-widest font-semibold mb-2">Atouts</p>
-          {atoutEntries.length > 0 ? (
-            <ul className="space-y-1.5">
-              {atoutEntries.map((e: CvEntry) => (
-                <li key={e.id} className="flex items-start gap-2 text-white/80 text-[10px] group/del">
-                  <ChevronRight className="w-3 h-3 mt-0.5 flex-shrink-0" style={{ color: colors.accent }} />
-                  <span className="flex-1">{e.selected}</span>
-                  <button onClick={() => removeEntry(e.id)} className="opacity-0 group-hover/del:opacity-100 text-white/30 hover:text-red-400 transition-opacity"><Trash2 className="w-2.5 h-2.5" /></button>
-                </li>
-              ))}
-            </ul>
-          ) : <p className="text-white/30 italic text-[9px]">Ajoutez des atouts…</p>}
-        </div>
-      </div>
-
-      <div className="px-5 py-3 text-[8px] text-white/20 text-center">My CV Coach · Méthode Fred</div>
-    </div>
-
-    {/* Main content */}
-    <div className="flex-1 flex flex-col bg-white">
-      {/* Top accent line */}
-      <div className="h-1" style={{ background: `linear-gradient(90deg, ${colors.accent}, ${colors.primary})` }} />
-      <div className="flex-1 px-6 py-6 overflow-y-auto">
-        <h3 className="text-[10px] font-bold uppercase tracking-[0.2em] mb-4 pb-2 flex items-center gap-2" style={{ color: colors.primary, borderBottom: `2px solid ${colors.accent}` }}>
-          <Layers className="w-3.5 h-3.5" />
-          Compétences professionnelles
-        </h3>
-        {experienceEntries.length > 0 ? (
-          <ul className="space-y-2">
-            {experienceEntries.map((entry: CvEntry) => (
-              <li key={entry.id} className="flex items-start gap-2.5 group/item rounded-lg px-2.5 py-1.5 hover:bg-gray-50 transition-colors">
-                <span className="mt-0.5 flex-shrink-0"><ModernBullet type={entry.bullet} color={entry.bullet === "technique" ? colors.primary : colors.accent} /></span>
-                <span className="flex-1 text-gray-700">{entry.selected}</span>
-                <button onClick={() => removeEntry(entry.id)} className="opacity-0 group-hover/item:opacity-100 text-gray-300 hover:text-red-400 transition-opacity"><Trash2 className="w-3 h-3" /></button>
-              </li>
-            ))}
-          </ul>
-        ) : (
-          <div className="rounded-xl border-2 border-dashed border-gray-100 p-6 text-center mt-4">
-            <Briefcase className="w-8 h-8 text-gray-200 mx-auto mb-2" />
-            <p className="text-gray-300 text-[10px] font-medium">Votre CV se construit ici en temps réel</p>
-            <p className="text-gray-200 text-[9px] mt-1">Style télégraphique · Verbes d'action · Pas de « Je… »</p>
-          </div>
-        )}
-      </div>
-      <div className="px-6 py-2 border-t border-gray-50 text-[8px] text-gray-300 flex justify-between">
-        <span>→ Action · ■ Technique · ● Relationnel</span>
-        <span>L'Impact</span>
-      </div>
-    </div>
-  </div>
-);
-
-const ArtisanPreview = ({ profile, experienceEntries, atoutEntries, entries, removeEntry, colors }: any) => (
-  <div className="h-full flex flex-col text-[11px] leading-[1.6]" style={{ fontFamily: "'DM Serif Display', Georgia, serif", background: "hsl(40, 30%, 97%)" }}>
-    {/* Header with texture feel */}
-    <div className="px-8 py-7 relative" style={{ background: colors.primary }}>
-      <div className="absolute inset-0 opacity-[0.04]" style={{ backgroundImage: "url(\"data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M20 20.5V18H0v-2h20v-2H0v-2h20v-2H0V8h20V6H0V4h20V2H0V0h22v20h2V0h2v20h2V0h2v20h2V0h2v20h2V0h2v22H20v-1.5z' fill='%23fff' fill-opacity='0.08'/%3E%3C/svg%3E\")" }} />
-      <div className="relative flex items-end gap-5">
-        <div className="w-14 h-14 rounded-full flex items-center justify-center text-white/40 text-xl font-bold"
-          style={{ background: "rgba(255,255,255,0.15)", border: "2px solid rgba(255,255,255,0.25)" }}>
-          {profile.nom ? profile.nom[0]?.toUpperCase() : "?"}
-        </div>
-        <div>
-          <h2 className="text-white text-lg font-bold">{profile.nom || "Votre Nom"}</h2>
-          <p className="text-white/65 text-xs italic">{profile.titre || "Titre du poste"}</p>
-        </div>
-      </div>
-      <div className="relative flex flex-wrap gap-x-5 gap-y-1 mt-4 text-white/55 text-[10px]" style={{ fontFamily: "'DM Sans', sans-serif" }}>
-        {profile.email && <span className="flex items-center gap-1.5"><Mail className="w-3 h-3" />{profile.email}</span>}
-        {profile.telephone && <span className="flex items-center gap-1.5"><Phone className="w-3 h-3" />{profile.telephone}</span>}
-        {profile.ville && <span className="flex items-center gap-1.5"><MapPin className="w-3 h-3" />{profile.ville}</span>}
-      </div>
-    </div>
-
-    <div className="flex-1 flex">
-      {/* Main */}
-      <div className="flex-1 px-7 py-5 overflow-y-auto">
-        <h3 className="text-[11px] font-bold uppercase tracking-[0.15em] mb-3 pb-2" style={{ color: colors.primary, borderBottom: `2px solid ${colors.accent}`, fontFamily: "'DM Sans', sans-serif" }}>
-          Compétences professionnelles
-        </h3>
-        {experienceEntries.length > 0 ? (
-          <ul className="space-y-2">
-            {experienceEntries.map((entry: CvEntry) => (
-              <li key={entry.id} className="flex items-start gap-2.5 group/item px-2 py-1 rounded-lg hover:bg-white/60 transition-colors">
-                <span className="mt-0.5 flex-shrink-0"><ModernBullet type={entry.bullet} color={entry.bullet === "technique" ? colors.primary : colors.accent} /></span>
-                <span className="flex-1 text-gray-700" style={{ fontFamily: "'DM Sans', sans-serif" }}>{entry.selected}</span>
-                <button onClick={() => removeEntry(entry.id)} className="opacity-0 group-hover/item:opacity-100 text-gray-300 hover:text-red-400 transition-opacity"><Trash2 className="w-3 h-3" /></button>
-              </li>
-            ))}
-          </ul>
-        ) : (
-          <div className="rounded-2xl border-2 border-dashed p-6 text-center mt-4" style={{ borderColor: `${colors.accent}40` }}>
-            <Briefcase className="w-8 h-8 mx-auto mb-2" style={{ color: `${colors.accent}40` }} />
-            <p className="text-gray-400 text-[10px] font-medium" style={{ fontFamily: "'DM Sans', sans-serif" }}>Votre CV se construit ici en temps réel</p>
-          </div>
-        )}
-      </div>
-
-      {/* Right sidebar */}
-      <div className="w-[35%] border-l px-5 py-5 space-y-4" style={{ borderColor: `${colors.primary}15`, background: `${colors.primary}06` }}>
-        <div>
-          <p className="text-[9px] uppercase tracking-widest font-semibold mb-2" style={{ color: colors.accent, fontFamily: "'DM Sans', sans-serif" }}>Atouts</p>
-          {atoutEntries.length > 0 ? (
-            <ul className="space-y-1.5">
-              {atoutEntries.map((e: CvEntry) => (
-                <li key={e.id} className="flex items-start gap-2 text-[10px] text-gray-600 group/del" style={{ fontFamily: "'DM Sans', sans-serif" }}>
-                  <Star className="w-3 h-3 mt-0.5 flex-shrink-0" style={{ color: colors.accent }} />
-                  <span className="flex-1">{e.selected}</span>
-                  <button onClick={() => removeEntry(e.id)} className="opacity-0 group-hover/del:opacity-100 text-gray-300 hover:text-red-400 transition-opacity"><Trash2 className="w-2.5 h-2.5" /></button>
-                </li>
-              ))}
-            </ul>
-          ) : <p className="text-gray-400 italic text-[9px]" style={{ fontFamily: "'DM Sans', sans-serif" }}>Ajoutez des atouts…</p>}
-        </div>
-      </div>
-    </div>
-
-    <div className="px-7 py-2 border-t text-[8px] text-gray-400 flex justify-between" style={{ borderColor: `${colors.primary}10`, fontFamily: "'DM Sans', sans-serif" }}>
-      <span>My CV Coach · Méthode Fred</span>
-      <span>L'Artisan</span>
-    </div>
-  </div>
-);
-
-const CreatifPreview = ({ profile, experienceEntries, atoutEntries, entries, removeEntry, colors }: any) => (
-  <div className="h-full flex flex-col text-[11px] leading-[1.6] relative overflow-hidden" style={{ fontFamily: "'DM Sans', system-ui, sans-serif" }}>
-    {/* Floating geometric shapes */}
-    <div className="absolute -top-6 -right-6 w-24 h-24 rounded-full opacity-[0.06]" style={{ background: colors.accent }} />
-    <div className="absolute top-1/3 -left-4 w-16 h-16 rotate-45 rounded-md opacity-[0.05]" style={{ background: colors.primary }} />
-    <div className="absolute bottom-1/4 right-8 w-10 h-10 rounded-full opacity-[0.04]" style={{ background: colors.accent }} />
-    <svg className="absolute bottom-12 left-6 opacity-[0.06]" width="60" height="30" viewBox="0 0 60 30"><path d="M5 25L30 5L55 25" stroke={colors.primary} strokeWidth="3" fill="none" /></svg>
-
-    {/* Header — asymmetric */}
-    <div className="relative px-7 pt-8 pb-6 flex items-end gap-5">
-      <div className="flex-1">
-        <h2 className="text-2xl font-black tracking-tight leading-none" style={{ color: colors.primary }}>
-          {profile.nom || "Votre Nom"}
-        </h2>
-        <div className="mt-1.5 inline-block rounded-full px-3 py-0.5 text-[10px] font-semibold text-white" style={{ background: colors.accent }}>
-          {profile.titre || "Titre du poste"}
-        </div>
-      </div>
-      <div className="w-14 h-14 rounded-2xl rotate-3 flex items-center justify-center text-white text-lg font-bold shadow-lg" style={{ background: `linear-gradient(135deg, ${colors.primary}, ${colors.accent})` }}>
-        {profile.nom ? profile.nom[0]?.toUpperCase() : "?"}
-      </div>
-    </div>
-
-    {/* Contact bar */}
-    <div className="mx-7 rounded-xl px-4 py-2 flex flex-wrap gap-x-4 gap-y-1 text-[10px] text-gray-500 mb-4" style={{ background: `${colors.primary}08` }}>
-      {profile.email && <span className="flex items-center gap-1"><Mail className="w-3 h-3" style={{ color: colors.accent }} />{profile.email}</span>}
-      {profile.telephone && <span className="flex items-center gap-1"><Phone className="w-3 h-3" style={{ color: colors.accent }} />{profile.telephone}</span>}
-      {profile.ville && <span className="flex items-center gap-1"><MapPin className="w-3 h-3" style={{ color: colors.accent }} />{profile.ville}</span>}
-    </div>
-
-    <div className="flex-1 flex px-7 gap-5 overflow-y-auto pb-4">
-      {/* Left main */}
-      <div className="flex-1">
-        <h3 className="text-[10px] font-black uppercase tracking-[0.2em] mb-3 flex items-center gap-2" style={{ color: colors.primary }}>
-          <span className="w-6 h-0.5 rounded-full" style={{ background: colors.accent }} />
-          Compétences
-        </h3>
-        {experienceEntries.length > 0 ? (
-          <ul className="space-y-2">
-            {experienceEntries.map((entry: CvEntry, idx: number) => (
-              <li key={entry.id} className="flex items-start gap-2.5 group/item px-2 py-1.5 rounded-xl hover:bg-gray-50 transition-colors"
-                style={{ borderLeft: `3px solid ${idx % 2 === 0 ? colors.primary : colors.accent}` }}>
-                <span className="mt-0.5 flex-shrink-0"><ModernBullet type={entry.bullet} color={entry.bullet === "technique" ? colors.primary : colors.accent} /></span>
-                <span className="flex-1 text-gray-700">{entry.selected}</span>
-                <button onClick={() => removeEntry(entry.id)} className="opacity-0 group-hover/item:opacity-100 text-gray-300 hover:text-red-400 transition-opacity"><Trash2 className="w-3 h-3" /></button>
-              </li>
-            ))}
-          </ul>
-        ) : (
-          <div className="rounded-2xl border-2 border-dashed p-6 text-center mt-2" style={{ borderColor: `${colors.accent}30` }}>
-            <Sparkles className="w-8 h-8 mx-auto mb-2" style={{ color: `${colors.accent}40` }} />
-            <p className="text-gray-400 text-[10px] font-medium">Saisissez une expérience pour commencer</p>
-          </div>
-        )}
-      </div>
-
-      {/* Right column */}
-      <div className="w-[34%] space-y-3">
-        <div className="rounded-2xl p-3.5" style={{ background: `${colors.primary}08`, border: `1px solid ${colors.primary}12` }}>
-          <p className="text-[9px] uppercase tracking-widest font-bold mb-2" style={{ color: colors.accent }}>Atouts</p>
-          {atoutEntries.length > 0 ? (
-            <ul className="space-y-1.5">
-              {atoutEntries.map((e: CvEntry) => (
-                <li key={e.id} className="flex items-start gap-1.5 text-[10px] text-gray-600 group/del">
-                  <span className="w-1.5 h-1.5 rounded-full mt-1 flex-shrink-0" style={{ background: colors.accent }} />
-                  <span className="flex-1">{e.selected}</span>
-                  <button onClick={() => removeEntry(e.id)} className="opacity-0 group-hover/del:opacity-100 text-gray-300 hover:text-red-400 transition-opacity"><Trash2 className="w-2.5 h-2.5" /></button>
-                </li>
-              ))}
-            </ul>
-          ) : <p className="text-gray-400 italic text-[9px]">Ajoutez des atouts…</p>}
-        </div>
-      </div>
-    </div>
-
-    <div className="px-7 py-2 text-[8px] text-gray-300 flex justify-between">
-      <span>My CV Coach · Méthode Fred</span>
-      <span>Le Créatif</span>
-    </div>
-  </div>
-);
-
 // ─── Main Component ────────────────────────────────────────────────
 const CvGenerator = () => {
   const [input, setInput] = useState("");
@@ -424,90 +147,142 @@ const CvGenerator = () => {
   const [entries, setEntries] = useState<CvEntry[]>([]);
   const [copied, setCopied] = useState(false);
   const [searching, setSearching] = useState(false);
-  const [activeTheme, setActiveTheme] = useState<ThemeId>("impact");
-  const [activeColor, setActiveColor] = useState<ColorId>("bleu");
   const [profile, setProfile] = useState<CvProfile>({ nom: "", titre: "", email: "", telephone: "", ville: "" });
+
+  // Sector-aware state
+  const [detectedSector, setDetectedSector] = useState<SectorId>("tertiaire");
+  const [activeLayout, setActiveLayout] = useState<LayoutId>("magazine");
+  const [activePalette, setActivePalette] = useState<SectorPalette>(sectorConfigs.tertiaire.palettes[0]);
+  const [sidebarPos, setSidebarPos] = useState<SidebarPosition>("left");
+  const [bulletStyle, setBulletStyle] = useState<BulletStyle>("mixte");
+
   const a4Ref = useRef<HTMLDivElement>(null);
 
-  const colors = colorPalettes[activeColor];
-  const experienceEntries = entries.filter((e) => e.input !== "Atout");
-  const atoutEntries = entries.filter((e) => e.input === "Atout");
+  // Auto-detect sector when titre changes
+  useEffect(() => {
+    if (profile.titre.length > 2) {
+      const sector = detectSector(profile.titre);
+      if (sector !== detectedSector) {
+        setDetectedSector(sector);
+        const cfg = sectorConfigs[sector];
+        setActiveLayout(cfg.layouts[0]);
+        setActivePalette(cfg.palettes[0]);
+      }
+    }
+  }, [profile.titre]);
+
+  const sectorCfg = sectorConfigs[detectedSector];
+  const colors = activePalette;
+  const experienceEntries = entries.filter(e => e.input !== "Atout");
+  const atoutEntries = entries.filter(e => e.input === "Atout");
 
   const handleTransform = () => {
     if (!input.trim()) return;
     setSearching(true);
     setTimeout(() => { setSuggestions(findSuggestions(input)); setSearching(false); }, 350);
   };
-  const addEntry = (t: Transformation) => { setEntries((p) => [...p, { id: Date.now(), input, selected: t.text, bullet: t.bullet }]); setInput(""); setSuggestions([]); };
-  const addAtout = (text: string) => { setEntries((p) => [...p, { id: Date.now(), input: "Atout", selected: text, bullet: "action" }]); };
-  const removeEntry = (id: number) => { setEntries((p) => p.filter((e) => e.id !== id)); };
+  const addEntry = (t: Transformation) => { setEntries(p => [...p, { id: Date.now(), input, selected: t.text, bullet: t.bullet }]); setInput(""); setSuggestions([]); };
+  const addAtout = (text: string) => { setEntries(p => [...p, { id: Date.now(), input: "Atout", selected: text, bullet: "action" }]); };
+  const removeEntry = (id: number) => { setEntries(p => p.filter(e => e.id !== id)); };
   const copyAll = () => {
     const symbols: Record<BulletType, string> = { action: "→", technique: "■", relationnel: "●" };
-    navigator.clipboard.writeText(entries.map((e) => `${symbols[e.bullet]} ${e.selected}`).join("\n"));
+    navigator.clipboard.writeText(entries.map(e => `${symbols[e.bullet]} ${e.selected}`).join("\n"));
     setCopied(true); setTimeout(() => setCopied(false), 2000);
   };
-  const updateProfile = (field: keyof CvProfile, value: string) => setProfile((p) => ({ ...p, [field]: value }));
+  const updateProfile = (field: keyof CvProfile, value: string) => setProfile(p => ({ ...p, [field]: value }));
 
-  const previewProps = { profile, experienceEntries, atoutEntries, entries, removeEntry, colors };
+  const Template = templateRegistry[activeLayout];
+  const templateProps: TemplateProps = { profile, experienceEntries, atoutEntries, entries, removeEntry, colors, sidebarPos, bulletStyle };
 
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
       <main className="pt-16">
-        <section className="py-10 md:py-14">
+        <section className="py-8 md:py-12">
           <div className="container mx-auto px-4 md:px-6">
             {/* Header */}
-            <div className="animate-fade-up max-w-2xl mb-8">
+            <div className="animate-fade-up max-w-2xl mb-6">
               <p className="text-sm font-semibold text-accent uppercase tracking-widest mb-2">Méthode Fred · Générateur Next-Gen</p>
-              <h1 className="text-3xl md:text-4xl tracking-tight mb-3">Générateur de CV</h1>
-              <p className="text-muted-foreground">Saisissez vos expériences, choisissez votre style, et créez un CV qui marque les esprits.</p>
+              <h1 className="text-3xl md:text-4xl tracking-tight mb-2">Générateur de CV</h1>
+              <p className="text-muted-foreground">L'IA détecte votre secteur et propose les meilleurs designs 2026.</p>
             </div>
 
-            {/* Theme & Color selectors */}
-            <div className="animate-fade-up-delay-1 flex flex-wrap gap-4 mb-8">
-              {/* Theme picker */}
-              <div className="flex gap-2">
-                {(Object.entries(themes) as [ThemeId, typeof themes.impact][]).map(([id, t]) => (
-                  <button key={id} onClick={() => setActiveTheme(id)}
-                    className={`flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-medium transition-all active:scale-[0.97] ${activeTheme === id ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20" : "bg-card text-foreground border border-border hover:shadow-md"}`}>
-                    {t.icon}
-                    <span>{t.label}</span>
-                    <span className={`text-[10px] ${activeTheme === id ? "text-primary-foreground/70" : "text-muted-foreground"}`}>{t.desc}</span>
+            {/* Sector badge */}
+            <div className="animate-fade-up-delay-1 mb-5">
+              <div className="inline-flex items-center gap-2 rounded-xl bg-card border border-border px-4 py-2 text-sm">
+                <span>{sectorCfg.emoji}</span>
+                <span className="font-medium">Secteur détecté :</span>
+                <span className="font-bold text-primary">{sectorCfg.label}</span>
+                <span className="text-muted-foreground text-xs">— renseignez votre titre pour changer</span>
+              </div>
+            </div>
+
+            {/* Layout selector */}
+            <div className="animate-fade-up-delay-1 flex flex-wrap gap-3 mb-4">
+              {sectorCfg.layouts.map(lid => {
+                const meta = layoutMeta[lid];
+                return (
+                  <button key={lid} onClick={() => setActiveLayout(lid)}
+                    className={`flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-medium transition-all active:scale-[0.97] ${activeLayout === lid ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20" : "bg-card text-foreground border border-border hover:shadow-md"}`}>
+                    <span>{meta.emoji}</span>
+                    <span>{meta.label}</span>
+                    <span className={`text-[10px] hidden sm:inline ${activeLayout === lid ? "text-primary-foreground/70" : "text-muted-foreground"}`}>{meta.desc}</span>
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Palette + customization row */}
+            <div className="animate-fade-up-delay-2 flex flex-wrap gap-4 mb-8">
+              {/* Palette picker */}
+              <div className="flex items-center gap-2 rounded-xl bg-card border border-border px-4 py-2">
+                <Palette className="w-4 h-4 text-muted-foreground" />
+                {sectorCfg.palettes.map(p => (
+                  <button key={p.id} onClick={() => setActivePalette(p)} title={p.label}
+                    className={`w-7 h-7 rounded-full transition-all active:scale-[0.95] ${activePalette.id === p.id ? "ring-2 ring-offset-2 ring-ring scale-110" : "hover:scale-105"}`}
+                    style={{ background: p.swatch }} />
+                ))}
+              </div>
+              {/* Sidebar position */}
+              <div className="flex items-center gap-1.5 rounded-xl bg-card border border-border px-3 py-2">
+                <Settings2 className="w-4 h-4 text-muted-foreground" />
+                {(["left", "right", "top"] as SidebarPosition[]).map(pos => (
+                  <button key={pos} onClick={() => setSidebarPos(pos)}
+                    className={`px-3 py-1 rounded-lg text-xs font-medium transition-all ${sidebarPos === pos ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-secondary"}`}>
+                    {pos === "left" ? "← Gauche" : pos === "right" ? "Droite →" : "↑ Haut"}
                   </button>
                 ))}
               </div>
-
-              {/* Color palette */}
-              <div className="flex items-center gap-2 rounded-xl bg-card border border-border px-4 py-2">
-                <Palette className="w-4 h-4 text-muted-foreground" />
-                {(Object.entries(colorPalettes) as [ColorId, typeof colorPalettes.bleu][]).map(([id, c]) => (
-                  <button key={id} onClick={() => setActiveColor(id)} title={c.label}
-                    className={`w-7 h-7 rounded-full transition-all active:scale-[0.95] ${activeColor === id ? "ring-2 ring-offset-2 ring-ring scale-110" : "hover:scale-105"}`}
-                    style={{ background: c.swatch }} />
+              {/* Bullet style */}
+              <div className="flex items-center gap-2 rounded-xl bg-card border border-border px-3 py-2">
+                <span className="text-xs text-muted-foreground font-medium">Puces :</span>
+                {(["mixte", "fleches", "carres", "cercles"] as BulletStyle[]).map(bs => (
+                  <button key={bs} onClick={() => setBulletStyle(bs)}
+                    className={`px-3 py-1 rounded-lg text-xs font-medium transition-all flex items-center gap-1.5 ${bulletStyle === bs ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-secondary"}`}>
+                    {bs === "mixte" ? "Mixte" : <><ModernBullet type={bs === "fleches" ? "action" : bs === "carres" ? "technique" : "relationnel"} color={bulletStyle === bs ? "white" : "currentColor"} /> {bs.charAt(0).toUpperCase() + bs.slice(1)}</>}
+                  </button>
                 ))}
               </div>
             </div>
 
-            <div className="grid lg:grid-cols-[1fr,minmax(480px,600px)] gap-8 items-start">
+            <div className="grid lg:grid-cols-[1fr,minmax(460px,580px)] gap-8 items-start">
               {/* LEFT — Controls */}
               <div className="space-y-5">
-                {/* Profile */}
                 <div className="rounded-2xl bg-card p-5 shadow-sm border border-border/50 space-y-3">
                   <h3 className="font-semibold text-sm flex items-center gap-2"><User className="w-4 h-4 text-primary" />Informations personnelles</h3>
                   <div className="grid sm:grid-cols-2 gap-3">
-                    {(["nom", "titre", "email", "telephone", "ville"] as (keyof CvProfile)[]).map((f) => (
-                      <input key={f} value={profile[f]} onChange={(e) => updateProfile(f, e.target.value)}
-                        placeholder={{ nom: "Nom complet", titre: "Titre visé", email: "Email", telephone: "Téléphone", ville: "Ville" }[f]}
-                        className={`rounded-xl border border-input bg-background px-4 py-2.5 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring ${f === "ville" ? "sm:col-span-1" : ""}`} />
+                    {(["nom", "titre", "email", "telephone", "ville"] as (keyof CvProfile)[]).map(f => (
+                      <input key={f} value={profile[f]} onChange={e => updateProfile(f, e.target.value)}
+                        placeholder={{ nom: "Nom complet", titre: "Titre visé (ex: Commercial, Maçon…)", email: "Email", telephone: "Téléphone", ville: "Ville" }[f]}
+                        className="rounded-xl border border-input bg-background px-4 py-2.5 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring" />
                     ))}
                   </div>
                 </div>
 
-                {/* Experience input */}
                 <div className="rounded-2xl bg-card p-5 shadow-sm border border-border/50">
                   <h3 className="font-semibold text-sm flex items-center gap-2 mb-3"><Briefcase className="w-4 h-4 text-primary" />Saisissez une expérience ou tâche</h3>
                   <div className="flex gap-3">
-                    <input value={input} onChange={(e) => setInput(e.target.value)} onKeyDown={(e) => e.key === "Enter" && handleTransform()}
+                    <input value={input} onChange={e => setInput(e.target.value)} onKeyDown={e => e.key === "Enter" && handleTransform()}
                       placeholder="Ex : agent de nettoyage, vente, cuisine…"
                       className="flex-1 rounded-xl border border-input bg-background px-4 py-3 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring" />
                     <button onClick={handleTransform} disabled={!input.trim() || searching}
@@ -515,15 +290,11 @@ const CvGenerator = () => {
                       <Wand2 className={`w-4 h-4 ${searching ? "animate-spin" : ""}`} /> Transformer
                     </button>
                   </div>
-
-                  {/* Legend */}
                   <div className="mt-3 flex gap-4 text-xs text-muted-foreground">
                     <span className="inline-flex items-center gap-1.5"><ModernBullet type="action" color="hsl(24, 85%, 52%)" /> Action</span>
                     <span className="inline-flex items-center gap-1.5"><ModernBullet type="technique" color="hsl(213, 65%, 38%)" /> Technique</span>
                     <span className="inline-flex items-center gap-1.5"><ModernBullet type="relationnel" color="hsl(24, 85%, 52%)" /> Relationnel</span>
                   </div>
-
-                  {/* Suggestions */}
                   {suggestions.length > 0 && (
                     <div className="mt-5 space-y-2">
                       <p className="text-sm text-muted-foreground">Compétences suggérées pour « <span className="font-medium text-foreground">{input}</span> » :</p>
@@ -539,15 +310,13 @@ const CvGenerator = () => {
                   )}
                 </div>
 
-                {/* Atouts */}
                 <div className="rounded-2xl bg-accent/8 border border-accent/20 p-5">
                   <h3 className="font-semibold text-sm mb-3 flex items-center gap-2"><Star className="w-4 h-4 text-accent" /> Atouts à valoriser</h3>
                   <div className="grid sm:grid-cols-2 gap-2">
-                    {atouts.map((a) => (
+                    {atouts.map(a => (
                       <button key={a} onClick={() => addAtout(a)}
                         className="text-left rounded-xl border border-border bg-background p-3 text-sm hover:bg-secondary hover:shadow-sm transition-all active:scale-[0.98] group flex items-center gap-2">
-                        <Plus className="w-3.5 h-3.5 text-accent opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0" />
-                        {a}
+                        <Plus className="w-3.5 h-3.5 text-accent opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0" />{a}
                       </button>
                     ))}
                   </div>
@@ -563,17 +332,15 @@ const CvGenerator = () => {
               </div>
 
               {/* RIGHT — A4 Preview */}
-              <div className="animate-fade-up-delay-2 sticky top-24">
+              <div className="animate-fade-up-delay-2 sticky top-20">
                 <div ref={a4Ref}
                   className="bg-white rounded-2xl overflow-hidden mx-auto"
                   style={{
                     aspectRatio: "210 / 297",
-                    maxHeight: "85vh",
+                    maxHeight: "82vh",
                     boxShadow: `0 4px 24px -4px rgba(0,0,0,0.12), 0 0 0 1px rgba(0,0,0,0.04), 0 20px 40px -12px ${colors.primary}15`,
                   }}>
-                  {activeTheme === "impact" && <ImpactPreview {...previewProps} />}
-                  {activeTheme === "artisan" && <ArtisanPreview {...previewProps} />}
-                  {activeTheme === "creatif" && <CreatifPreview {...previewProps} />}
+                  {Template && <Template {...templateProps} />}
                 </div>
               </div>
             </div>
