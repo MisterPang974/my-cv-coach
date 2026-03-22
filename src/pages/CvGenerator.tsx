@@ -44,23 +44,27 @@ export interface InterestEntry {
   category: "loisir" | "benevolat" | "permis" | "langue" | "autre";
 }
 
-const INTEREST_ICONS: Record<string, string> = {
-  "Sport": "⚽", "Musique": "🎵", "Lecture": "📚", "Voyage": "✈️", "Cuisine": "🍳",
-  "Photo": "📷", "Cinéma": "🎬", "Art": "🎨", "Jardinage": "🌱", "Jeux vidéo": "🎮",
-  "Yoga": "🧘", "Randonnée": "🥾", "Bénévolat": "🤝", "Permis B": "🚗", "Permis C": "🚛",
-  "Anglais": "🇬🇧", "Espagnol": "🇪🇸", "Allemand": "🇩🇪", "Arabe": "🇸🇦", "Italien": "🇮🇹",
-};
-
-const INTEREST_SUGGESTIONS: { text: string; icon: string; category: InterestEntry["category"] }[] = [
-  { text: "Sport collectif", icon: "⚽", category: "loisir" },
-  { text: "Musique", icon: "🎵", category: "loisir" },
-  { text: "Lecture", icon: "📚", category: "loisir" },
-  { text: "Voyages", icon: "✈️", category: "loisir" },
-  { text: "Cuisine", icon: "🍳", category: "loisir" },
-  { text: "Bénévolat associatif", icon: "🤝", category: "benevolat" },
-  { text: "Permis B", icon: "🚗", category: "permis" },
-  { text: "Anglais courant", icon: "🇬🇧", category: "langue" },
+const INTEREST_SUGGESTIONS: { text: string; category: InterestEntry["category"] }[] = [
+  { text: "Sport collectif", category: "loisir" },
+  { text: "Musique", category: "loisir" },
+  { text: "Lecture", category: "loisir" },
+  { text: "Voyages", category: "loisir" },
+  { text: "Cuisine", category: "loisir" },
+  { text: "Bénévolat associatif", category: "benevolat" },
+  { text: "Permis B", category: "permis" },
+  { text: "Anglais courant", category: "langue" },
 ];
+
+// ─── Qualities AI suggestions by sector ───────────────────────────
+const QUALITIES_BY_SECTOR: Record<string, string[]> = {
+  manuel: ["Rigueur et précision", "Résistance physique", "Sens de la sécurité", "Autonomie sur le terrain", "Esprit d'équipe"],
+  tertiaire: ["Sens du contact", "Organisation", "Réactivité", "Esprit d'analyse", "Aisance rédactionnelle"],
+  soin: ["Empathie et bienveillance", "Patience", "Sens de l'écoute", "Discrétion professionnelle", "Résistance au stress"],
+  tech: ["Esprit logique", "Curiosité technique", "Rigueur méthodologique", "Adaptabilité", "Veille technologique"],
+  creatif: ["Créativité", "Sens esthétique", "Ouverture d'esprit", "Sensibilité artistique", "Capacité d'innovation"],
+  logistique: ["Sens de l'organisation", "Réactivité", "Rigueur", "Gestion du stress", "Ponctualité"],
+  default: ["Ponctualité et assiduité", "Autonomie et prise d'initiative", "Travail en équipe", "Adaptabilité", "Sens de l'organisation"],
+};
 
 // ─── Competencies Domain System ────────────────────────────────────
 interface CompetencyItem { id: string; text: string; enabled: boolean; }
