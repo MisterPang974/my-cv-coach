@@ -28,6 +28,13 @@ export interface FormationEntry {
   ville: string;
 }
 
+export interface InterestEntry {
+  id: number;
+  text: string;
+  icon: string;
+  category: "loisir" | "benevolat" | "permis" | "langue" | "autre";
+}
+
 export type TextColorSection = "header" | "experiences" | "competences";
 export type FontId = "dm-sans" | "montserrat" | "open-sans" | "playfair" | "roboto" | "lato";
 
@@ -70,6 +77,9 @@ export interface TemplateProps {
   removeFormation?: (id: number) => void;
   formationTitle?: string;
   getCompanyLogoUrl?: (company: string) => string | null;
+  interests?: InterestEntry[];
+  removeInterest?: (id: number) => void;
+  interestDisplayMode?: "badges" | "list";
 }
 
 // ─── Bullet renderers ──────────────────────────────────────────────
@@ -233,6 +243,35 @@ const FormationBlock = ({ formations, colors, bulletStyle, bulletShape, textColo
     </div>
   );
 };
+/** Render interests / divers block — badge or list mode */
+const InterestsBlock = ({ interests, colors, bulletStyle, bulletShape, textColor, light, onRemove, displayMode = "badges" }: { interests?: InterestEntry[]; colors: Colors; bulletStyle: BulletStyle; bulletShape?: BulletShapeId; textColor?: string; light?: boolean; onRemove?: (id: number) => void; displayMode?: "badges" | "list" }) => {
+  if (!interests || interests.length === 0) return null;
+  if (displayMode === "badges") {
+    return (
+      <div className="flex flex-wrap gap-1">
+        {interests.map(i => (
+          <span key={i.id} className="inline-flex items-center gap-1 px-2 py-0.5 text-[8px] font-medium group/item"
+            style={{ borderRadius: "8px", background: light ? "rgba(255,255,255,0.12)" : `${colors.accent}08`, border: `1px solid ${light ? "rgba(255,255,255,0.15)" : `${colors.accent}18`}`, color: textColor || (light ? "rgba(255,255,255,0.85)" : undefined) }}>
+            <span className="text-[9px]">{i.icon}</span> {i.text}
+            {onRemove && <button onClick={() => onRemove(i.id)} className={`opacity-0 group-hover/item:opacity-100 ml-0.5 ${light ? "text-white/30 hover:text-red-300" : "text-gray-300 hover:text-red-400"}`}><Trash2 className="w-2 h-2" /></button>}
+          </span>
+        ))}
+      </div>
+    );
+  }
+  return (
+    <ul style={{ margin: 0, padding: 0, listStyle: "none" }}>
+      {interests.map(i => (
+        <li key={i.id} className="flex items-center gap-1.5 group/item" style={{ color: textColor || (light ? "rgba(255,255,255,0.85)" : undefined), fontSize: "9px", lineHeight: "1.3", paddingTop: "1px", paddingBottom: "1px" }}>
+          <span className="text-[9px] flex-shrink-0">{i.icon}</span>
+          <span className="flex-shrink-0 w-[12px] h-[12px] flex items-center justify-center"><ModernBullet type="action" color={colors.accent} style={bulletStyle} shape={bulletShape} /></span>
+          <span className="flex-1">{i.text}</span>
+          {onRemove && <button onClick={() => onRemove(i.id)} className={`opacity-0 group-hover/item:opacity-100 ${light ? "text-white/30 hover:text-red-300" : "text-gray-300 hover:text-red-400"}`}><Trash2 className="w-2 h-2" /></button>}
+        </li>
+      ))}
+    </ul>
+  );
+};
 
 const DeleteBtn = ({ onClick, light }: { onClick: () => void; light?: boolean }) => (
   <button onClick={onClick} className={`opacity-0 group-hover/item:opacity-100 transition-opacity ${light ? "text-white/30 hover:text-red-300" : "text-gray-300 hover:text-red-400"}`}>
@@ -343,7 +382,7 @@ const Blob = ({ color, className, style }: { color: string; className?: string; 
 // 1. IMPACT — Glassmorphism sidebar, gradient accents, floating depth
 //    - Photo removed. Competences moved to sidebar to fill right void.
 // ═══════════════════════════════════════════════════════════════════
-export const ImpactTemplate = ({ profile, experienceEntries, atoutEntries, removeEntry, colors, sidebarPos, bulletStyle, bulletShape, gradient, gradientTarget, textColors, titleColor, fontFamily, competencyDomains, competencyBulletShape, professionalExperiences, removeProfessionalExperience, formations, removeFormation, formationTitle, getCompanyLogoUrl }: TemplateProps) => {
+export const ImpactTemplate = ({ profile, experienceEntries, atoutEntries, removeEntry, colors, sidebarPos, bulletStyle, bulletShape, gradient, gradientTarget, textColors, titleColor, fontFamily, competencyDomains, competencyBulletShape, professionalExperiences, removeProfessionalExperience, formations, removeFormation, formationTitle, getCompanyLogoUrl, interests, removeInterest, interestDisplayMode }: TemplateProps) => {
   const fondStyle = useGradientBg(gradient, gradientTarget);
   const rubriqueStyle = useGradientRubrique(gradient, gradientTarget, `linear-gradient(170deg, ${colors.primary}, ${colors.swatch})`);
   const { isDark } = useAutoContrast(gradient, gradientTarget);
@@ -439,7 +478,7 @@ export const ImpactTemplate = ({ profile, experienceEntries, atoutEntries, remov
 // 2. ARTISAN — Organic shapes, variable radius, warm textures
 //    - Photo removed. bgCircleColor for background circles.
 // ═══════════════════════════════════════════════════════════════════
-export const ArtisanTemplate = ({ profile, experienceEntries, atoutEntries, removeEntry, colors, sidebarPos, bulletStyle, bulletShape, gradient, gradientTarget, bgCircleColor, textColors, titleColor, fontFamily, competencyDomains, competencyBulletShape, professionalExperiences, removeProfessionalExperience, formations, removeFormation, formationTitle, getCompanyLogoUrl }: TemplateProps) => {
+export const ArtisanTemplate = ({ profile, experienceEntries, atoutEntries, removeEntry, colors, sidebarPos, bulletStyle, bulletShape, gradient, gradientTarget, bgCircleColor, textColors, titleColor, fontFamily, competencyDomains, competencyBulletShape, professionalExperiences, removeProfessionalExperience, formations, removeFormation, formationTitle, getCompanyLogoUrl, interests, removeInterest, interestDisplayMode }: TemplateProps) => {
   const fondStyle = useGradientBg(gradient, gradientTarget);
   const circleCol = bgCircleColor || colors.accent;
   const { isDark } = useAutoContrast(gradient, gradientTarget);
@@ -509,6 +548,12 @@ export const ArtisanTemplate = ({ profile, experienceEntries, atoutEntries, remo
           </div>
         </div>
       </div>
+      {interests && interests.length > 0 && (
+        <div className="px-5 py-2">
+          <p className="text-[8px] font-bold uppercase tracking-widest mb-1" style={{ color: compTc || colors.accent }}>Divers</p>
+          <InterestsBlock interests={interests} colors={colors} bulletStyle={bulletStyle} bulletShape={bulletShape} textColor={expTc} onRemove={removeInterest} displayMode={interestDisplayMode} />
+        </div>
+      )}
       <div className="px-6 py-2 text-[8px] text-gray-400 flex justify-between" style={{ fontFamily: "'DM Sans', sans-serif" }}><span>My CV Coach · Méthode Fred</span><span>L'Artisan</span></div>
     </div>
   );
@@ -517,7 +562,7 @@ export const ArtisanTemplate = ({ profile, experienceEntries, atoutEntries, remo
 // ═══════════════════════════════════════════════════════════════════
 // 3. CRÉATIF — Sector logo replaces letter "A". Customizable circle bg.
 // ═══════════════════════════════════════════════════════════════════
-export const CreatifTemplate = ({ profile, experienceEntries, atoutEntries, removeEntry, colors, bulletStyle, bulletShape, gradient, gradientTarget, bgCircleColor, textColors, titleColor, fontFamily, competencyDomains, competencyBulletShape, professionalExperiences, removeProfessionalExperience, formations, removeFormation, formationTitle, getCompanyLogoUrl }: TemplateProps) => {
+export const CreatifTemplate = ({ profile, experienceEntries, atoutEntries, removeEntry, colors, bulletStyle, bulletShape, gradient, gradientTarget, bgCircleColor, textColors, titleColor, fontFamily, competencyDomains, competencyBulletShape, professionalExperiences, removeProfessionalExperience, formations, removeFormation, formationTitle, getCompanyLogoUrl, interests, removeInterest, interestDisplayMode }: TemplateProps) => {
   const fondStyle = useGradientBg(gradient, gradientTarget);
   const circleBg = bgCircleColor || "#1a1a1a";
   const headerTc = sectionTextColor("header", textColors, TEXT_BLACK);
@@ -613,6 +658,12 @@ export const CreatifTemplate = ({ profile, experienceEntries, atoutEntries, remo
           </div>
         </div>
       </div>
+      {interests && interests.length > 0 && (
+        <div className="px-5 py-2">
+          <p className="text-[8px] font-bold uppercase tracking-widest mb-1" style={{ color: compTc || colors.accent }}>Divers</p>
+          <InterestsBlock interests={interests} colors={colors} bulletStyle={bulletStyle} bulletShape={bulletShape} textColor={expTc} onRemove={removeInterest} displayMode={interestDisplayMode} />
+        </div>
+      )}
       <div className="px-7 py-2 text-[8px] text-gray-300 flex justify-between"><span>My CV Coach · Méthode Fred</span><span>Le Créatif</span></div>
     </div>
   );
@@ -621,7 +672,7 @@ export const CreatifTemplate = ({ profile, experienceEntries, atoutEntries, remo
 // ═══════════════════════════════════════════════════════════════════
 // 4. MURAL — Photo removed.
 // ═══════════════════════════════════════════════════════════════════
-export const MuralTemplate = ({ profile, experienceEntries, atoutEntries, removeEntry, colors, sidebarPos, bulletStyle, bulletShape, gradient, gradientTarget, textColors, titleColor, fontFamily, competencyDomains, competencyBulletShape, professionalExperiences, removeProfessionalExperience, formations, removeFormation, formationTitle, getCompanyLogoUrl }: TemplateProps) => {
+export const MuralTemplate = ({ profile, experienceEntries, atoutEntries, removeEntry, colors, sidebarPos, bulletStyle, bulletShape, gradient, gradientTarget, textColors, titleColor, fontFamily, competencyDomains, competencyBulletShape, professionalExperiences, removeProfessionalExperience, formations, removeFormation, formationTitle, getCompanyLogoUrl, interests, removeInterest, interestDisplayMode }: TemplateProps) => {
   const fondStyle = useGradientBg(gradient, gradientTarget);
   const { isDark } = useAutoContrast(gradient, gradientTarget);
   const headerTc = sectionTextColor("header", textColors, TEXT_WHITE);
@@ -697,6 +748,12 @@ export const MuralTemplate = ({ profile, experienceEntries, atoutEntries, remove
           ) : <p className="text-gray-400 italic text-[9px] ml-2">Ajoutez…</p>}
         </div>
       </div>
+      {interests && interests.length > 0 && (
+        <div className="px-5 py-2">
+          <p className="text-[8px] font-bold uppercase tracking-widest mb-1" style={{ color: compTc || colors.accent }}>Divers</p>
+          <InterestsBlock interests={interests} colors={colors} bulletStyle={bulletStyle} bulletShape={bulletShape} textColor={expTc} onRemove={removeInterest} displayMode={interestDisplayMode} />
+        </div>
+      )}
       <div className="px-5 py-2 text-[8px] text-gray-400 flex justify-between" style={{ background: `linear-gradient(90deg, ${colors.primary}08, transparent)` }}><span>My CV Coach · Méthode Fred</span><span>Mural</span></div>
     </div>
   );
@@ -705,7 +762,7 @@ export const MuralTemplate = ({ profile, experienceEntries, atoutEntries, remove
 // ═══════════════════════════════════════════════════════════════════
 // 5. MAGAZINE — Right zone now shows coordinates. Photo removed.
 // ═══════════════════════════════════════════════════════════════════
-export const MagazineTemplate = ({ profile, experienceEntries, atoutEntries, removeEntry, colors, bulletStyle, bulletShape, gradient, gradientTarget, textColors, titleColor, fontFamily, competencyDomains, competencyBulletShape, professionalExperiences, removeProfessionalExperience, formations, removeFormation, formationTitle, getCompanyLogoUrl }: TemplateProps) => {
+export const MagazineTemplate = ({ profile, experienceEntries, atoutEntries, removeEntry, colors, bulletStyle, bulletShape, gradient, gradientTarget, textColors, titleColor, fontFamily, competencyDomains, competencyBulletShape, professionalExperiences, removeProfessionalExperience, formations, removeFormation, formationTitle, getCompanyLogoUrl, interests, removeInterest, interestDisplayMode }: TemplateProps) => {
   const fondStyle = useGradientBg(gradient, gradientTarget);
   const headerTc = sectionTextColor("header", textColors, TEXT_WHITE);
   const compTc = sectionTextColor("competences", textColors, colors.accent);
@@ -788,6 +845,12 @@ export const MagazineTemplate = ({ profile, experienceEntries, atoutEntries, rem
           ) : <p className="text-gray-400 italic text-[9px]">Ajoutez des atouts…</p>}
         </div>
       </div>
+      {interests && interests.length > 0 && (
+        <div className="px-5 py-2">
+          <p className="text-[8px] font-bold uppercase tracking-widest mb-1" style={{ color: compTc || colors.accent }}>Divers</p>
+          <InterestsBlock interests={interests} colors={colors} bulletStyle={bulletStyle} bulletShape={bulletShape} textColor={expTc} onRemove={removeInterest} displayMode={interestDisplayMode} />
+        </div>
+      )}
       <div className="px-6 py-2 text-[8px] text-gray-400 flex justify-between" style={{ background: `linear-gradient(90deg, ${colors.primary}05, transparent)` }}><span>My CV Coach · Méthode Fred</span><span>Magazine</span></div>
     </div>
   );
@@ -796,7 +859,7 @@ export const MagazineTemplate = ({ profile, experienceEntries, atoutEntries, rem
 // ═══════════════════════════════════════════════════════════════════
 // 7. MÉDICAL — Photo removed, contacts fixed.
 // ═══════════════════════════════════════════════════════════════════
-export const MedicalTemplate = ({ profile, experienceEntries, atoutEntries, removeEntry, colors, bulletStyle, bulletShape, gradient, gradientTarget, textColors, titleColor, fontFamily, competencyDomains, competencyBulletShape, professionalExperiences, removeProfessionalExperience, formations, removeFormation, formationTitle, getCompanyLogoUrl }: TemplateProps) => {
+export const MedicalTemplate = ({ profile, experienceEntries, atoutEntries, removeEntry, colors, bulletStyle, bulletShape, gradient, gradientTarget, textColors, titleColor, fontFamily, competencyDomains, competencyBulletShape, professionalExperiences, removeProfessionalExperience, formations, removeFormation, formationTitle, getCompanyLogoUrl, interests, removeInterest, interestDisplayMode }: TemplateProps) => {
   const fondStyle = useGradientBg(gradient, gradientTarget);
   const headerTc = sectionTextColor("header", textColors, TEXT_WHITE);
   const compTc = sectionTextColor("competences", textColors, colors.primary);
@@ -867,6 +930,12 @@ export const MedicalTemplate = ({ profile, experienceEntries, atoutEntries, remo
           ) : <p className="text-gray-400 italic text-[9px]">Ajoutez des atouts…</p>}
         </div>
       </div>
+      {interests && interests.length > 0 && (
+        <div className="px-5 py-2">
+          <p className="text-[8px] font-bold uppercase tracking-widest mb-1" style={{ color: compTc || colors.accent }}>Divers</p>
+          <InterestsBlock interests={interests} colors={colors} bulletStyle={bulletStyle} bulletShape={bulletShape} textColor={expTc} onRemove={removeInterest} displayMode={interestDisplayMode} />
+        </div>
+      )}
       <div className="px-6 py-2 text-[8px] text-gray-400 flex justify-between"><span>My CV Coach · Méthode Fred</span><span>Médical</span></div>
     </div>
   );
@@ -875,7 +944,7 @@ export const MedicalTemplate = ({ profile, experienceEntries, atoutEntries, remo
 // ═══════════════════════════════════════════════════════════════════
 // 8. FLUX — Photo removed.
 // ═══════════════════════════════════════════════════════════════════
-export const FluxTemplate = ({ profile, experienceEntries, atoutEntries, removeEntry, colors, bulletStyle, bulletShape, gradient, gradientTarget, textColors, titleColor, fontFamily, competencyDomains, competencyBulletShape, professionalExperiences, removeProfessionalExperience, formations, removeFormation, formationTitle, getCompanyLogoUrl }: TemplateProps) => {
+export const FluxTemplate = ({ profile, experienceEntries, atoutEntries, removeEntry, colors, bulletStyle, bulletShape, gradient, gradientTarget, textColors, titleColor, fontFamily, competencyDomains, competencyBulletShape, professionalExperiences, removeProfessionalExperience, formations, removeFormation, formationTitle, getCompanyLogoUrl, interests, removeInterest, interestDisplayMode }: TemplateProps) => {
   const fondStyle = useGradientBg(gradient, gradientTarget);
   const headerTc = sectionTextColor("header", textColors, TEXT_WHITE);
   const compTc = sectionTextColor("competences", textColors, colors.primary);
@@ -953,6 +1022,12 @@ export const FluxTemplate = ({ profile, experienceEntries, atoutEntries, removeE
           ) : <p className="text-gray-400 italic text-[9px]">Ajoutez des atouts…</p>}
         </div>
       </div>
+      {interests && interests.length > 0 && (
+        <div className="px-5 py-2">
+          <p className="text-[8px] font-bold uppercase tracking-widest mb-1" style={{ color: compTc || colors.accent }}>Divers</p>
+          <InterestsBlock interests={interests} colors={colors} bulletStyle={bulletStyle} bulletShape={bulletShape} textColor={expTc} onRemove={removeInterest} displayMode={interestDisplayMode} />
+        </div>
+      )}
       <div className="px-6 py-2 text-[8px] text-gray-400 flex justify-between" style={{ background: `linear-gradient(90deg, transparent, ${colors.accent}08, transparent)` }}><span>My CV Coach · Méthode Fred</span><span>Flux</span></div>
     </div>
   );
@@ -961,7 +1036,7 @@ export const FluxTemplate = ({ profile, experienceEntries, atoutEntries, removeE
 // ═══════════════════════════════════════════════════════════════════
 // 9. SÉRÉNITÉ — Photo removed. Contacts bug fixed.
 // ═══════════════════════════════════════════════════════════════════
-export const SereniteTemplate = ({ profile, experienceEntries, atoutEntries, removeEntry, colors, bulletStyle, bulletShape, gradient, gradientTarget, textColors, titleColor, fontFamily, competencyDomains, competencyBulletShape, professionalExperiences, removeProfessionalExperience, formations, removeFormation, formationTitle, getCompanyLogoUrl }: TemplateProps) => {
+export const SereniteTemplate = ({ profile, experienceEntries, atoutEntries, removeEntry, colors, bulletStyle, bulletShape, gradient, gradientTarget, textColors, titleColor, fontFamily, competencyDomains, competencyBulletShape, professionalExperiences, removeProfessionalExperience, formations, removeFormation, formationTitle, getCompanyLogoUrl, interests, removeInterest, interestDisplayMode }: TemplateProps) => {
   const fondStyle = useGradientBg(gradient, gradientTarget);
   const headerTc = sectionTextColor("header", textColors, TEXT_WHITE);
   const compTc = sectionTextColor("competences", textColors, colors.primary);
@@ -1045,6 +1120,12 @@ export const SereniteTemplate = ({ profile, experienceEntries, atoutEntries, rem
           </div>
         </div>
       </div>
+      {interests && interests.length > 0 && (
+        <div className="px-5 py-2">
+          <p className="text-[8px] font-bold uppercase tracking-widest mb-1" style={{ color: compTc || colors.accent }}>Divers</p>
+          <InterestsBlock interests={interests} colors={colors} bulletStyle={bulletStyle} bulletShape={bulletShape} textColor={expTc} onRemove={removeInterest} displayMode={interestDisplayMode} />
+        </div>
+      )}
       <div className="px-6 py-2 text-[8px] text-gray-400 flex justify-between"><span>My CV Coach · Méthode Fred</span><span>Sérénité</span></div>
     </div>
   );

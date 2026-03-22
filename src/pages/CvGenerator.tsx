@@ -36,6 +36,32 @@ export interface FormationEntry {
   ville: string;
 }
 
+// ─── Divers & Centres d'intérêt ───────────────────────────────────
+export interface InterestEntry {
+  id: number;
+  text: string;
+  icon: string; // lucide icon key or emoji
+  category: "loisir" | "benevolat" | "permis" | "langue" | "autre";
+}
+
+const INTEREST_ICONS: Record<string, string> = {
+  "Sport": "⚽", "Musique": "🎵", "Lecture": "📚", "Voyage": "✈️", "Cuisine": "🍳",
+  "Photo": "📷", "Cinéma": "🎬", "Art": "🎨", "Jardinage": "🌱", "Jeux vidéo": "🎮",
+  "Yoga": "🧘", "Randonnée": "🥾", "Bénévolat": "🤝", "Permis B": "🚗", "Permis C": "🚛",
+  "Anglais": "🇬🇧", "Espagnol": "🇪🇸", "Allemand": "🇩🇪", "Arabe": "🇸🇦", "Italien": "🇮🇹",
+};
+
+const INTEREST_SUGGESTIONS: { text: string; icon: string; category: InterestEntry["category"] }[] = [
+  { text: "Sport collectif", icon: "⚽", category: "loisir" },
+  { text: "Musique", icon: "🎵", category: "loisir" },
+  { text: "Lecture", icon: "📚", category: "loisir" },
+  { text: "Voyages", icon: "✈️", category: "loisir" },
+  { text: "Cuisine", icon: "🍳", category: "loisir" },
+  { text: "Bénévolat associatif", icon: "🤝", category: "benevolat" },
+  { text: "Permis B", icon: "🚗", category: "permis" },
+  { text: "Anglais courant", icon: "🇬🇧", category: "langue" },
+];
+
 // ─── Competencies Domain System ────────────────────────────────────
 interface CompetencyItem { id: string; text: string; enabled: boolean; }
 interface CompetencyDomain { id: string; label: string; enabled: boolean; items: CompetencyItem[]; custom?: boolean; }
@@ -271,6 +297,11 @@ const CvGenerator = () => {
   const [editingFormation, setEditingFormation] = useState<FormationEntry>({ id: 0, dateDebut: "", dateFin: "", intitule: "", etablissement: "", ville: "" });
   const [formationMode, setFormationMode] = useState<"diplomes" | "parcours">("diplomes");
 
+  // Interests state
+  const [interests, setInterests] = useState<InterestEntry[]>([]);
+  const [newInterestText, setNewInterestText] = useState("");
+  const [interestDisplayMode, setInterestDisplayMode] = useState<"badges" | "list">("badges");
+
   // White palette option (always available)
   const whitePalette: SectorPalette = { id: "blanc", label: "Blanc pur", primary: "#2d2d2d", accent: "#555555", swatch: "#ffffff", bg: "#ffffff" };
 
@@ -280,7 +311,7 @@ const CvGenerator = () => {
   }, [domains]);
 
   const maxCompetencies = LAYOUT_MAX_COMPETENCIES[activeLayout] || 12;
-  const totalContentItems = activeCompetencyCount + entries.length + formations.length + experiences.length;
+  const totalContentItems = activeCompetencyCount + entries.length + formations.length + experiences.length + interests.length;
   const isOverloaded = activeCompetencyCount > maxCompetencies;
   const usagePercent = Math.min(100, Math.round((totalContentItems / (maxCompetencies + 8)) * 100));
 
@@ -332,6 +363,19 @@ const CvGenerator = () => {
     setEditingFormation({ id: 0, dateDebut: "", dateFin: "", intitule: "", etablissement: "", ville: "" });
   };
   const removeFormation = (id: number) => setFormations(prev => prev.filter(f => f.id !== id));
+
+  // Interests CRUD
+  const addInterest = (text: string, icon: string, category: InterestEntry["category"]) => {
+    if (!text.trim()) return;
+    setInterests(prev => [...prev, { id: Date.now(), text: text.trim(), icon, category }]);
+  };
+  const addCustomInterest = () => {
+    if (!newInterestText.trim()) return;
+    const icon = INTEREST_ICONS[newInterestText.trim()] || "✦";
+    addInterest(newInterestText.trim(), icon, "autre");
+    setNewInterestText("");
+  };
+  const removeInterest = (id: number) => setInterests(prev => prev.filter(i => i.id !== id));
 
   // Company logo URL helper (Google S2 Favicon service - free, no API key)
   const getCompanyLogoUrl = (company: string): string | null => {
@@ -424,7 +468,7 @@ const CvGenerator = () => {
   const Template = templateRegistry[activeLayout];
   const activeDomains = domains.filter(d => d.enabled).map(d => ({ ...d, items: d.items.filter(i => i.enabled) })).filter(d => d.items.length > 0);
   const formationTitle = formationMode === "parcours" ? "Parcours de formation" : "Formation & Diplômes";
-  const templateProps: TemplateProps = { profile, experienceEntries, atoutEntries, entries, removeEntry, colors, sidebarPos, bulletStyle, bulletShape: activeBulletShape || undefined, competencyBulletShape: competencyBulletShape || undefined, gradient: activeGradient || undefined, gradientTarget, bgCircleColor: bgCircleColor || undefined, textColors, titleColor: titleColor || undefined, fontFamily: currentFont, competencyDomains: activeDomains, professionalExperiences: experiences, removeProfessionalExperience: removeExperience, formations, removeFormation, formationTitle, getCompanyLogoUrl };
+  const templateProps: TemplateProps = { profile, experienceEntries, atoutEntries, entries, removeEntry, colors, sidebarPos, bulletStyle, bulletShape: activeBulletShape || undefined, competencyBulletShape: competencyBulletShape || undefined, gradient: activeGradient || undefined, gradientTarget, bgCircleColor: bgCircleColor || undefined, textColors, titleColor: titleColor || undefined, fontFamily: currentFont, competencyDomains: activeDomains, professionalExperiences: experiences, removeProfessionalExperience: removeExperience, formations, removeFormation, formationTitle, getCompanyLogoUrl, interests, removeInterest, interestDisplayMode };
 
   return (
     <div className="min-h-screen bg-background">
@@ -1006,6 +1050,61 @@ const CvGenerator = () => {
                           className="rounded-xl bg-primary px-4 py-2.5 text-primary-foreground text-sm font-medium shadow-sm hover:shadow-md transition-all disabled:opacity-40 active:scale-[0.97]">
                           <Plus className="w-4 h-4" />
                         </button>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* ═══ Divers & Centres d'intérêt Panel ═══ */}
+                  <div className="rounded-2xl bg-card p-5 shadow-sm border border-border/50 space-y-4">
+                    <div className="flex items-center justify-between">
+                      <h3 className="font-semibold text-sm flex items-center gap-2">🎯 Divers & Centres d'intérêt</h3>
+                      <div className="flex items-center gap-1 rounded-lg bg-secondary p-0.5">
+                        {(["badges", "list"] as const).map(m => (
+                          <button key={m} onClick={() => setInterestDisplayMode(m)}
+                            className={`px-2.5 py-1 rounded-md text-[10px] font-medium transition-all ${interestDisplayMode === m ? "bg-primary text-primary-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"}`}>
+                            {m === "badges" ? "Badges" : "Liste"}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Quick suggestions */}
+                    <div className="flex flex-wrap gap-1.5">
+                      {INTEREST_SUGGESTIONS.filter(s => !interests.some(i => i.text === s.text)).map(s => (
+                        <button key={s.text} onClick={() => addInterest(s.text, s.icon, s.category)}
+                          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] border border-border bg-background hover:bg-secondary hover:shadow-sm transition-all active:scale-[0.97]">
+                          <span>{s.icon}</span> {s.text}
+                        </button>
+                      ))}
+                    </div>
+
+                    {/* Current interests */}
+                    {interests.length > 0 && (
+                      <div className="flex flex-wrap gap-1.5">
+                        {interests.map(i => (
+                          <span key={i.id} className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-medium bg-primary/5 border border-primary/15 text-foreground">
+                            <span>{i.icon}</span> {i.text}
+                            <button onClick={() => removeInterest(i.id)} className="text-muted-foreground hover:text-destructive transition-colors ml-0.5"><Trash2 className="w-3 h-3" /></button>
+                          </span>
+                        ))}
+                      </div>
+                    )}
+
+                    {/* Custom interest */}
+                    <div className="flex gap-2">
+                      <input value={newInterestText} onChange={e => setNewInterestText(e.target.value)} onKeyDown={e => e.key === "Enter" && addCustomInterest()}
+                        placeholder="Ajouter un centre d'intérêt personnalisé…"
+                        className="flex-1 rounded-xl border border-input bg-background px-4 py-2.5 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring" />
+                      <button onClick={addCustomInterest} disabled={!newInterestText.trim()}
+                        className="rounded-xl bg-primary px-4 py-2.5 text-primary-foreground text-sm font-medium shadow-sm hover:shadow-md transition-all disabled:opacity-40 active:scale-[0.97]">
+                        <Plus className="w-4 h-4" />
+                      </button>
+                    </div>
+
+                    {interests.length > 6 && (
+                      <div className="flex items-start gap-2 rounded-xl bg-amber-50 border border-amber-200 px-4 py-3 text-[11px] text-amber-700">
+                        <AlertTriangle className="w-4 h-4 mt-0.5 flex-shrink-0 text-amber-500" />
+                        <p>Cette rubrique est votre variable d'ajustement. <strong>4-5 éléments</strong> suffisent pour un CV professionnel.</p>
                       </div>
                     )}
                   </div>
