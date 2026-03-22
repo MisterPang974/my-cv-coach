@@ -11,7 +11,7 @@ import { templateRegistry, ModernBullet, ShapeBullet, type TemplateProps } from 
 type BulletType = "action" | "technique" | "relationnel";
 interface Transformation { text: string; bullet: BulletType; }
 interface CvEntry { id: number; input: string; selected: string; bullet: BulletType; }
-interface CvProfile { nom: string; titre: string; email: string; telephone: string; ville: string; }
+interface CvProfile { nom: string; prenom: string; titre: string; email: string; telephone: string; adresse: string; codePostal: string; ville: string; }
 
 // ─── Transformations (Méthode Fred) ────────────────────────────────
 const transformations: Record<string, Transformation[]> = {
