@@ -999,6 +999,17 @@ export const SereniteTemplate = ({ profile, experienceEntries, atoutEntries, rem
               <ExperiencesBlock experiences={professionalExperiences} colors={colors} bulletStyle={bulletStyle} bulletShape={bulletShape} getCompanyLogoUrl={getCompanyLogoUrl} textColor={expTc} onRemove={removeProfessionalExperience} />
             </>
           )}
+          {formations && formations.length > 0 && (
+            <>
+              <h3 className="text-[10px] font-bold uppercase tracking-[0.15em] flex items-center gap-2" style={{ color: expTc || colors.primary }}>
+                <span className="w-8 h-8 rounded-2xl flex items-center justify-center" style={{ background: `linear-gradient(135deg, ${colors.primary}10, ${colors.accent}08)` }}>
+                  <GraduationCap className="w-3.5 h-3.5" style={{ color: colors.accent }} />
+                </span>
+                {formationTitle || "Formation"}
+              </h3>
+              <FormationBlock formations={formations} colors={colors} bulletStyle={bulletStyle} bulletShape={bulletShape} textColor={expTc} onRemove={removeFormation} />
+            </>
+          )}
           <h3 className="text-[10px] font-bold uppercase tracking-[0.15em] flex items-center gap-2" style={{ color: compTc || colors.primary }}>
             <span className="w-8 h-8 rounded-2xl flex items-center justify-center" style={{ background: `linear-gradient(135deg, ${colors.primary}10, ${colors.accent}08)` }}>
               <Layers className="w-3.5 h-3.5" style={{ color: colors.accent }} />
