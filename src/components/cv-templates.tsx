@@ -599,13 +599,10 @@ export const CreatifTemplate = ({ profile, experienceEntries, atoutEntries, remo
       <div className="relative px-7 pt-7 pb-4">
         <div className="flex items-end gap-4">
           <div className="flex-1">
-            <h2 className="text-2xl font-black tracking-[-0.02em] leading-[0.9]" style={{ color: headerTc }}>
+            <p className="text-2xl font-black uppercase tracking-wider leading-none" style={{ color: titleTc }}>{profile.titre || "TITRE DU POSTE"}</p>
+            <h2 className="text-sm font-semibold mt-1" style={{ color: headerTc }}>
               {[profile.prenom, profile.nom].filter(Boolean).join(" ") || "Votre Nom"}
             </h2>
-            <div className="mt-2 inline-flex items-center gap-1.5">
-              <span className="w-5 h-1 rounded-full" style={{ background: `linear-gradient(90deg, ${colors.primary}, ${colors.accent})` }} />
-              <span className="text-[10px] font-bold uppercase tracking-wider" style={{ color: titleTc }}>{profile.titre || "Titre"}</span>
-            </div>
           </div>
           {/* Sector professional logo */}
           <div className="w-14 h-14 rotate-3 flex items-center justify-center"
