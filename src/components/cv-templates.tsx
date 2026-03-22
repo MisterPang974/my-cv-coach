@@ -249,20 +249,20 @@ export const ArtisanTemplate = ({ profile, experienceEntries, atoutEntries, remo
         <div className="relative mt-3" style={{ fontFamily: "'DM Sans', sans-serif" }}><ContactLine profile={profile} light colors={colors} /></div>
       </div>
 
-      <div className="flex-1 flex relative z-10 mt-3" style={{ flexDirection: sidebarPos === "left" ? "row-reverse" : "row" }}>
-        <div className="flex-1 px-6 py-4 overflow-y-auto">
-          <h3 className="text-[11px] font-bold uppercase tracking-[0.12em] mb-3 pb-1.5 flex items-center gap-2" style={{ color: colors.primary, fontFamily: "'DM Sans', sans-serif" }}>
+      <div className="flex-1 flex relative z-10 mt-4" style={{ flexDirection: sidebarPos === "left" ? "row-reverse" : "row" }}>
+        <div className="flex-1 px-7 py-5 overflow-y-auto">
+          <h3 className="text-[11px] font-bold uppercase tracking-[0.12em] mb-4 pb-2 flex items-center gap-2" style={{ color: isDark ? "white" : colors.primary, fontFamily: "'DM Sans', sans-serif" }}>
             <span className="w-6 h-1 rounded-full" style={{ background: `linear-gradient(90deg, ${colors.accent}, ${colors.primary})` }} /> Compétences
           </h3>
           {experienceEntries.length > 0 ? (
-            <ul className="space-y-2">{experienceEntries.map((e, i) => (
-              <li key={e.id} className="flex items-start gap-2.5 group/item px-3 py-2 transition-all hover:translate-x-0.5"
-                style={{ borderRadius: i % 2 === 0 ? "12px 4px 12px 4px" : "4px 12px 4px 12px", background: "rgba(255,255,255,0.6)", boxShadow: "0 2px 8px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.06)", backdropFilter: "blur(4px)" }}>
+            <ul className="space-y-3">{experienceEntries.map((e, i) => (
+              <li key={e.id} className="flex items-start gap-3 group/item px-4 py-3 transition-all hover:translate-x-0.5"
+                style={{ borderRadius: i % 2 === 0 ? "12px 4px 12px 4px" : "4px 12px 4px 12px", background: isDark ? "rgba(255,255,255,0.08)" : "rgba(255,255,255,0.6)", boxShadow: "0 2px 8px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.06)", backdropFilter: "blur(4px)" }}>
                 <span className="mt-0.5"><ModernBullet type={e.bullet} color={e.bullet === "technique" ? colors.primary : colors.accent} style={bulletStyle} shape={bulletShape} /></span>
-                <span className="flex-1 text-gray-700" style={{ fontFamily: "'DM Sans', sans-serif" }}>{e.selected}</span><DeleteBtn onClick={() => removeEntry(e.id)} />
+                <span className="flex-1" style={{ color: isDark ? "rgba(255,255,255,0.85)" : "#374151", fontFamily: "'DM Sans', sans-serif" }}>{e.selected}</span><DeleteBtn onClick={() => removeEntry(e.id)} light={isDark} />
               </li>
             ))}</ul>
-          ) : <EmptyState color={colors.accent} />}
+          ) : <EmptyState color={colors.accent} dark={isDark} />}
         </div>
         <div className="w-[34%] px-4 py-4 space-y-3" style={{ background: `${colors.primary}05` }}>
           <div className="p-3" style={{ borderRadius: "8px 20px 8px 20px", background: "rgba(255,255,255,0.5)", backdropFilter: "blur(8px)", boxShadow: `0 4px 12px ${colors.primary}08` }}>
