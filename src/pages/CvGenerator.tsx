@@ -160,6 +160,9 @@ const CvGenerator = () => {
   const [gradientTarget, setGradientTarget] = useState<"fond" | "rubriques">("fond");
   const [activeBulletShape, setActiveBulletShape] = useState<BulletShapeId | null>(null);
   const [bgCircleColor, setBgCircleColor] = useState<string>("");
+  const [textColors, setTextColors] = useState<Record<TextColorSection, "noir" | "blanc">>({ header: "noir", experiences: "noir", competences: "noir" });
+  const [titleColor, setTitleColor] = useState<string>("");
+  const [selectedFont, setSelectedFont] = useState<FontId>("dm-sans");
 
   // White palette option (always available)
   const whitePalette: SectorPalette = { id: "blanc", label: "Blanc pur", primary: "#2d2d2d", accent: "#555555", swatch: "#ffffff", bg: "#ffffff" };
@@ -187,6 +190,16 @@ const CvGenerator = () => {
   const experienceEntries = entries.filter(e => e.input !== "Atout");
   const atoutEntries = entries.filter(e => e.input === "Atout");
 
+  // Contrast warning logic
+  const getContrastWarning = (section: TextColorSection): string | null => {
+    const textC = textColors[section];
+    const hasDarkBg = activeGradient && gradientTarget === "fond";
+    // Simple check: white text on white/light background or black text on dark background
+    if (textC === "blanc" && !hasDarkBg && activePalette.id === "blanc") return "Attention, le texte risque d'être illisible à cause du manque de contraste !";
+    if (textC === "blanc" && !hasDarkBg && !activeGradient) return "Attention, le texte risque d'être illisible à cause du manque de contraste !";
+    return null;
+  };
+
   const handleTransform = () => {
     if (!input.trim()) return;
     setSearching(true);
@@ -201,9 +214,11 @@ const CvGenerator = () => {
     setCopied(true); setTimeout(() => setCopied(false), 2000);
   };
   const updateProfile = (field: keyof CvProfile, value: string) => setProfile(p => ({ ...p, [field]: value }));
+  const updateTextColor = (section: TextColorSection, val: "noir" | "blanc") => setTextColors(p => ({ ...p, [section]: val }));
 
+  const currentFont = fontOptions.find(f => f.id === selectedFont)?.family;
   const Template = templateRegistry[activeLayout];
-  const templateProps: TemplateProps = { profile, experienceEntries, atoutEntries, entries, removeEntry, colors, sidebarPos, bulletStyle, bulletShape: activeBulletShape || undefined, gradient: activeGradient || undefined, gradientTarget, bgCircleColor: bgCircleColor || undefined };
+  const templateProps: TemplateProps = { profile, experienceEntries, atoutEntries, entries, removeEntry, colors, sidebarPos, bulletStyle, bulletShape: activeBulletShape || undefined, gradient: activeGradient || undefined, gradientTarget, bgCircleColor: bgCircleColor || undefined, textColors, titleColor: titleColor || undefined, fontFamily: currentFont };
 
   return (
     <div className="min-h-screen bg-background">
