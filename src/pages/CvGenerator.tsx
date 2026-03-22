@@ -291,6 +291,23 @@ const CvGenerator = () => {
     setDomains(prev => prev.map(d => d.id === domainId ? { ...d, items: d.items.filter(i => i.id !== itemId) } : d));
   };
 
+  // Experience CRUD
+  const addExperience = () => {
+    if (!editingExp.poste.trim()) return;
+    setExperiences(prev => [...prev, { ...editingExp, id: Date.now(), missions: editingExp.missions.filter(m => m.trim()) }]);
+    setEditingExp({ id: 0, dateDebut: "", dateFin: "", aujourdhui: false, poste: "", entreprise: "", ville: "", missions: [] });
+  };
+  const removeExperience = (id: number) => setExperiences(prev => prev.filter(e => e.id !== id));
+  const addMissionToEditing = () => {
+    if (!newMission.trim()) return;
+    setEditingExp(prev => ({ ...prev, missions: [...prev.missions, newMission.trim()] }));
+    setNewMission("");
+  };
+  const removeMissionFromEditing = (idx: number) => {
+    setEditingExp(prev => ({ ...prev, missions: prev.missions.filter((_, i) => i !== idx) }));
+  };
+  const MAX_EXPERIENCES = 5;
+
   const a4Ref = useRef<HTMLDivElement>(null);
 
   // Auto-detect sector when titre changes
