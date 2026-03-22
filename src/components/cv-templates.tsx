@@ -4,7 +4,7 @@ import type { SidebarPosition, BulletStyle, BulletShapeId } from "@/lib/cv-secto
 // ─── Types ─────────────────────────────────────────────────────────
 type BulletType = "action" | "technique" | "relationnel";
 interface CvEntry { id: number; input: string; selected: string; bullet: BulletType; }
-interface CvProfile { nom: string; titre: string; email: string; telephone: string; ville: string; }
+interface CvProfile { nom: string; prenom: string; titre: string; email: string; telephone: string; adresse: string; codePostal: string; ville: string; }
 interface Colors { primary: string; accent: string; swatch: string; }
 
 export interface TemplateProps {
