@@ -163,8 +163,31 @@ const EmptyState = ({ color, label, dark }: { color: string; label?: string; dar
   </div>
 );
 
-/** Render competency domains */
-const DomainsBlock = ({ domains, colors, bulletStyle, bulletShape, competencyBulletShape, textColor, light }: { domains?: CompetencyDomainData[]; colors: Colors; bulletStyle: BulletStyle; bulletShape?: BulletShapeId; competencyBulletShape?: BulletShapeId; textColor?: string; light?: boolean }) => {
+// ─── Level indicators ──────────────────────────────────────────────
+const LevelDots = ({ level = 0, max = 5, color }: { level: number; max?: number; color: string }) => (
+  <div className="flex gap-[3px] items-center flex-shrink-0">
+    {Array.from({ length: max }).map((_, i) => (
+      <div key={i} className="w-[5px] h-[5px] rounded-full" style={{ background: i < level ? color : `${color}25` }} />
+    ))}
+  </div>
+);
+
+const LevelBar = ({ level = 0, max = 5, color }: { level: number; max?: number; color: string }) => (
+  <div className="w-14 h-[4px] rounded-full overflow-hidden flex-shrink-0" style={{ background: `${color}18` }}>
+    <div className="h-full rounded-full transition-all" style={{ width: `${(level / max) * 100}%`, background: color }} />
+  </div>
+);
+
+// ─── Section heading with separator line ───────────────────────────
+const SectionHeading = ({ children, color, icon }: { children: React.ReactNode; color: string; icon?: React.ReactNode }) => (
+  <div className="mb-2.5 pb-1.5 flex items-center gap-2" style={{ borderBottom: `1.5px solid ${color}20` }}>
+    {icon && <span style={{ color }}>{icon}</span>}
+    <h3 className="text-[10px] font-black uppercase tracking-[0.2em]" style={{ color }}>{children}</h3>
+  </div>
+);
+
+/** Render competency domains with optional level indicators */
+const DomainsBlock = ({ domains, colors, bulletStyle, bulletShape, competencyBulletShape, textColor, light, levelDisplay = "none" }: { domains?: CompetencyDomainData[]; colors: Colors; bulletStyle: BulletStyle; bulletShape?: BulletShapeId; competencyBulletShape?: BulletShapeId; textColor?: string; light?: boolean; levelDisplay?: "dots" | "bars" | "none" }) => {
   if (!domains || domains.length === 0) return null;
   const effectiveShape = competencyBulletShape || bulletShape;
   return (
@@ -177,6 +200,8 @@ const DomainsBlock = ({ domains, colors, bulletStyle, bulletShape, competencyBul
               <li key={item.id} className="flex items-center gap-1.5" style={{ color: textColor || (light ? "rgba(255,255,255,0.85)" : undefined), fontSize: "9px", lineHeight: "1.3", paddingTop: "1px", paddingBottom: "1px" }}>
                 <span className="flex-shrink-0 w-[12px] h-[12px] flex items-center justify-center"><ModernBullet type="technique" color={colors.accent} style={bulletStyle} shape={effectiveShape} /></span>
                 <span className="flex-1">{item.text}</span>
+                {levelDisplay === "dots" && item.level != null && <LevelDots level={item.level} color={light ? "rgba(255,255,255,0.6)" : colors.accent} />}
+                {levelDisplay === "bars" && item.level != null && <LevelBar level={item.level} color={light ? "rgba(255,255,255,0.5)" : colors.accent} />}
               </li>
             ))}
           </ul>
