@@ -23,6 +23,8 @@ const TEXT_BLACK = "hsl(var(--foreground))";
 const TEXT_WHITE = "hsl(var(--primary-foreground))";
 const TEXT_MUTED = "hsl(var(--muted-foreground))";
 
+export interface CompetencyDomainData { id: string; label: string; items: { id: string; text: string; enabled: boolean }[]; }
+
 export interface TemplateProps {
   profile: CvProfile;
   experienceEntries: CvEntry[];
@@ -39,6 +41,7 @@ export interface TemplateProps {
   textColors?: Record<TextColorSection, "noir" | "blanc">;
   titleColor?: string;
   fontFamily?: string;
+  competencyDomains?: CompetencyDomainData[];
 }
 
 // ─── Bullet renderers ──────────────────────────────────────────────

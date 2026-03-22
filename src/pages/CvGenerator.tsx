@@ -635,6 +635,85 @@ const CvGenerator = () => {
                     )}
                   </div>
 
+                  {/* ═══ Competency Domains Panel ═══ */}
+                  <div className="rounded-2xl bg-card p-5 shadow-sm border border-border/50 space-y-4">
+                    <div className="flex items-center justify-between">
+                      <h3 className="font-semibold text-sm flex items-center gap-2"><Layers className="w-4 h-4 text-primary" /> Compétences par domaine</h3>
+                      <div className="flex items-center gap-2">
+                        <Gauge className="w-3.5 h-3.5 text-muted-foreground" />
+                        <div className="w-24 h-2 rounded-full bg-secondary overflow-hidden">
+                          <div className="h-full rounded-full transition-all duration-300" style={{ width: `${usagePercent}%`, background: isOverloaded ? "hsl(0, 70%, 55%)" : usagePercent > 75 ? "hsl(35, 90%, 55%)" : "hsl(150, 50%, 45%)" }} />
+                        </div>
+                        <span className={`text-[10px] font-medium ${isOverloaded ? "text-red-500" : "text-muted-foreground"}`}>{activeCompetencyCount}/{maxCompetencies}</span>
+                      </div>
+                    </div>
+
+                    {/* Predictive hint */}
+                    <p className="text-[10px] text-muted-foreground bg-secondary/50 rounded-lg px-3 py-1.5">
+                      💡 Le modèle <span className="font-bold text-foreground">{layoutMeta[activeLayout].label}</span> accepte idéalement <span className="font-bold text-foreground">{maxCompetencies} compétences</span> max pour une mise en page A4 optimale.
+                    </p>
+
+                    {/* Overload alert */}
+                    {isOverloaded && (
+                      <div className="flex items-start gap-2 rounded-xl bg-red-50 border border-red-200 px-4 py-3 text-[11px] text-red-700">
+                        <AlertTriangle className="w-4 h-4 mt-0.5 flex-shrink-0 text-red-500" />
+                        <p>Votre CV est trop chargé. Pour une lecture optimale, choisissez vos <strong>4 domaines</strong> et <strong>4 sous-compétences</strong> les plus percutants.</p>
+                      </div>
+                    )}
+
+                    {/* Domain list */}
+                    <div className="space-y-3">
+                      {domains.map(domain => (
+                        <div key={domain.id} className={`rounded-xl border transition-all ${domain.enabled ? "border-primary/20 bg-primary/[0.02]" : "border-border bg-secondary/30 opacity-60"}`}>
+                          <div className="flex items-center gap-2 px-4 py-2.5">
+                            <button onClick={() => toggleDomain(domain.id)} className="text-primary">
+                              {domain.enabled ? <ToggleRight className="w-5 h-5" /> : <ToggleLeft className="w-5 h-5 text-muted-foreground" />}
+                            </button>
+                            <span className={`text-xs font-semibold flex-1 ${domain.enabled ? "text-foreground" : "text-muted-foreground"}`}>{domain.label}</span>
+                            <span className="text-[10px] text-muted-foreground">{domain.items.filter(i => i.enabled).length}/{domain.items.length}</span>
+                            {domain.custom && (
+                              <button onClick={() => removeCustomDomain(domain.id)} className="text-muted-foreground hover:text-red-500 transition-colors"><Trash2 className="w-3.5 h-3.5" /></button>
+                            )}
+                          </div>
+                          {domain.enabled && (
+                            <div className="px-4 pb-3 space-y-1.5">
+                              {domain.items.map(item => (
+                                <label key={item.id} className="flex items-start gap-2 cursor-pointer group">
+                                  <input type="checkbox" checked={item.enabled} onChange={() => {
+                                    if (!item.enabled && isOverloaded) return;
+                                    toggleCompetencyItem(domain.id, item.id);
+                                  }} className="mt-0.5 rounded border-primary text-primary focus:ring-primary" disabled={!item.enabled && isOverloaded} />
+                                  <span className={`text-[11px] leading-relaxed flex-1 ${item.enabled ? "text-foreground" : "text-muted-foreground line-through"}`}>{item.text}</span>
+                                  {domain.custom && (
+                                    <button onClick={() => removeCompetencyItem(domain.id, item.id)} className="opacity-0 group-hover:opacity-100 text-muted-foreground hover:text-red-400 transition-all"><Trash2 className="w-3 h-3" /></button>
+                                  )}
+                                </label>
+                              ))}
+                              {/* Add custom competency to domain */}
+                              <div className="flex gap-2 mt-2">
+                                <input placeholder="Ajouter une compétence…" className="flex-1 rounded-lg border border-input bg-background px-3 py-1.5 text-[11px] placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring"
+                                  onKeyDown={e => { if (e.key === "Enter") { addCustomCompetency(domain.id, (e.target as HTMLInputElement).value); (e.target as HTMLInputElement).value = ""; } }} />
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+
+                    {/* Add custom domain */}
+                    {domains.filter(d => d.custom).length < 2 && (
+                      <div className="flex gap-2">
+                        <input value={newDomainName} onChange={e => setNewDomainName(e.target.value)} placeholder="Nouveau domaine personnalisé…"
+                          className="flex-1 rounded-xl border border-input bg-background px-4 py-2.5 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+                          onKeyDown={e => e.key === "Enter" && addCustomDomain()} />
+                        <button onClick={addCustomDomain} disabled={!newDomainName.trim()}
+                          className="rounded-xl bg-primary px-4 py-2.5 text-primary-foreground text-sm font-medium shadow-sm hover:shadow-md transition-all disabled:opacity-40 active:scale-[0.97]">
+                          <Plus className="w-4 h-4" />
+                        </button>
+                      </div>
+                    )}
+                  </div>
+
                   <div className="rounded-2xl bg-accent/8 border border-accent/20 p-5">
                     <h3 className="font-semibold text-sm mb-3 flex items-center gap-2"><Star className="w-4 h-4 text-accent" /> Atouts à valoriser</h3>
                     <div className="grid sm:grid-cols-2 gap-2">
