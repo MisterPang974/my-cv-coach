@@ -311,7 +311,7 @@ const CvGenerator = () => {
   }, [domains]);
 
   const maxCompetencies = LAYOUT_MAX_COMPETENCIES[activeLayout] || 12;
-  const totalContentItems = activeCompetencyCount + entries.length + formations.length + experiences.length;
+  const totalContentItems = activeCompetencyCount + entries.length + formations.length + experiences.length + interests.length;
   const isOverloaded = activeCompetencyCount > maxCompetencies;
   const usagePercent = Math.min(100, Math.round((totalContentItems / (maxCompetencies + 8)) * 100));
 
