@@ -632,15 +632,46 @@ const CvGenerator = () => {
                       <span className="inline-flex items-center gap-1.5"><ModernBullet type="relationnel" color="hsl(24, 85%, 52%)" /> Relationnel</span>
                     </div>
                     {suggestions.length > 0 && (
-                      <div className="mt-5 space-y-2">
+                      <div className="mt-5 space-y-3">
                         <p className="text-sm text-muted-foreground">Compétences suggérées pour « <span className="font-medium text-foreground">{input}</span> » :</p>
                         {suggestions.map((s, i) => (
-                          <button key={i} onClick={() => addEntry(s)}
-                            className="w-full text-left rounded-xl border border-border bg-background p-3.5 hover:bg-secondary hover:shadow-sm transition-all active:scale-[0.98] group flex items-start gap-3">
-                            <span className="mt-0.5"><ModernBullet type={s.bullet} color={s.bullet === "technique" ? "hsl(213, 65%, 38%)" : "hsl(24, 85%, 52%)"} /></span>
-                            <span className="text-sm leading-relaxed">{s.text}</span>
-                            <Plus className="w-4 h-4 ml-auto mt-0.5 text-accent opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0" />
-                          </button>
+                          <div key={i} className="rounded-xl border border-border bg-background overflow-hidden">
+                            <button onClick={() => addEntry(s)}
+                              className="w-full text-left p-3.5 hover:bg-secondary/50 transition-all active:scale-[0.98] group flex items-start gap-3">
+                              <span className="mt-0.5"><ModernBullet type={s.bullet} color={s.bullet === "technique" ? "hsl(213, 65%, 38%)" : "hsl(24, 85%, 52%)"} /></span>
+                              <span className="text-sm leading-relaxed flex-1">{s.text}</span>
+                              <Plus className="w-4 h-4 ml-auto mt-0.5 text-accent opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0" />
+                            </button>
+                            {/* ── Dispatch to competency domain ── */}
+                            <div className="border-t border-border/50 bg-secondary/30 px-3.5 py-2.5 flex flex-wrap items-center gap-2">
+                              <span className="text-[10px] text-muted-foreground font-medium flex items-center gap-1"><Send className="w-3 h-3" /> Envoyer vers :</span>
+                              {domains.filter(d => d.enabled).map(d => (
+                                <button key={d.id}
+                                  onClick={() => setDispatchTarget(dispatchTarget === `${i}-${d.id}` ? null : `${i}-${d.id}`)}
+                                  className={`px-2.5 py-1 rounded-lg text-[10px] font-medium transition-all active:scale-[0.97] ${dispatchTarget === `${i}-${d.id}` ? "bg-primary text-primary-foreground shadow-sm" : "bg-background border border-border text-foreground hover:bg-accent/20"}`}>
+                                  {d.label}
+                                </button>
+                              ))}
+                              <button
+                                onClick={() => {
+                                  const name = prompt("Nom du nouveau domaine :");
+                                  if (name && name.trim()) dispatchToNewDomain(s.text, name);
+                                }}
+                                className="px-2.5 py-1 rounded-lg text-[10px] font-medium bg-background border border-dashed border-primary/40 text-primary hover:bg-primary/5 transition-all active:scale-[0.97] flex items-center gap-1">
+                                <FolderPlus className="w-3 h-3" /> Nouveau
+                              </button>
+                              {dispatchTarget?.startsWith(`${i}-`) && (
+                                <button
+                                  onClick={() => {
+                                    const domainId = dispatchTarget.split("-").slice(1).join("-");
+                                    dispatchToCompetency(s.text, domainId);
+                                  }}
+                                  className="ml-auto px-3 py-1 rounded-lg text-[10px] font-bold bg-primary text-primary-foreground shadow-md hover:shadow-lg transition-all active:scale-[0.97] flex items-center gap-1">
+                                  <Check className="w-3 h-3" /> Insérer
+                                </button>
+                              )}
+                            </div>
+                          </div>
                         ))}
                       </div>
                     )}
