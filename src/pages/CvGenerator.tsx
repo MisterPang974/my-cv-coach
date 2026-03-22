@@ -742,6 +742,32 @@ const CvGenerator = () => {
               </div>
             </div>
 
+              {/* Row 6: Réorganiser les rubriques */}
+              <div className="rounded-xl bg-card border border-border px-4 py-3 space-y-2">
+                <div className="flex items-center gap-2 mb-1">
+                  <GripVertical className="w-4 h-4 text-muted-foreground" />
+                  <span className="text-xs font-semibold text-muted-foreground">Ordre des rubriques</span>
+                </div>
+                <p className="text-[10px] text-muted-foreground">L'en-tête reste fixe. Déplacez les rubriques ci-dessous.</p>
+                <div className="space-y-1.5">
+                  {sectionOrder.map((sec, idx) => (
+                    <div key={sec} className="flex items-center gap-2 rounded-lg bg-secondary/50 border border-border px-3 py-2">
+                      <GripVertical className="w-3.5 h-3.5 text-muted-foreground/50" />
+                      <span className="text-xs font-medium text-foreground flex-1">{SECTION_LABELS[sec]}</span>
+                      <button onClick={() => moveSectionUp(idx)} disabled={idx === 0}
+                        className="p-1 rounded hover:bg-background transition-colors disabled:opacity-20">
+                        <ArrowUp className="w-3.5 h-3.5 text-muted-foreground" />
+                      </button>
+                      <button onClick={() => moveSectionDown(idx)} disabled={idx === sectionOrder.length - 1}
+                        className="p-1 rounded hover:bg-background transition-colors disabled:opacity-20">
+                        <ArrowDown className="w-3.5 h-3.5 text-muted-foreground" />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+
             {/* ═══ STEP 2: Détails (shown after Suivant) ═══ */}
             {step === "details" && (
               <div className="grid lg:grid-cols-[1fr,minmax(460px,580px)] gap-8 items-start animate-fade-up">
