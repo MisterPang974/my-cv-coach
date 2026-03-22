@@ -1,5 +1,5 @@
-import { Mail, Phone, MapPin, Briefcase, Layers, Star, ChevronRight, Sparkles, Trash2, Grid3X3, ArrowRightCircle } from "lucide-react";
-import type { SidebarPosition, BulletStyle } from "@/lib/cv-sectors";
+import { Mail, Phone, MapPin, Briefcase, Layers, Star, ChevronRight, Sparkles, Trash2, Grid3X3, ArrowRightCircle, Heart } from "lucide-react";
+import type { SidebarPosition, BulletStyle, BulletShapeId } from "@/lib/cv-sectors";
 
 // ─── Types ─────────────────────────────────────────────────────────
 type BulletType = "action" | "technique" | "relationnel";
@@ -16,11 +16,16 @@ export interface TemplateProps {
   colors: Colors;
   sidebarPos: SidebarPosition;
   bulletStyle: BulletStyle;
+  bulletShape?: BulletShapeId;
+  gradient?: { id: string; label: string; from: string; to: string; angle?: number };
+  gradientTarget?: "fond" | "rubriques";
 }
 
 // ─── Bullet renderers ──────────────────────────────────────────────
-export const ModernBullet = ({ type, color, style = "mixte" }: { type: BulletType; color: string; style?: BulletStyle }) => {
+export const ModernBullet = ({ type, color, style = "mixte", shape }: { type: BulletType; color: string; style?: BulletStyle; shape?: BulletShapeId }) => {
   const sz = 14;
+  // If a specific shape is chosen, use it
+  if (shape) return <ShapeBullet shape={shape} color={color} />;
   const effectiveType = style === "mixte" ? type : style === "fleches" ? "action" : style === "carres" ? "technique" : "relationnel";
   switch (effectiveType) {
     case "action":
@@ -29,6 +34,30 @@ export const ModernBullet = ({ type, color, style = "mixte" }: { type: BulletTyp
       return <svg width={sz} height={sz} viewBox="0 0 14 14" fill="none"><rect x="2" y="2" width="10" height="10" rx="2" stroke={color} strokeWidth="1.5" fill={color} fillOpacity="0.15" /></svg>;
     case "relationnel":
       return <svg width={sz} height={sz} viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="5" stroke={color} strokeWidth="1.5" fill={color} fillOpacity="0.15" /></svg>;
+  }
+};
+
+// ─── 15 shape bullets ──────────────────────────────────────────────
+export const ShapeBullet = ({ shape, color }: { shape: BulletShapeId; color: string }) => {
+  const sz = 14;
+  const svgProps = { width: sz, height: sz, viewBox: "0 0 14 14", fill: "none" as const };
+  switch (shape) {
+    case "fleche": return <svg {...svgProps}><path d="M3 7h6M9 4l3 3-3 3" stroke={color} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" /></svg>;
+    case "carre": return <svg {...svgProps}><rect x="2" y="2" width="10" height="10" rx="2" stroke={color} strokeWidth="1.5" fill={color} fillOpacity="0.15" /></svg>;
+    case "cercle": return <svg {...svgProps}><circle cx="7" cy="7" r="5" stroke={color} strokeWidth="1.5" fill={color} fillOpacity="0.15" /></svg>;
+    case "losange": return <svg {...svgProps}><rect x="2" y="2" width="7" height="7" rx="1" stroke={color} strokeWidth="1.5" fill={color} fillOpacity="0.15" transform="rotate(45 7 7)" /></svg>;
+    case "hexagone": return <svg {...svgProps}><polygon points="7,1 12.5,4 12.5,10 7,13 1.5,10 1.5,4" stroke={color} strokeWidth="1.3" fill={color} fillOpacity="0.1" /></svg>;
+    case "check": return <svg {...svgProps}><path d="M3 7.5l2.5 3L11 4" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>;
+    case "etoile": return <svg {...svgProps}><polygon points="7,1 8.8,5.2 13,5.5 9.8,8.3 10.8,12.5 7,10.2 3.2,12.5 4.2,8.3 1,5.5 5.2,5.2" stroke={color} strokeWidth="1" fill={color} fillOpacity="0.2" /></svg>;
+    case "triangle": return <svg {...svgProps}><polygon points="3,11 7,3 11,11" stroke={color} strokeWidth="1.5" fill={color} fillOpacity="0.12" /></svg>;
+    case "croix-plus": return <svg {...svgProps}><path d="M7 2v10M2 7h10" stroke={color} strokeWidth="2" strokeLinecap="round" /></svg>;
+    case "tiret": return <svg {...svgProps}><line x1="2" y1="7" x2="12" y2="7" stroke={color} strokeWidth="2.5" strokeLinecap="round" /></svg>;
+    case "chevron": return <svg {...svgProps}><path d="M4 3l5 4-5 4" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /><path d="M8 3l5 4-5 4" stroke={color} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" opacity="0.4" /></svg>;
+    case "double-fleche": return <svg {...svgProps}><path d="M1 7h10M8 4l3 3-3 3" stroke={color} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /><path d="M5 5l2 2-2 2" stroke={color} strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" opacity="0.5" /></svg>;
+    case "puce-pleine": return <svg {...svgProps}><circle cx="7" cy="7" r="5" fill={color} /><circle cx="7" cy="7" r="2.5" fill="white" /></svg>;
+    case "anneau": return <svg {...svgProps}><circle cx="7" cy="7" r="5" stroke={color} strokeWidth="2" fill="none" /><circle cx="7" cy="7" r="1.5" fill={color} /></svg>;
+    case "eclair": return <svg {...svgProps}><path d="M8 1L4 8h3l-1 5 5-7H8l1-5z" fill={color} fillOpacity="0.8" /></svg>;
+    default: return <svg {...svgProps}><circle cx="7" cy="7" r="4" fill={color} fillOpacity="0.3" /></svg>;
   }
 };
 
@@ -515,6 +544,71 @@ export const FluxTemplate = ({ profile, experienceEntries, atoutEntries, removeE
   </div>
 );
 
+// ═══════════════════════════════════════════════════════════════════
+// 9. SÉRÉNITÉ — Ultra-rounded, soft fades, calming elegance
+// ═══════════════════════════════════════════════════════════════════
+export const SereniteTemplate = ({ profile, experienceEntries, atoutEntries, removeEntry, colors, bulletStyle }: TemplateProps) => (
+  <div className="h-full flex flex-col text-[11px] leading-[1.6] relative overflow-hidden" style={{ fontFamily: "'DM Sans', system-ui, sans-serif", background: `linear-gradient(180deg, ${colors.primary}05, white 40%, ${colors.accent}04 100%)` }}>
+    {/* Soft radial glows */}
+    <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[80%] h-48 rounded-full" style={{ background: `radial-gradient(ellipse, ${colors.primary}08, transparent)` }} />
+    <div className="absolute bottom-0 right-0 w-64 h-64 rounded-full" style={{ background: `radial-gradient(circle, ${colors.accent}06, transparent)` }} />
+
+    {/* Floating header with mega round corners */}
+    <div className="relative mx-5 mt-5 px-6 py-6 flex items-center gap-5 overflow-hidden"
+      style={{ borderRadius: "32px", background: `linear-gradient(160deg, ${colors.primary}ee, ${colors.accent}dd)`, boxShadow: `0 12px 40px ${colors.primary}18, 0 4px 16px ${colors.accent}12` }}>
+      <Blob color="rgba(255,255,255,0.06)" className="absolute -top-12 -right-12 w-44 h-44" />
+      <Blob color="rgba(255,255,255,0.04)" className="absolute bottom-0 left-0 w-32 h-32" />
+      <div className="w-16 h-16 rounded-[20px] flex items-center justify-center text-white text-xl font-bold relative z-10"
+        style={{ background: "rgba(255,255,255,0.15)", backdropFilter: "blur(16px)", border: "2px solid rgba(255,255,255,0.2)", boxShadow: "0 8px 24px rgba(0,0,0,0.08), inset 0 1px 2px rgba(255,255,255,0.15)" }}>
+        {profile.nom?.[0]?.toUpperCase() || "?"}
+      </div>
+      <div className="relative z-10 flex-1">
+        <h2 className="text-white text-base font-bold leading-tight">{profile.nom || "Votre Nom"}</h2>
+        <p className="text-white/65 text-xs font-medium mt-0.5">{profile.titre || "Titre du poste"}</p>
+        <div className="mt-2.5"><ContactLine profile={profile} light colors={colors} /></div>
+      </div>
+    </div>
+
+    {/* Content with soft pills */}
+    <div className="flex-1 flex px-5 pt-4 pb-3 gap-4 overflow-y-auto relative z-10">
+      <div className="flex-1 space-y-3">
+        <h3 className="text-[10px] font-bold uppercase tracking-[0.15em] flex items-center gap-2" style={{ color: colors.primary }}>
+          <span className="w-8 h-8 rounded-2xl flex items-center justify-center" style={{ background: `linear-gradient(135deg, ${colors.primary}10, ${colors.accent}08)` }}>
+            <Layers className="w-3.5 h-3.5" style={{ color: colors.accent }} />
+          </span>
+          Compétences
+        </h3>
+        {experienceEntries.length > 0 ? (
+          <ul className="space-y-2">{experienceEntries.map(e => (
+            <li key={e.id} className="flex items-start gap-2.5 group/item px-4 py-2.5 transition-all hover:translate-x-0.5"
+              style={{ borderRadius: "20px", background: "rgba(255,255,255,0.65)", backdropFilter: "blur(8px)", boxShadow: `0 2px 12px rgba(0,0,0,0.03), 0 0 0 1px ${colors.accent}08` }}>
+              <span className="mt-0.5"><ModernBullet type={e.bullet} color={e.bullet === "technique" ? colors.primary : colors.accent} style={bulletStyle} /></span>
+              <span className="flex-1 text-gray-700">{e.selected}</span><DeleteBtn onClick={() => removeEntry(e.id)} />
+            </li>
+          ))}</ul>
+        ) : <EmptyState color={colors.accent} />}
+      </div>
+
+      <div className="w-[34%] space-y-3">
+        <div className="p-4" style={{ borderRadius: "24px", background: `linear-gradient(160deg, ${colors.primary}06, ${colors.accent}04)`, backdropFilter: "blur(12px)", boxShadow: `0 4px 16px rgba(0,0,0,0.03)` }}>
+          <h3 className="text-[10px] font-bold uppercase tracking-[0.12em] mb-3 flex items-center gap-2" style={{ color: colors.accent }}>
+            <Heart className="w-3.5 h-3.5" /> Qualités
+          </h3>
+          {atoutEntries.length > 0 ? (
+            <div className="flex flex-wrap gap-1.5">{atoutEntries.map(e => (
+              <span key={e.id} className="inline-flex items-center gap-1 px-3 py-1.5 text-[10px] text-gray-600 group/item"
+                style={{ borderRadius: "16px", background: "rgba(255,255,255,0.6)", border: `1px solid ${colors.accent}12`, boxShadow: `0 1px 4px ${colors.accent}06` }}>
+                {e.selected}<DeleteBtn onClick={() => removeEntry(e.id)} />
+              </span>
+            ))}</div>
+          ) : <p className="text-gray-400 italic text-[9px]">Ajoutez des qualités…</p>}
+        </div>
+      </div>
+    </div>
+    <div className="px-6 py-2 text-[8px] text-gray-400 flex justify-between"><span>My CV Coach · Méthode Fred</span><span>Sérénité</span></div>
+  </div>
+);
+
 // ─── Template registry ─────────────────────────────────────────────
 export const templateRegistry: Record<string, React.FC<TemplateProps>> = {
   impact: ImpactTemplate,
@@ -524,4 +618,5 @@ export const templateRegistry: Record<string, React.FC<TemplateProps>> = {
   magazine: MagazineTemplate,
   medical: MedicalTemplate,
   flux: FluxTemplate,
+  serenite: SereniteTemplate,
 };
