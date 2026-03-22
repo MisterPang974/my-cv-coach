@@ -218,10 +218,12 @@ const CvGenerator = () => {
   const [activeGradient, setActiveGradient] = useState<SectorGradient | null>(null);
   const [gradientTarget, setGradientTarget] = useState<"fond" | "rubriques">("fond");
   const [activeBulletShape, setActiveBulletShape] = useState<BulletShapeId | null>(null);
+  const [competencyBulletShape, setCompetencyBulletShape] = useState<BulletShapeId | null>(null);
   const [bgCircleColor, setBgCircleColor] = useState<string>("");
   const [textColors, setTextColors] = useState<Record<TextColorSection, "noir" | "blanc">>({ header: "noir", experiences: "noir", competences: "noir" });
   const [titleColor, setTitleColor] = useState<string>("");
   const [selectedFont, setSelectedFont] = useState<FontId>("dm-sans");
+  const [dispatchTarget, setDispatchTarget] = useState<string | null>(null);
 
   // Competency domains state
   const [domains, setDomains] = useState<CompetencyDomain[]>(DEFAULT_DOMAINS);
