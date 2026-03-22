@@ -28,6 +28,13 @@ export interface FormationEntry {
   ville: string;
 }
 
+export interface InterestEntry {
+  id: number;
+  text: string;
+  icon: string;
+  category: "loisir" | "benevolat" | "permis" | "langue" | "autre";
+}
+
 export type TextColorSection = "header" | "experiences" | "competences";
 export type FontId = "dm-sans" | "montserrat" | "open-sans" | "playfair" | "roboto" | "lato";
 
