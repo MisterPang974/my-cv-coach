@@ -739,8 +739,7 @@ const CvGenerator = () => {
                     ))}
                   </div>
                 </div>
-              </div>
-            </div>
+               </div>
 
               {/* Row 6: Réorganiser les rubriques */}
               <div className="rounded-xl bg-card border border-border px-4 py-3 space-y-2">
