@@ -510,8 +510,8 @@ export const ArtisanTemplate = ({ profile, experienceEntries, atoutEntries, remo
       <div className="relative mx-4 mt-4 px-6 py-5 overflow-hidden" style={{ borderRadius: "28px 8px 28px 8px", background: `linear-gradient(135deg, ${colors.primary}, ${colors.swatch})`, boxShadow: `0 8px 32px ${colors.primary}25, 0 2px 8px ${colors.primary}15`, ...useGradientRubrique(gradient, gradientTarget) }}>
         <div className="absolute inset-0 opacity-[0.05]" style={{ backgroundImage: "url(\"data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='30' cy='30' r='1.5' fill='%23fff'/%3E%3C/svg%3E\")" }} />
         <div className="relative">
+          <p className="text-xl font-black uppercase tracking-wider leading-none" style={{ color: titleTc, fontFamily: fontFamily || "'DM Sans', sans-serif" }}>{profile.titre || "TITRE DU POSTE"}</p>
           <NameBlock profile={profile} light size="md" fontFamily={fontFamily} color={headerTc} />
-          <p className="text-xs italic mt-0.5" style={{ color: titleTc }}>{profile.titre || "Titre du poste"}</p>
         </div>
         <div className="relative mt-3" style={{ fontFamily: fontFamily || "'DM Sans', sans-serif" }}><ContactLine profile={profile} light colors={colors} fontFamily={fontFamily} textColor={withAlpha(headerTc, 0.72)} iconColor={titleTc} /></div>
       </div>
