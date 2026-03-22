@@ -697,7 +697,9 @@ export const FluxTemplate = ({ profile, experienceEntries, atoutEntries, removeE
           <ArrowRightCircle className="w-4 h-4" style={{ color: colors.accent, filter: `drop-shadow(0 0 4px ${colors.accent}40)` }} /> Parcours & compétences
         </h3>
 
-        {experienceEntries.length > 0 ? (
+        {competencyDomains && competencyDomains.length > 0 ? (
+          <div className="ml-10"><DomainsBlock domains={competencyDomains} colors={colors} bulletStyle={bulletStyle} bulletShape={bulletShape} textColor={expTc} /></div>
+        ) : experienceEntries.length > 0 ? (
           <div className="space-y-2.5 ml-3">{experienceEntries.map(e => (
             <div key={e.id} className="flex items-start gap-3 group/item relative">
               <div className="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 z-10"
