@@ -35,6 +35,7 @@ export interface TemplateProps {
   sidebarPos: SidebarPosition;
   bulletStyle: BulletStyle;
   bulletShape?: BulletShapeId;
+  competencyBulletShape?: BulletShapeId;
   gradient?: { id: string; label: string; from: string; to: string; angle?: number };
   gradientTarget?: "fond" | "rubriques";
   bgCircleColor?: string;
@@ -116,8 +117,9 @@ const EmptyState = ({ color, label, dark }: { color: string; label?: string; dar
 );
 
 /** Render competency domains */
-const DomainsBlock = ({ domains, colors, bulletStyle, bulletShape, textColor, light }: { domains?: CompetencyDomainData[]; colors: Colors; bulletStyle: BulletStyle; bulletShape?: BulletShapeId; textColor?: string; light?: boolean }) => {
+const DomainsBlock = ({ domains, colors, bulletStyle, bulletShape, competencyBulletShape, textColor, light }: { domains?: CompetencyDomainData[]; colors: Colors; bulletStyle: BulletStyle; bulletShape?: BulletShapeId; competencyBulletShape?: BulletShapeId; textColor?: string; light?: boolean }) => {
   if (!domains || domains.length === 0) return null;
+  const effectiveShape = competencyBulletShape || bulletShape;
   return (
     <div className="space-y-3">
       {domains.map(d => (
@@ -126,7 +128,7 @@ const DomainsBlock = ({ domains, colors, bulletStyle, bulletShape, textColor, li
           <ul className="space-y-1">
             {d.items.map(item => (
               <li key={item.id} className="flex items-start gap-2 text-[10px]" style={{ color: textColor || (light ? "rgba(255,255,255,0.8)" : undefined) }}>
-                <span className="mt-0.5"><ModernBullet type="technique" color={colors.accent} style={bulletStyle} shape={bulletShape} /></span>
+                <span className="mt-0.5"><ModernBullet type="technique" color={colors.accent} style={bulletStyle} shape={effectiveShape} /></span>
                 <span className="flex-1">{item.text}</span>
               </li>
             ))}
@@ -246,7 +248,7 @@ const Blob = ({ color, className, style }: { color: string; className?: string; 
 // 1. IMPACT — Glassmorphism sidebar, gradient accents, floating depth
 //    - Photo removed. Competences moved to sidebar to fill right void.
 // ═══════════════════════════════════════════════════════════════════
-export const ImpactTemplate = ({ profile, experienceEntries, atoutEntries, removeEntry, colors, sidebarPos, bulletStyle, bulletShape, gradient, gradientTarget, textColors, titleColor, fontFamily, competencyDomains }: TemplateProps) => {
+export const ImpactTemplate = ({ profile, experienceEntries, atoutEntries, removeEntry, colors, sidebarPos, bulletStyle, bulletShape, gradient, gradientTarget, textColors, titleColor, fontFamily, competencyDomains, competencyBulletShape }: TemplateProps) => {
   const fondStyle = useGradientBg(gradient, gradientTarget);
   const rubriqueStyle = useGradientRubrique(gradient, gradientTarget, `linear-gradient(170deg, ${colors.primary}, ${colors.swatch})`);
   const { isDark } = useAutoContrast(gradient, gradientTarget);
@@ -276,7 +278,7 @@ export const ImpactTemplate = ({ profile, experienceEntries, atoutEntries, remov
         <div className="p-3" style={{ borderRadius: "4px 16px 4px 16px", background: "rgba(255,255,255,0.06)", backdropFilter: "blur(12px)", border: "1px solid rgba(255,255,255,0.08)", boxShadow: "0 4px 16px rgba(0,0,0,0.1)" }}>
           <p className="text-[8px] text-white/35 uppercase tracking-[0.2em] font-bold mb-2" style={compTc ? { color: compTc } : undefined}>Compétences</p>
           {competencyDomains && competencyDomains.length > 0 ? (
-            <DomainsBlock domains={competencyDomains} colors={colors} bulletStyle={bulletStyle} bulletShape={bulletShape} textColor={compTc} light />
+            <DomainsBlock domains={competencyDomains} colors={colors} bulletStyle={bulletStyle} bulletShape={bulletShape} competencyBulletShape={competencyBulletShape} textColor={compTc} light />
           ) : experienceEntries.length > 0 ? (
             <ul className="space-y-1.5">{experienceEntries.map(e => (
               <li key={e.id} className="flex items-start gap-2 text-white/80 text-[10px] group/item" style={compTc ? { color: compTc } : undefined}>
@@ -324,7 +326,7 @@ export const ImpactTemplate = ({ profile, experienceEntries, atoutEntries, remov
 // 2. ARTISAN — Organic shapes, variable radius, warm textures
 //    - Photo removed. bgCircleColor for background circles.
 // ═══════════════════════════════════════════════════════════════════
-export const ArtisanTemplate = ({ profile, experienceEntries, atoutEntries, removeEntry, colors, sidebarPos, bulletStyle, bulletShape, gradient, gradientTarget, bgCircleColor, textColors, titleColor, fontFamily, competencyDomains }: TemplateProps) => {
+export const ArtisanTemplate = ({ profile, experienceEntries, atoutEntries, removeEntry, colors, sidebarPos, bulletStyle, bulletShape, gradient, gradientTarget, bgCircleColor, textColors, titleColor, fontFamily, competencyDomains, competencyBulletShape }: TemplateProps) => {
   const fondStyle = useGradientBg(gradient, gradientTarget);
   const circleCol = bgCircleColor || colors.accent;
   const { isDark } = useAutoContrast(gradient, gradientTarget);
@@ -353,7 +355,7 @@ export const ArtisanTemplate = ({ profile, experienceEntries, atoutEntries, remo
             <span className="w-6 h-1 rounded-full" style={{ background: `linear-gradient(90deg, ${colors.accent}, ${colors.primary})` }} /> Compétences
           </h3>
           {competencyDomains && competencyDomains.length > 0 ? (
-            <DomainsBlock domains={competencyDomains} colors={colors} bulletStyle={bulletStyle} bulletShape={bulletShape} textColor={compTc} light={isDark} />
+            <DomainsBlock domains={competencyDomains} colors={colors} bulletStyle={bulletStyle} bulletShape={bulletShape} competencyBulletShape={competencyBulletShape} textColor={compTc} light={isDark} />
           ) : experienceEntries.length > 0 ? (
             <ul className="space-y-3">{experienceEntries.map((e, i) => (
               <li key={e.id} className="flex items-start gap-3 group/item px-4 py-3 transition-all hover:translate-x-0.5"
@@ -385,7 +387,7 @@ export const ArtisanTemplate = ({ profile, experienceEntries, atoutEntries, remo
 // ═══════════════════════════════════════════════════════════════════
 // 3. CRÉATIF — Sector logo replaces letter "A". Customizable circle bg.
 // ═══════════════════════════════════════════════════════════════════
-export const CreatifTemplate = ({ profile, experienceEntries, atoutEntries, removeEntry, colors, bulletStyle, bulletShape, gradient, gradientTarget, bgCircleColor, textColors, titleColor, fontFamily, competencyDomains }: TemplateProps) => {
+export const CreatifTemplate = ({ profile, experienceEntries, atoutEntries, removeEntry, colors, bulletStyle, bulletShape, gradient, gradientTarget, bgCircleColor, textColors, titleColor, fontFamily, competencyDomains, competencyBulletShape }: TemplateProps) => {
   const fondStyle = useGradientBg(gradient, gradientTarget);
   const circleBg = bgCircleColor || "#1a1a1a";
   const headerTc = sectionTextColor("header", textColors, TEXT_BLACK);
@@ -434,7 +436,7 @@ export const CreatifTemplate = ({ profile, experienceEntries, atoutEntries, remo
             <span className="w-6 h-0.5 rounded-full" style={{ background: `linear-gradient(90deg, ${colors.accent}, transparent)` }} /> Compétences
           </h3>
           {competencyDomains && competencyDomains.length > 0 ? (
-            <DomainsBlock domains={competencyDomains} colors={colors} bulletStyle={bulletStyle} bulletShape={bulletShape} textColor={expTc} />
+            <DomainsBlock domains={competencyDomains} colors={colors} bulletStyle={bulletStyle} bulletShape={bulletShape} competencyBulletShape={competencyBulletShape} textColor={expTc} />
           ) : experienceEntries.length > 0 ? (
             <ul className="space-y-2">{experienceEntries.map((e, idx) => (
               <li key={e.id} className="flex items-start gap-2 group/item px-3 py-2 transition-all hover:translate-x-0.5" style={{
@@ -472,7 +474,7 @@ export const CreatifTemplate = ({ profile, experienceEntries, atoutEntries, remo
 // ═══════════════════════════════════════════════════════════════════
 // 4. MURAL — Photo removed.
 // ═══════════════════════════════════════════════════════════════════
-export const MuralTemplate = ({ profile, experienceEntries, atoutEntries, removeEntry, colors, sidebarPos, bulletStyle, bulletShape, gradient, gradientTarget, textColors, titleColor, fontFamily, competencyDomains }: TemplateProps) => {
+export const MuralTemplate = ({ profile, experienceEntries, atoutEntries, removeEntry, colors, sidebarPos, bulletStyle, bulletShape, gradient, gradientTarget, textColors, titleColor, fontFamily, competencyDomains, competencyBulletShape }: TemplateProps) => {
   const fondStyle = useGradientBg(gradient, gradientTarget);
   const { isDark } = useAutoContrast(gradient, gradientTarget);
   const headerTc = sectionTextColor("header", textColors, TEXT_WHITE);
@@ -501,7 +503,7 @@ export const MuralTemplate = ({ profile, experienceEntries, atoutEntries, remove
             <div className="flex-1 h-px" style={{ background: `linear-gradient(90deg, ${colors.primary}25, transparent)` }} />
           </div>
           {competencyDomains && competencyDomains.length > 0 ? (
-            <DomainsBlock domains={competencyDomains} colors={colors} bulletStyle={bulletStyle} bulletShape={bulletShape} textColor={expTc} />
+            <DomainsBlock domains={competencyDomains} colors={colors} bulletStyle={bulletStyle} bulletShape={bulletShape} competencyBulletShape={competencyBulletShape} textColor={expTc} />
           ) : experienceEntries.length > 0 ? (
             <div className="grid grid-cols-1 gap-2">{experienceEntries.map(e => (
               <div key={e.id} className="flex items-start gap-2.5 group/item p-2.5 transition-all hover:translate-y-[-1px]"
@@ -537,7 +539,7 @@ export const MuralTemplate = ({ profile, experienceEntries, atoutEntries, remove
 // ═══════════════════════════════════════════════════════════════════
 // 5. MAGAZINE — Right zone now shows coordinates. Photo removed.
 // ═══════════════════════════════════════════════════════════════════
-export const MagazineTemplate = ({ profile, experienceEntries, atoutEntries, removeEntry, colors, bulletStyle, bulletShape, gradient, gradientTarget, textColors, titleColor, fontFamily, competencyDomains }: TemplateProps) => {
+export const MagazineTemplate = ({ profile, experienceEntries, atoutEntries, removeEntry, colors, bulletStyle, bulletShape, gradient, gradientTarget, textColors, titleColor, fontFamily, competencyDomains, competencyBulletShape }: TemplateProps) => {
   const fondStyle = useGradientBg(gradient, gradientTarget);
   const headerTc = sectionTextColor("header", textColors, TEXT_WHITE);
   const compTc = sectionTextColor("competences", textColors, colors.accent);
@@ -576,7 +578,7 @@ export const MagazineTemplate = ({ profile, experienceEntries, atoutEntries, rem
             <h3 className="text-[10px] font-black uppercase tracking-[0.25em]" style={{ color: compTc || colors.primary }}>Compétences professionnelles</h3>
           </div>
           {competencyDomains && competencyDomains.length > 0 ? (
-            <DomainsBlock domains={competencyDomains} colors={colors} bulletStyle={bulletStyle} bulletShape={bulletShape} textColor={expTc} />
+            <DomainsBlock domains={competencyDomains} colors={colors} bulletStyle={bulletStyle} bulletShape={bulletShape} competencyBulletShape={competencyBulletShape} textColor={expTc} />
           ) : experienceEntries.length > 0 ? (
             <ul className="space-y-2">{experienceEntries.map(e => (
               <li key={e.id} className="flex items-start gap-2.5 group/item py-1.5 px-2 rounded-lg transition-all hover:bg-gray-50/80"
@@ -611,7 +613,7 @@ export const MagazineTemplate = ({ profile, experienceEntries, atoutEntries, rem
 // ═══════════════════════════════════════════════════════════════════
 // 7. MÉDICAL — Photo removed, contacts fixed.
 // ═══════════════════════════════════════════════════════════════════
-export const MedicalTemplate = ({ profile, experienceEntries, atoutEntries, removeEntry, colors, bulletStyle, bulletShape, gradient, gradientTarget, textColors, titleColor, fontFamily, competencyDomains }: TemplateProps) => {
+export const MedicalTemplate = ({ profile, experienceEntries, atoutEntries, removeEntry, colors, bulletStyle, bulletShape, gradient, gradientTarget, textColors, titleColor, fontFamily, competencyDomains, competencyBulletShape }: TemplateProps) => {
   const fondStyle = useGradientBg(gradient, gradientTarget);
   const headerTc = sectionTextColor("header", textColors, TEXT_WHITE);
   const compTc = sectionTextColor("competences", textColors, colors.primary);
@@ -638,7 +640,7 @@ export const MedicalTemplate = ({ profile, experienceEntries, atoutEntries, remo
             Compétences
           </h3>
           {competencyDomains && competencyDomains.length > 0 ? (
-            <DomainsBlock domains={competencyDomains} colors={colors} bulletStyle={bulletStyle} bulletShape={bulletShape} textColor={expTc} />
+            <DomainsBlock domains={competencyDomains} colors={colors} bulletStyle={bulletStyle} bulletShape={bulletShape} competencyBulletShape={competencyBulletShape} textColor={expTc} />
           ) : experienceEntries.length > 0 ? (
             <ul className="space-y-2">{experienceEntries.map(e => (
               <li key={e.id} className="flex items-start gap-2.5 group/item px-3 py-1.5 rounded-2xl transition-all hover:bg-white/80" style={{ boxShadow: "0 1px 3px rgba(0,0,0,0.03)" }}>
@@ -672,7 +674,7 @@ export const MedicalTemplate = ({ profile, experienceEntries, atoutEntries, remo
 // ═══════════════════════════════════════════════════════════════════
 // 8. FLUX — Photo removed.
 // ═══════════════════════════════════════════════════════════════════
-export const FluxTemplate = ({ profile, experienceEntries, atoutEntries, removeEntry, colors, bulletStyle, bulletShape, gradient, gradientTarget, textColors, titleColor, fontFamily, competencyDomains }: TemplateProps) => {
+export const FluxTemplate = ({ profile, experienceEntries, atoutEntries, removeEntry, colors, bulletStyle, bulletShape, gradient, gradientTarget, textColors, titleColor, fontFamily, competencyDomains, competencyBulletShape }: TemplateProps) => {
   const fondStyle = useGradientBg(gradient, gradientTarget);
   const headerTc = sectionTextColor("header", textColors, TEXT_WHITE);
   const compTc = sectionTextColor("competences", textColors, colors.primary);
@@ -698,7 +700,7 @@ export const FluxTemplate = ({ profile, experienceEntries, atoutEntries, removeE
         </h3>
 
         {competencyDomains && competencyDomains.length > 0 ? (
-          <div className="ml-10"><DomainsBlock domains={competencyDomains} colors={colors} bulletStyle={bulletStyle} bulletShape={bulletShape} textColor={expTc} /></div>
+          <div className="ml-10"><DomainsBlock domains={competencyDomains} colors={colors} bulletStyle={bulletStyle} bulletShape={bulletShape} competencyBulletShape={competencyBulletShape} textColor={expTc} /></div>
         ) : experienceEntries.length > 0 ? (
           <div className="space-y-2.5 ml-3">{experienceEntries.map(e => (
             <div key={e.id} className="flex items-start gap-3 group/item relative">
@@ -740,7 +742,7 @@ export const FluxTemplate = ({ profile, experienceEntries, atoutEntries, removeE
 // ═══════════════════════════════════════════════════════════════════
 // 9. SÉRÉNITÉ — Photo removed. Contacts bug fixed.
 // ═══════════════════════════════════════════════════════════════════
-export const SereniteTemplate = ({ profile, experienceEntries, atoutEntries, removeEntry, colors, bulletStyle, bulletShape, gradient, gradientTarget, textColors, titleColor, fontFamily, competencyDomains }: TemplateProps) => {
+export const SereniteTemplate = ({ profile, experienceEntries, atoutEntries, removeEntry, colors, bulletStyle, bulletShape, gradient, gradientTarget, textColors, titleColor, fontFamily, competencyDomains, competencyBulletShape }: TemplateProps) => {
   const fondStyle = useGradientBg(gradient, gradientTarget);
   const headerTc = sectionTextColor("header", textColors, TEXT_WHITE);
   const compTc = sectionTextColor("competences", textColors, colors.primary);
@@ -774,7 +776,7 @@ export const SereniteTemplate = ({ profile, experienceEntries, atoutEntries, rem
             Compétences
           </h3>
           {competencyDomains && competencyDomains.length > 0 ? (
-            <DomainsBlock domains={competencyDomains} colors={colors} bulletStyle={bulletStyle} bulletShape={bulletShape} textColor={expTc} />
+            <DomainsBlock domains={competencyDomains} colors={colors} bulletStyle={bulletStyle} bulletShape={bulletShape} competencyBulletShape={competencyBulletShape} textColor={expTc} />
           ) : experienceEntries.length > 0 ? (
             <ul className="space-y-2">{experienceEntries.map(e => (
               <li key={e.id} className="flex items-start gap-2.5 group/item px-4 py-2.5 transition-all hover:translate-x-0.5"

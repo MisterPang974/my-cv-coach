@@ -2,7 +2,7 @@ import { useState, useRef, useEffect, useMemo } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import {
-  Wand2, Copy, Check, Plus, Trash2, User, Briefcase, Palette, Star, Settings2, ChevronRight, Type, AlertTriangle, ToggleLeft, ToggleRight, Gauge, Layers
+  Wand2, Copy, Check, Plus, Trash2, User, Briefcase, Palette, Star, Settings2, ChevronRight, Type, AlertTriangle, ToggleLeft, ToggleRight, Gauge, Layers, Send, FolderPlus
 } from "lucide-react";
 import { detectSector, sectorConfigs, layoutMeta, gradientLibrary, bulletShapes, type SectorId, type LayoutId, type SidebarPosition, type BulletStyle, type SectorPalette, type SectorGradient, type BulletShapeId } from "@/lib/cv-sectors";
 import { templateRegistry, ModernBullet, ShapeBullet, fontOptions, type TemplateProps, type TextColorSection, type FontId } from "@/components/cv-templates";
@@ -218,10 +218,12 @@ const CvGenerator = () => {
   const [activeGradient, setActiveGradient] = useState<SectorGradient | null>(null);
   const [gradientTarget, setGradientTarget] = useState<"fond" | "rubriques">("fond");
   const [activeBulletShape, setActiveBulletShape] = useState<BulletShapeId | null>(null);
+  const [competencyBulletShape, setCompetencyBulletShape] = useState<BulletShapeId | null>(null);
   const [bgCircleColor, setBgCircleColor] = useState<string>("");
   const [textColors, setTextColors] = useState<Record<TextColorSection, "noir" | "blanc">>({ header: "noir", experiences: "noir", competences: "noir" });
   const [titleColor, setTitleColor] = useState<string>("");
   const [selectedFont, setSelectedFont] = useState<FontId>("dm-sans");
+  const [dispatchTarget, setDispatchTarget] = useState<string | null>(null);
 
   // Competency domains state
   const [domains, setDomains] = useState<CompetencyDomain[]>(DEFAULT_DOMAINS);
@@ -323,8 +325,17 @@ const CvGenerator = () => {
     setSearching(true);
     setTimeout(() => { setSuggestions(findSuggestions(input)); setSearching(false); }, 350);
   };
-  const addEntry = (t: Transformation) => { setEntries(p => [...p, { id: Date.now(), input, selected: t.text, bullet: t.bullet }]); setInput(""); setSuggestions([]); };
+  const addEntry = (t: Transformation) => { setEntries(p => [...p, { id: Date.now(), input, selected: t.text, bullet: t.bullet }]); setInput(""); setSuggestions([]); setDispatchTarget(null); };
   const addAtout = (text: string) => { setEntries(p => [...p, { id: Date.now(), input: "Atout", selected: text, bullet: "action" }]); };
+  const dispatchToCompetency = (text: string, domainId: string) => {
+    addCustomCompetency(domainId, text);
+    setDispatchTarget(null);
+  };
+  const dispatchToNewDomain = (text: string, domainLabel: string) => {
+    const id = `custom-${Date.now()}`;
+    setDomains(prev => [...prev, { id, label: domainLabel.trim(), enabled: true, custom: true, items: [{ id: `ci-${Date.now()}`, text: text.trim(), enabled: true }] }]);
+    setDispatchTarget(null);
+  };
   const removeEntry = (id: number) => { setEntries(p => p.filter(e => e.id !== id)); };
   const copyAll = () => {
     const symbols: Record<BulletType, string> = { action: "→", technique: "■", relationnel: "●" };
@@ -337,7 +348,7 @@ const CvGenerator = () => {
   const currentFont = fontOptions.find(f => f.id === selectedFont)?.family;
   const Template = templateRegistry[activeLayout];
   const activeDomains = domains.filter(d => d.enabled).map(d => ({ ...d, items: d.items.filter(i => i.enabled) })).filter(d => d.items.length > 0);
-  const templateProps: TemplateProps = { profile, experienceEntries, atoutEntries, entries, removeEntry, colors, sidebarPos, bulletStyle, bulletShape: activeBulletShape || undefined, gradient: activeGradient || undefined, gradientTarget, bgCircleColor: bgCircleColor || undefined, textColors, titleColor: titleColor || undefined, fontFamily: currentFont, competencyDomains: activeDomains };
+  const templateProps: TemplateProps = { profile, experienceEntries, atoutEntries, entries, removeEntry, colors, sidebarPos, bulletStyle, bulletShape: activeBulletShape || undefined, competencyBulletShape: competencyBulletShape || undefined, gradient: activeGradient || undefined, gradientTarget, bgCircleColor: bgCircleColor || undefined, textColors, titleColor: titleColor || undefined, fontFamily: currentFont, competencyDomains: activeDomains };
 
   return (
     <div className="min-h-screen bg-background">
@@ -485,12 +496,12 @@ const CvGenerator = () => {
                 </div>
               )}
 
-              {/* Row 3: 15 bullet shapes */}
+              {/* Row 3: 15 bullet shapes — Expériences */}
               <div className="rounded-xl bg-card border border-border px-4 py-3">
                 <div className="flex items-center gap-3 mb-2">
-                  <span className="text-xs font-semibold text-muted-foreground">✦ Puces stylisées</span>
+                  <span className="text-xs font-semibold text-muted-foreground">✦ Puces Expériences</span>
                   {activeBulletShape && (
-                    <button onClick={() => setActiveBulletShape(null)} className="text-[10px] text-muted-foreground hover:text-destructive transition-colors ml-auto">✕ Auto (Méthode Fred)</button>
+                    <button onClick={() => setActiveBulletShape(null)} className="text-[10px] text-muted-foreground hover:text-destructive transition-colors ml-auto">✕ Auto</button>
                   )}
                 </div>
                 <div className="flex flex-wrap gap-1.5">
@@ -498,6 +509,24 @@ const CvGenerator = () => {
                     <button key={bs.id} onClick={() => setActiveBulletShape(bs.id)} title={bs.label}
                       className={`w-9 h-9 rounded-lg flex items-center justify-center transition-all active:scale-[0.95] ${activeBulletShape === bs.id ? "bg-primary text-primary-foreground ring-2 ring-offset-1 ring-ring" : "bg-secondary text-muted-foreground hover:bg-accent/20"}`}>
                       <ShapeBullet shape={bs.id} color={activeBulletShape === bs.id ? "white" : "currentColor"} />
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Row 4: 15 bullet shapes — Compétences (independent) */}
+              <div className="rounded-xl bg-card border border-border px-4 py-3">
+                <div className="flex items-center gap-3 mb-2">
+                  <span className="text-xs font-semibold text-muted-foreground">✦ Puces Compétences</span>
+                  {competencyBulletShape && (
+                    <button onClick={() => setCompetencyBulletShape(null)} className="text-[10px] text-muted-foreground hover:text-destructive transition-colors ml-auto">✕ Auto</button>
+                  )}
+                </div>
+                <div className="flex flex-wrap gap-1.5">
+                  {bulletShapes.map(bs => (
+                    <button key={bs.id} onClick={() => setCompetencyBulletShape(bs.id)} title={bs.label}
+                      className={`w-9 h-9 rounded-lg flex items-center justify-center transition-all active:scale-[0.95] ${competencyBulletShape === bs.id ? "bg-accent text-accent-foreground ring-2 ring-offset-1 ring-ring" : "bg-secondary text-muted-foreground hover:bg-accent/20"}`}>
+                      <ShapeBullet shape={bs.id} color={competencyBulletShape === bs.id ? "white" : "currentColor"} />
                     </button>
                   ))}
                 </div>
@@ -621,15 +650,46 @@ const CvGenerator = () => {
                       <span className="inline-flex items-center gap-1.5"><ModernBullet type="relationnel" color="hsl(24, 85%, 52%)" /> Relationnel</span>
                     </div>
                     {suggestions.length > 0 && (
-                      <div className="mt-5 space-y-2">
+                      <div className="mt-5 space-y-3">
                         <p className="text-sm text-muted-foreground">Compétences suggérées pour « <span className="font-medium text-foreground">{input}</span> » :</p>
                         {suggestions.map((s, i) => (
-                          <button key={i} onClick={() => addEntry(s)}
-                            className="w-full text-left rounded-xl border border-border bg-background p-3.5 hover:bg-secondary hover:shadow-sm transition-all active:scale-[0.98] group flex items-start gap-3">
-                            <span className="mt-0.5"><ModernBullet type={s.bullet} color={s.bullet === "technique" ? "hsl(213, 65%, 38%)" : "hsl(24, 85%, 52%)"} /></span>
-                            <span className="text-sm leading-relaxed">{s.text}</span>
-                            <Plus className="w-4 h-4 ml-auto mt-0.5 text-accent opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0" />
-                          </button>
+                          <div key={i} className="rounded-xl border border-border bg-background overflow-hidden">
+                            <button onClick={() => addEntry(s)}
+                              className="w-full text-left p-3.5 hover:bg-secondary/50 transition-all active:scale-[0.98] group flex items-start gap-3">
+                              <span className="mt-0.5"><ModernBullet type={s.bullet} color={s.bullet === "technique" ? "hsl(213, 65%, 38%)" : "hsl(24, 85%, 52%)"} /></span>
+                              <span className="text-sm leading-relaxed flex-1">{s.text}</span>
+                              <Plus className="w-4 h-4 ml-auto mt-0.5 text-accent opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0" />
+                            </button>
+                            {/* ── Dispatch to competency domain ── */}
+                            <div className="border-t border-border/50 bg-secondary/30 px-3.5 py-2.5 flex flex-wrap items-center gap-2">
+                              <span className="text-[10px] text-muted-foreground font-medium flex items-center gap-1"><Send className="w-3 h-3" /> Envoyer vers :</span>
+                              {domains.filter(d => d.enabled).map(d => (
+                                <button key={d.id}
+                                  onClick={() => setDispatchTarget(dispatchTarget === `${i}-${d.id}` ? null : `${i}-${d.id}`)}
+                                  className={`px-2.5 py-1 rounded-lg text-[10px] font-medium transition-all active:scale-[0.97] ${dispatchTarget === `${i}-${d.id}` ? "bg-primary text-primary-foreground shadow-sm" : "bg-background border border-border text-foreground hover:bg-accent/20"}`}>
+                                  {d.label}
+                                </button>
+                              ))}
+                              <button
+                                onClick={() => {
+                                  const name = prompt("Nom du nouveau domaine :");
+                                  if (name && name.trim()) dispatchToNewDomain(s.text, name);
+                                }}
+                                className="px-2.5 py-1 rounded-lg text-[10px] font-medium bg-background border border-dashed border-primary/40 text-primary hover:bg-primary/5 transition-all active:scale-[0.97] flex items-center gap-1">
+                                <FolderPlus className="w-3 h-3" /> Nouveau
+                              </button>
+                              {dispatchTarget?.startsWith(`${i}-`) && (
+                                <button
+                                  onClick={() => {
+                                    const domainId = dispatchTarget.split("-").slice(1).join("-");
+                                    dispatchToCompetency(s.text, domainId);
+                                  }}
+                                  className="ml-auto px-3 py-1 rounded-lg text-[10px] font-bold bg-primary text-primary-foreground shadow-md hover:shadow-lg transition-all active:scale-[0.97] flex items-center gap-1">
+                                  <Check className="w-3 h-3" /> Insérer
+                                </button>
+                              )}
+                            </div>
+                          </div>
                         ))}
                       </div>
                     )}
