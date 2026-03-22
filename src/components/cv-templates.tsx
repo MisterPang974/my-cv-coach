@@ -497,6 +497,15 @@ export const CreatifTemplate = ({ profile, experienceEntries, atoutEntries, remo
 
       <div className="flex-1 flex px-7 gap-4 overflow-y-auto pb-3 relative z-10">
         <div className="flex-1">
+          {professionalExperiences && professionalExperiences.length > 0 && (
+            <>
+              <h3 className="text-[10px] font-black uppercase tracking-[0.25em] mb-3 flex items-center gap-2" style={{ color: expTc || colors.primary }}>
+                <span className="w-6 h-0.5 rounded-full" style={{ background: `linear-gradient(90deg, ${colors.accent}, transparent)` }} /> Expérience Professionnelle
+              </h3>
+              <ExperiencesBlock experiences={professionalExperiences} colors={colors} bulletStyle={bulletStyle} bulletShape={bulletShape} textColor={expTc} onRemove={removeProfessionalExperience} />
+              <div className="my-3" />
+            </>
+          )}
           <h3 className="text-[10px] font-black uppercase tracking-[0.25em] mb-3 flex items-center gap-2" style={{ color: compTc || colors.primary, ...useGradientRubrique(gradient, gradientTarget) }}>
             <span className="w-6 h-0.5 rounded-full" style={{ background: `linear-gradient(90deg, ${colors.accent}, transparent)` }} /> Compétences
           </h3>
