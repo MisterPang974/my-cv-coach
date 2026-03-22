@@ -965,8 +965,8 @@ export const FluxTemplate = ({ profile, experienceEntries, atoutEntries, removeE
         <div className="absolute top-0 right-0 w-2/5 h-full" style={{ background: `linear-gradient(135deg, ${colors.accent}, ${colors.accent}cc)`, clipPath: "polygon(25% 0, 100% 0, 100% 100%, 0% 100%)" }} />
         <Blob color="rgba(255,255,255,0.04)" className="absolute -bottom-16 left-10 w-36 h-36" />
         <div className="relative z-10">
+          <p className="text-2xl font-black uppercase tracking-wider leading-none" style={{ color: titleTc }}>{profile.titre || "TITRE DU POSTE"}</p>
           <NameBlock profile={profile} light size="lg" fontFamily={fontFamily} color={headerTc} />
-          <p className="text-xs font-bold mt-1 uppercase tracking-wider" style={{ color: titleTc }}>{profile.titre || "Titre du poste"}</p>
           <div className="mt-3"><ContactLine profile={profile} light colors={colors} fontFamily={fontFamily} textColor={withAlpha(headerTc, 0.72)} iconColor={titleTc} /></div>
         </div>
       </div>
