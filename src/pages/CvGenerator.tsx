@@ -159,6 +159,10 @@ const CvGenerator = () => {
   const [activeGradient, setActiveGradient] = useState<SectorGradient | null>(null);
   const [gradientTarget, setGradientTarget] = useState<"fond" | "rubriques">("fond");
   const [activeBulletShape, setActiveBulletShape] = useState<BulletShapeId | null>(null);
+  const [bgCircleColor, setBgCircleColor] = useState<string>("");
+
+  // White palette option (always available)
+  const whitePalette: SectorPalette = { id: "blanc", label: "Blanc", primary: "#333333", accent: "#666666", swatch: "#ffffff" };
 
   const a4Ref = useRef<HTMLDivElement>(null);
 
