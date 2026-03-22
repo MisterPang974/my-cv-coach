@@ -223,8 +223,45 @@ const CvGenerator = () => {
   const [titleColor, setTitleColor] = useState<string>("");
   const [selectedFont, setSelectedFont] = useState<FontId>("dm-sans");
 
+  // Competency domains state
+  const [domains, setDomains] = useState<CompetencyDomain[]>(DEFAULT_DOMAINS);
+  const [newDomainName, setNewDomainName] = useState("");
+
   // White palette option (always available)
   const whitePalette: SectorPalette = { id: "blanc", label: "Blanc pur", primary: "#2d2d2d", accent: "#555555", swatch: "#ffffff", bg: "#ffffff" };
+
+  // ─── A4 Space Intelligence ────────────────────────────────────────
+  const activeCompetencyCount = useMemo(() => {
+    return domains.filter(d => d.enabled).reduce((sum, d) => sum + d.items.filter(i => i.enabled).length, 0);
+  }, [domains]);
+
+  const maxCompetencies = LAYOUT_MAX_COMPETENCIES[activeLayout] || 12;
+  const totalContentItems = activeCompetencyCount + entries.length + atouts.filter((_, i) => entries.some(e => e.input === "Atout" && e.selected === atouts[i])).length;
+  const isOverloaded = activeCompetencyCount > maxCompetencies;
+  const usagePercent = Math.min(100, Math.round((activeCompetencyCount / maxCompetencies) * 100));
+
+  const toggleDomain = (domainId: string) => {
+    setDomains(prev => prev.map(d => d.id === domainId ? { ...d, enabled: !d.enabled } : d));
+  };
+  const toggleCompetencyItem = (domainId: string, itemId: string) => {
+    setDomains(prev => prev.map(d => d.id === domainId ? { ...d, items: d.items.map(i => i.id === itemId ? { ...i, enabled: !i.enabled } : i) } : d));
+  };
+  const addCustomDomain = () => {
+    if (!newDomainName.trim() || domains.filter(d => d.custom).length >= 2) return;
+    const id = `custom-${Date.now()}`;
+    setDomains(prev => [...prev, { id, label: newDomainName.trim(), enabled: true, custom: true, items: [] }]);
+    setNewDomainName("");
+  };
+  const addCustomCompetency = (domainId: string, text: string) => {
+    if (!text.trim()) return;
+    setDomains(prev => prev.map(d => d.id === domainId ? { ...d, items: [...d.items, { id: `ci-${Date.now()}`, text: text.trim(), enabled: true }] } : d));
+  };
+  const removeCustomDomain = (domainId: string) => {
+    setDomains(prev => prev.filter(d => d.id !== domainId));
+  };
+  const removeCompetencyItem = (domainId: string, itemId: string) => {
+    setDomains(prev => prev.map(d => d.id === domainId ? { ...d, items: d.items.filter(i => i.id !== itemId) } : d));
+  };
 
   const a4Ref = useRef<HTMLDivElement>(null);
 
