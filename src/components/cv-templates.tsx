@@ -185,7 +185,7 @@ const ExperiencesBlock = ({ experiences, colors, bulletStyle, bulletShape, textC
   );
 };
 
-
+const DeleteBtn = ({ onClick, light }: { onClick: () => void; light?: boolean }) => (
   <button onClick={onClick} className={`opacity-0 group-hover/item:opacity-100 transition-opacity ${light ? "text-white/30 hover:text-red-300" : "text-gray-300 hover:text-red-400"}`}>
     <Trash2 className="w-2.5 h-2.5" />
   </button>
