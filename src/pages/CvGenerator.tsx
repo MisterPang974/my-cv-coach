@@ -203,7 +203,7 @@ const CvGenerator = () => {
   const updateProfile = (field: keyof CvProfile, value: string) => setProfile(p => ({ ...p, [field]: value }));
 
   const Template = templateRegistry[activeLayout];
-  const templateProps: TemplateProps = { profile, experienceEntries, atoutEntries, entries, removeEntry, colors, sidebarPos, bulletStyle, bulletShape: activeBulletShape || undefined, gradient: activeGradient || undefined, gradientTarget };
+  const templateProps: TemplateProps = { profile, experienceEntries, atoutEntries, entries, removeEntry, colors, sidebarPos, bulletStyle, bulletShape: activeBulletShape || undefined, gradient: activeGradient || undefined, gradientTarget, bgCircleColor: bgCircleColor || undefined };
 
   return (
     <div className="min-h-screen bg-background">
