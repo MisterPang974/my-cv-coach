@@ -1,3 +1,4 @@
+import React from "react";
 import { Mail, Phone, MapPin, Briefcase, Layers, Star, ChevronRight, Sparkles, Trash2, Grid3X3, ArrowRightCircle, Heart, Calendar, GraduationCap, Building2 } from "lucide-react";
 import type { SidebarPosition, BulletStyle, BulletShapeId } from "@/lib/cv-sectors";
 
@@ -53,6 +54,8 @@ const TEXT_MUTED = "hsl(var(--muted-foreground))";
 
 export interface CompetencyDomainData { id: string; label: string; items: { id: string; text: string; enabled: boolean }[]; }
 
+export type CvSectionId = "experiences" | "competences" | "formation" | "divers";
+
 export interface TemplateProps {
   profile: CvProfile;
   experienceEntries: CvEntry[];
@@ -80,6 +83,7 @@ export interface TemplateProps {
   interests?: InterestEntry[];
   removeInterest?: (id: number) => void;
   interestDisplayMode?: "badges" | "list";
+  sectionOrder?: CvSectionId[];
 }
 
 // ─── Bullet renderers ──────────────────────────────────────────────
@@ -199,7 +203,7 @@ const ExperiencesBlock = ({ experiences, colors, bulletStyle, bulletShape, textC
                 <div>
                   <p className="text-[10px] font-black leading-tight" style={{ color: textColor || (light ? "white" : colors.primary) }}>{exp.poste}</p>
                   <p className="text-[8px]" style={{ color: textColor ? `${textColor}99` : (light ? "rgba(255,255,255,0.6)" : TEXT_MUTED) }}>
-                    {exp.entreprise}{exp.ville ? ` · ${exp.ville}` : ""}{exp.dateDebut ? ` | ${exp.dateDebut}` : ""}{exp.aujourdhui ? " — Aujourd'hui" : exp.dateFin ? ` — ${exp.dateFin}` : ""}
+                    {exp.entreprise}{exp.ville ? ` · ${exp.ville}` : ""}{exp.dateDebut ? ` | ${formatDateDisplay(exp.dateDebut)}` : ""}{exp.aujourdhui ? " — Aujourd'hui" : exp.dateFin ? ` — ${formatDateDisplay(exp.dateFin)}` : ""}
                   </p>
                 </div>
               </div>
@@ -233,7 +237,7 @@ const FormationBlock = ({ formations, colors, bulletStyle, bulletShape, textColo
             <div>
               <p className="text-[10px] font-black leading-tight" style={{ color: textColor || (light ? "white" : colors.primary) }}>{f.intitule}</p>
               <p className="text-[8px]" style={{ color: textColor ? `${textColor}99` : (light ? "rgba(255,255,255,0.6)" : TEXT_MUTED) }}>
-                {f.etablissement}{f.ville ? ` · ${f.ville}` : ""}{f.dateDebut ? ` | ${f.dateDebut}` : ""}{f.dateFin ? ` — ${f.dateFin}` : ""}
+                {f.etablissement}{f.ville ? ` · ${f.ville}` : ""}{f.dateDebut ? ` | ${formatDateDisplay(f.dateDebut)}` : ""}{f.dateFin ? ` — ${formatDateDisplay(f.dateFin)}` : ""}
               </p>
             </div>
             {onRemove && <button onClick={() => onRemove(f.id)} className={`opacity-0 group-hover/item:opacity-100 transition-opacity ${light ? "text-white/30 hover:text-red-300" : "text-gray-300 hover:text-red-400"}`}><Trash2 className="w-2.5 h-2.5" /></button>}
@@ -278,6 +282,17 @@ const DeleteBtn = ({ onClick, light }: { onClick: () => void; light?: boolean })
     <Trash2 className="w-2.5 h-2.5" />
   </button>
 );
+
+/** Format date string to MM/YYYY if it looks like a date */
+const formatDateDisplay = (d: string): string => {
+  if (!d) return "";
+  // Already MM/YYYY or YYYY
+  if (/^\d{2}\/\d{4}$/.test(d)) return d;
+  // ISO date or YYYY-MM
+  const isoMatch = d.match(/^(\d{4})-(\d{2})/);
+  if (isoMatch) return `${isoMatch[2]}/${isoMatch[1]}`;
+  return d;
+};
 
 const withAlpha = (color: string, alpha: number) => {
   if (color.startsWith("hsl(")) return color.replace("hsl(", "hsla(").replace(")", `, ${alpha})`);
@@ -331,9 +346,10 @@ const NameBlock = ({
   color?: string;
 }) => {
   const fullName = [profile.prenom, profile.nom].filter(Boolean).join(" ") || "Votre Nom";
-  const sizeClasses = size === "lg" ? "text-xl" : size === "md" ? "text-base" : "text-sm";
+  // Typography charter: name is BELOW the title, so uses a smaller size
+  const sizeClasses = size === "lg" ? "text-sm" : size === "md" ? "text-xs" : "text-[10px]";
   const resolvedColor = color || (light ? TEXT_WHITE : undefined);
-  return <span className={`font-black leading-tight ${sizeClasses}`} style={{ ...(fontFamily ? { fontFamily } : {}), ...(resolvedColor ? { color: resolvedColor } : {}) }}>{fullName}</span>;
+  return <span className={`font-semibold leading-tight ${sizeClasses}`} style={{ ...(fontFamily ? { fontFamily } : {}), ...(resolvedColor ? { color: resolvedColor } : {}) }}>{fullName}</span>;
 };
 
 /** Resolve text color for a section */
@@ -378,11 +394,30 @@ const Blob = ({ color, className, style }: { color: string; className?: string; 
   </svg>
 );
 
+/** Ordered section renderer — renders CV sections in the order specified by sectionOrder */
+interface SectionRendererProps {
+  sectionOrder?: CvSectionId[];
+  renderExperiences: () => React.ReactNode;
+  renderCompetences: () => React.ReactNode;
+  renderFormation: () => React.ReactNode;
+  renderDivers: () => React.ReactNode;
+}
+const OrderedSections = ({ sectionOrder, renderExperiences, renderCompetences, renderFormation, renderDivers }: SectionRendererProps) => {
+  const order = sectionOrder || ["experiences", "competences", "formation", "divers"];
+  const renderers: Record<CvSectionId, () => React.ReactNode> = {
+    experiences: renderExperiences,
+    competences: renderCompetences,
+    formation: renderFormation,
+    divers: renderDivers,
+  };
+  return <>{order.map(s => <React.Fragment key={s}>{renderers[s]()}</React.Fragment>)}</>;
+};
+
 // ═══════════════════════════════════════════════════════════════════
 // 1. IMPACT — Glassmorphism sidebar, gradient accents, floating depth
 //    - Photo removed. Competences moved to sidebar to fill right void.
 // ═══════════════════════════════════════════════════════════════════
-export const ImpactTemplate = ({ profile, experienceEntries, atoutEntries, removeEntry, colors, sidebarPos, bulletStyle, bulletShape, gradient, gradientTarget, textColors, titleColor, fontFamily, competencyDomains, competencyBulletShape, professionalExperiences, removeProfessionalExperience, formations, removeFormation, formationTitle, getCompanyLogoUrl, interests, removeInterest, interestDisplayMode }: TemplateProps) => {
+export const ImpactTemplate = ({ profile, experienceEntries, atoutEntries, removeEntry, colors, sidebarPos, bulletStyle, bulletShape, gradient, gradientTarget, textColors, titleColor, fontFamily, competencyDomains, competencyBulletShape, professionalExperiences, removeProfessionalExperience, formations, removeFormation, formationTitle, getCompanyLogoUrl, interests, removeInterest, interestDisplayMode, sectionOrder }: TemplateProps) => {
   const fondStyle = useGradientBg(gradient, gradientTarget);
   const rubriqueStyle = useGradientRubrique(gradient, gradientTarget, `linear-gradient(170deg, ${colors.primary}, ${colors.swatch})`);
   const { isDark } = useAutoContrast(gradient, gradientTarget);
@@ -397,11 +432,11 @@ export const ImpactTemplate = ({ profile, experienceEntries, atoutEntries, remov
       <Blob color="rgba(255,255,255,0.03)" className="absolute -top-16 -right-12 w-40 h-40" />
 
       <div className="relative px-5 pt-6 pb-3 z-10">
-        <NameBlock profile={profile} light size="md" fontFamily={fontFamily} color={headerTc} />
-        <p className="text-center text-[10px] mt-1 font-medium px-3 py-0.5 rounded-full mx-auto w-fit"
-          style={{ background: withAlpha(colors.accent, 0.18), color: titleTc, backdropFilter: "blur(8px)" }}>
-          {profile.titre || "Titre du poste"}
+        <p className="text-xl font-black uppercase tracking-wider leading-none"
+          style={{ color: titleTc, fontFamily: fontFamily || undefined }}>
+          {profile.titre || "TITRE DU POSTE"}
         </p>
+        <NameBlock profile={profile} light size="md" fontFamily={fontFamily} color={headerTc} />
       </div>
 
       <div className="relative px-4 space-y-3 flex-1 z-10">
@@ -478,7 +513,7 @@ export const ImpactTemplate = ({ profile, experienceEntries, atoutEntries, remov
 // 2. ARTISAN — Organic shapes, variable radius, warm textures
 //    - Photo removed. bgCircleColor for background circles.
 // ═══════════════════════════════════════════════════════════════════
-export const ArtisanTemplate = ({ profile, experienceEntries, atoutEntries, removeEntry, colors, sidebarPos, bulletStyle, bulletShape, gradient, gradientTarget, bgCircleColor, textColors, titleColor, fontFamily, competencyDomains, competencyBulletShape, professionalExperiences, removeProfessionalExperience, formations, removeFormation, formationTitle, getCompanyLogoUrl, interests, removeInterest, interestDisplayMode }: TemplateProps) => {
+export const ArtisanTemplate = ({ profile, experienceEntries, atoutEntries, removeEntry, colors, sidebarPos, bulletStyle, bulletShape, gradient, gradientTarget, bgCircleColor, textColors, titleColor, fontFamily, competencyDomains, competencyBulletShape, professionalExperiences, removeProfessionalExperience, formations, removeFormation, formationTitle, getCompanyLogoUrl, interests, removeInterest, interestDisplayMode, sectionOrder }: TemplateProps) => {
   const fondStyle = useGradientBg(gradient, gradientTarget);
   const circleCol = bgCircleColor || colors.accent;
   const { isDark } = useAutoContrast(gradient, gradientTarget);
@@ -495,8 +530,8 @@ export const ArtisanTemplate = ({ profile, experienceEntries, atoutEntries, remo
       <div className="relative mx-4 mt-4 px-6 py-5 overflow-hidden" style={{ borderRadius: "28px 8px 28px 8px", background: `linear-gradient(135deg, ${colors.primary}, ${colors.swatch})`, boxShadow: `0 8px 32px ${colors.primary}25, 0 2px 8px ${colors.primary}15`, ...useGradientRubrique(gradient, gradientTarget) }}>
         <div className="absolute inset-0 opacity-[0.05]" style={{ backgroundImage: "url(\"data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='30' cy='30' r='1.5' fill='%23fff'/%3E%3C/svg%3E\")" }} />
         <div className="relative">
+          <p className="text-xl font-black uppercase tracking-wider leading-none" style={{ color: titleTc, fontFamily: fontFamily || "'DM Sans', sans-serif" }}>{profile.titre || "TITRE DU POSTE"}</p>
           <NameBlock profile={profile} light size="md" fontFamily={fontFamily} color={headerTc} />
-          <p className="text-xs italic mt-0.5" style={{ color: titleTc }}>{profile.titre || "Titre du poste"}</p>
         </div>
         <div className="relative mt-3" style={{ fontFamily: fontFamily || "'DM Sans', sans-serif" }}><ContactLine profile={profile} light colors={colors} fontFamily={fontFamily} textColor={withAlpha(headerTc, 0.72)} iconColor={titleTc} /></div>
       </div>
@@ -562,7 +597,7 @@ export const ArtisanTemplate = ({ profile, experienceEntries, atoutEntries, remo
 // ═══════════════════════════════════════════════════════════════════
 // 3. CRÉATIF — Sector logo replaces letter "A". Customizable circle bg.
 // ═══════════════════════════════════════════════════════════════════
-export const CreatifTemplate = ({ profile, experienceEntries, atoutEntries, removeEntry, colors, bulletStyle, bulletShape, gradient, gradientTarget, bgCircleColor, textColors, titleColor, fontFamily, competencyDomains, competencyBulletShape, professionalExperiences, removeProfessionalExperience, formations, removeFormation, formationTitle, getCompanyLogoUrl, interests, removeInterest, interestDisplayMode }: TemplateProps) => {
+export const CreatifTemplate = ({ profile, experienceEntries, atoutEntries, removeEntry, colors, bulletStyle, bulletShape, gradient, gradientTarget, bgCircleColor, textColors, titleColor, fontFamily, competencyDomains, competencyBulletShape, professionalExperiences, removeProfessionalExperience, formations, removeFormation, formationTitle, getCompanyLogoUrl, interests, removeInterest, interestDisplayMode, sectionOrder }: TemplateProps) => {
   const fondStyle = useGradientBg(gradient, gradientTarget);
   const circleBg = bgCircleColor || "#1a1a1a";
   const headerTc = sectionTextColor("header", textColors, TEXT_BLACK);
@@ -584,13 +619,10 @@ export const CreatifTemplate = ({ profile, experienceEntries, atoutEntries, remo
       <div className="relative px-7 pt-7 pb-4">
         <div className="flex items-end gap-4">
           <div className="flex-1">
-            <h2 className="text-2xl font-black tracking-[-0.02em] leading-[0.9]" style={{ color: headerTc }}>
+            <p className="text-2xl font-black uppercase tracking-wider leading-none" style={{ color: titleTc }}>{profile.titre || "TITRE DU POSTE"}</p>
+            <h2 className="text-sm font-semibold mt-1" style={{ color: headerTc }}>
               {[profile.prenom, profile.nom].filter(Boolean).join(" ") || "Votre Nom"}
             </h2>
-            <div className="mt-2 inline-flex items-center gap-1.5">
-              <span className="w-5 h-1 rounded-full" style={{ background: `linear-gradient(90deg, ${colors.primary}, ${colors.accent})` }} />
-              <span className="text-[10px] font-bold uppercase tracking-wider" style={{ color: titleTc }}>{profile.titre || "Titre"}</span>
-            </div>
           </div>
           {/* Sector professional logo */}
           <div className="w-14 h-14 rotate-3 flex items-center justify-center"
@@ -672,7 +704,7 @@ export const CreatifTemplate = ({ profile, experienceEntries, atoutEntries, remo
 // ═══════════════════════════════════════════════════════════════════
 // 4. MURAL — Photo removed.
 // ═══════════════════════════════════════════════════════════════════
-export const MuralTemplate = ({ profile, experienceEntries, atoutEntries, removeEntry, colors, sidebarPos, bulletStyle, bulletShape, gradient, gradientTarget, textColors, titleColor, fontFamily, competencyDomains, competencyBulletShape, professionalExperiences, removeProfessionalExperience, formations, removeFormation, formationTitle, getCompanyLogoUrl, interests, removeInterest, interestDisplayMode }: TemplateProps) => {
+export const MuralTemplate = ({ profile, experienceEntries, atoutEntries, removeEntry, colors, sidebarPos, bulletStyle, bulletShape, gradient, gradientTarget, textColors, titleColor, fontFamily, competencyDomains, competencyBulletShape, professionalExperiences, removeProfessionalExperience, formations, removeFormation, formationTitle, getCompanyLogoUrl, interests, removeInterest, interestDisplayMode, sectionOrder }: TemplateProps) => {
   const fondStyle = useGradientBg(gradient, gradientTarget);
   const { isDark } = useAutoContrast(gradient, gradientTarget);
   const headerTc = sectionTextColor("header", textColors, TEXT_WHITE);
@@ -684,11 +716,8 @@ export const MuralTemplate = ({ profile, experienceEntries, atoutEntries, remove
       <div className="px-7 py-5 relative overflow-hidden" style={{ background: `linear-gradient(135deg, ${colors.primary}, ${colors.swatch})`, boxShadow: `0 6px 24px ${colors.primary}30`, ...useGradientRubrique(gradient, gradientTarget) }}>
         <svg className="absolute inset-0 w-full h-full opacity-[0.04]"><pattern id="grid" width="20" height="20" patternUnits="userSpaceOnUse"><rect width="20" height="20" fill="none" stroke="white" strokeWidth="0.5"/></pattern><rect width="100%" height="100%" fill="url(#grid)"/></svg>
         <div className="relative">
+          <p className="text-2xl font-black uppercase tracking-wider leading-none" style={{ color: titleTc }}>{profile.titre || "TITRE DU POSTE"}</p>
           <NameBlock profile={profile} light size="lg" color={headerTc} />
-          <div className="flex items-center gap-3 mt-2">
-            <span className="w-10 h-1.5" style={{ background: `linear-gradient(90deg, ${colors.accent}, transparent)`, borderRadius: "4px" }} />
-            <p className="text-xs font-bold uppercase tracking-wider" style={{ color: titleTc }}>{profile.titre || "Titre du poste"}</p>
-          </div>
           <div className="mt-3"><ContactLine profile={profile} light colors={colors} fontFamily={fontFamily} textColor={withAlpha(headerTc, 0.72)} iconColor={titleTc} /></div>
         </div>
       </div>
@@ -762,7 +791,7 @@ export const MuralTemplate = ({ profile, experienceEntries, atoutEntries, remove
 // ═══════════════════════════════════════════════════════════════════
 // 5. MAGAZINE — Right zone now shows coordinates. Photo removed.
 // ═══════════════════════════════════════════════════════════════════
-export const MagazineTemplate = ({ profile, experienceEntries, atoutEntries, removeEntry, colors, bulletStyle, bulletShape, gradient, gradientTarget, textColors, titleColor, fontFamily, competencyDomains, competencyBulletShape, professionalExperiences, removeProfessionalExperience, formations, removeFormation, formationTitle, getCompanyLogoUrl, interests, removeInterest, interestDisplayMode }: TemplateProps) => {
+export const MagazineTemplate = ({ profile, experienceEntries, atoutEntries, removeEntry, colors, bulletStyle, bulletShape, gradient, gradientTarget, textColors, titleColor, fontFamily, competencyDomains, competencyBulletShape, professionalExperiences, removeProfessionalExperience, formations, removeFormation, formationTitle, getCompanyLogoUrl, interests, removeInterest, interestDisplayMode, sectionOrder }: TemplateProps) => {
   const fondStyle = useGradientBg(gradient, gradientTarget);
   const headerTc = sectionTextColor("header", textColors, TEXT_WHITE);
   const compTc = sectionTextColor("competences", textColors, colors.accent);
@@ -774,8 +803,8 @@ export const MagazineTemplate = ({ profile, experienceEntries, atoutEntries, rem
       <div className="flex items-stretch relative overflow-hidden">
         <div className="flex-1 px-7 py-5 flex flex-col justify-center relative" style={{ background: `linear-gradient(135deg, ${colors.primary}, ${colors.swatch})`, ...useGradientRubrique(gradient, gradientTarget) }}>
           <Blob color="rgba(255,255,255,0.04)" className="absolute -bottom-10 -left-10 w-32 h-32" />
+          <p className="text-xl font-black uppercase tracking-wider leading-none relative z-10" style={{ color: titleTc }}>{profile.titre || "TITRE DU POSTE"}</p>
           <NameBlock profile={profile} light size="lg" fontFamily={fontFamily} color={headerTc} />
-          <p className="text-xs mt-0.5 relative z-10 font-medium" style={{ color: titleTc }}>{profile.titre || "Titre du poste"}</p>
         </div>
         <div className="w-[40%] px-5 py-4 flex flex-col justify-center relative" style={{ background: `linear-gradient(135deg, ${colors.accent}, ${colors.accent}dd)`, boxShadow: `inset 4px 0 12px rgba(0,0,0,0.1)` }}>
           {/* Full coordinates in right zone */}
@@ -859,7 +888,7 @@ export const MagazineTemplate = ({ profile, experienceEntries, atoutEntries, rem
 // ═══════════════════════════════════════════════════════════════════
 // 7. MÉDICAL — Photo removed, contacts fixed.
 // ═══════════════════════════════════════════════════════════════════
-export const MedicalTemplate = ({ profile, experienceEntries, atoutEntries, removeEntry, colors, bulletStyle, bulletShape, gradient, gradientTarget, textColors, titleColor, fontFamily, competencyDomains, competencyBulletShape, professionalExperiences, removeProfessionalExperience, formations, removeFormation, formationTitle, getCompanyLogoUrl, interests, removeInterest, interestDisplayMode }: TemplateProps) => {
+export const MedicalTemplate = ({ profile, experienceEntries, atoutEntries, removeEntry, colors, bulletStyle, bulletShape, gradient, gradientTarget, textColors, titleColor, fontFamily, competencyDomains, competencyBulletShape, professionalExperiences, removeProfessionalExperience, formations, removeFormation, formationTitle, getCompanyLogoUrl, interests, removeInterest, interestDisplayMode, sectionOrder }: TemplateProps) => {
   const fondStyle = useGradientBg(gradient, gradientTarget);
   const headerTc = sectionTextColor("header", textColors, TEXT_WHITE);
   const compTc = sectionTextColor("competences", textColors, colors.primary);
@@ -873,69 +902,76 @@ export const MedicalTemplate = ({ profile, experienceEntries, atoutEntries, remo
       <div className="relative mx-5 mt-4 px-6 py-5 overflow-hidden" style={{ borderRadius: "24px", background: `linear-gradient(135deg, ${colors.primary}, ${colors.accent})`, boxShadow: `0 8px 32px ${colors.primary}20, 0 4px 12px ${colors.accent}15`, ...useGradientRubrique(gradient, gradientTarget) }}>
         <Blob color="rgba(255,255,255,0.05)" className="absolute -bottom-12 -right-8 w-40 h-40" />
         <div className="relative z-10">
+          <p className="text-xl font-black uppercase tracking-wider leading-none" style={{ color: titleTc }}>{profile.titre || "TITRE DU POSTE"}</p>
           <NameBlock profile={profile} light size="md" fontFamily={fontFamily} color={headerTc} />
-          <p className="text-xs font-medium" style={{ color: titleTc }}>{profile.titre || "Titre du poste"}</p>
           <div className="mt-2"><ContactLine profile={profile} light colors={colors} fontFamily={fontFamily} textColor={withAlpha(headerTc, 0.72)} iconColor={titleTc} /></div>
         </div>
       </div>
 
       <div className="flex-1 px-5 py-4 overflow-y-auto space-y-3 relative z-10">
-        {professionalExperiences && professionalExperiences.length > 0 && (
-          <div className="p-4" style={{ borderRadius: "20px", background: "rgba(255,255,255,0.7)", backdropFilter: "blur(12px)", boxShadow: `0 4px 20px rgba(0,0,0,0.04), 0 1px 4px rgba(0,0,0,0.06), 0 0 0 1px ${colors.accent}10` }}>
-            <h3 className="text-[10px] font-bold uppercase tracking-[0.15em] mb-3 flex items-center gap-2" style={{ color: expTc || colors.primary }}>
-              <span className="w-6 h-6 rounded-full flex items-center justify-center" style={{ background: `linear-gradient(135deg, ${colors.accent}20, ${colors.primary}15)` }}><Briefcase className="w-3 h-3" style={{ color: colors.accent }} /></span>
-              Expérience Professionnelle
-            </h3>
-            <ExperiencesBlock experiences={professionalExperiences} colors={colors} bulletStyle={bulletStyle} bulletShape={bulletShape} getCompanyLogoUrl={getCompanyLogoUrl} textColor={expTc} onRemove={removeProfessionalExperience} />
-          </div>
-        )}
-        {formations && formations.length > 0 && (
-          <div className="p-4" style={{ borderRadius: "20px", background: "rgba(255,255,255,0.7)", backdropFilter: "blur(12px)", boxShadow: `0 4px 20px rgba(0,0,0,0.04), 0 1px 4px rgba(0,0,0,0.06), 0 0 0 1px ${colors.accent}10` }}>
-            <h3 className="text-[10px] font-bold uppercase tracking-[0.15em] mb-3 flex items-center gap-2" style={{ color: expTc || colors.primary }}>
-              <span className="w-6 h-6 rounded-full flex items-center justify-center" style={{ background: `linear-gradient(135deg, ${colors.accent}20, ${colors.primary}15)` }}><GraduationCap className="w-3 h-3" style={{ color: colors.accent }} /></span>
-              {formationTitle || "Formation"}
-            </h3>
-            <FormationBlock formations={formations} colors={colors} bulletStyle={bulletStyle} bulletShape={bulletShape} textColor={expTc} onRemove={removeFormation} />
-          </div>
-        )}
-        <div className="p-4" style={{ borderRadius: "20px", background: "rgba(255,255,255,0.7)", backdropFilter: "blur(12px)", boxShadow: `0 4px 20px rgba(0,0,0,0.04), 0 1px 4px rgba(0,0,0,0.06), 0 0 0 1px ${colors.accent}10` }}>
-          <h3 className="text-[10px] font-bold uppercase tracking-[0.15em] mb-3 flex items-center gap-2" style={{ color: compTc || colors.primary }}>
-            <span className="w-6 h-6 rounded-full flex items-center justify-center" style={{ background: `linear-gradient(135deg, ${colors.accent}20, ${colors.primary}15)` }}><Layers className="w-3 h-3" style={{ color: colors.accent }} /></span>
-            Compétences
-          </h3>
-          {competencyDomains && competencyDomains.length > 0 ? (
-            <DomainsBlock domains={competencyDomains} colors={colors} bulletStyle={bulletStyle} bulletShape={bulletShape} competencyBulletShape={competencyBulletShape} textColor={expTc} />
-          ) : experienceEntries.length > 0 ? (
-            <ul className="space-y-0.5">{experienceEntries.map(e => (
-              <li key={e.id} className="flex items-start gap-2.5 group/item px-3 py-1.5 rounded-2xl transition-all hover:bg-white/80" style={{ boxShadow: "0 1px 3px rgba(0,0,0,0.03)" }}>
-                <span className="mt-0.5"><ModernBullet type={e.bullet} color={e.bullet === "technique" ? colors.primary : colors.accent} style={bulletStyle} shape={bulletShape} /></span>
-                <span className="flex-1" style={{ color: expTc || TEXT_BLACK }}>{e.selected}</span><DeleteBtn onClick={() => removeEntry(e.id)} />
-              </li>
-            ))}</ul>
-          ) : <EmptyState color={colors.accent} />}
-        </div>
-
-        <div className="p-4" style={{ borderRadius: "20px", background: "rgba(255,255,255,0.7)", backdropFilter: "blur(12px)", boxShadow: `0 4px 20px rgba(0,0,0,0.04), 0 0 0 1px ${colors.primary}08` }}>
-          <h3 className="text-[10px] font-bold uppercase tracking-[0.15em] mb-3 flex items-center gap-2" style={{ color: compTc || colors.accent }}>
-            <span className="w-6 h-6 rounded-full flex items-center justify-center" style={{ background: `linear-gradient(135deg, ${colors.primary}15, ${colors.accent}10)` }}><Star className="w-3 h-3" style={{ color: colors.primary }} /></span>
-            Qualités humaines
-          </h3>
-          {atoutEntries.length > 0 ? (
-            <div className="flex flex-wrap gap-2">{atoutEntries.map(e => (
-              <span key={e.id} className="inline-flex items-center gap-1.5 px-3 py-1.5 text-[10px] group/item"
-                style={{ color: compTc || TEXT_MUTED, borderRadius: "20px", background: `linear-gradient(135deg, ${colors.accent}08, ${colors.primary}05)`, border: `1px solid ${colors.accent}15`, boxShadow: `0 2px 6px ${colors.accent}06` }}>
-                {e.selected}<DeleteBtn onClick={() => removeEntry(e.id)} />
-              </span>
-            ))}</div>
-          ) : <p className="text-gray-400 italic text-[9px]">Ajoutez des atouts…</p>}
-        </div>
+        <OrderedSections sectionOrder={sectionOrder}
+          renderExperiences={() => professionalExperiences && professionalExperiences.length > 0 ? (
+            <div className="p-4" style={{ borderRadius: "20px", background: "rgba(255,255,255,0.7)", backdropFilter: "blur(12px)", boxShadow: `0 4px 20px rgba(0,0,0,0.04), 0 1px 4px rgba(0,0,0,0.06), 0 0 0 1px ${colors.accent}10` }}>
+              <h3 className="text-[10px] font-bold uppercase tracking-[0.15em] mb-3 flex items-center gap-2" style={{ color: expTc || colors.primary }}>
+                <span className="w-6 h-6 rounded-full flex items-center justify-center" style={{ background: `linear-gradient(135deg, ${colors.accent}20, ${colors.primary}15)` }}><Briefcase className="w-3 h-3" style={{ color: colors.accent }} /></span>
+                EXPÉRIENCE PROFESSIONNELLE
+              </h3>
+              <ExperiencesBlock experiences={professionalExperiences} colors={colors} bulletStyle={bulletStyle} bulletShape={bulletShape} getCompanyLogoUrl={getCompanyLogoUrl} textColor={expTc} onRemove={removeProfessionalExperience} />
+            </div>
+          ) : null}
+          renderFormation={() => formations && formations.length > 0 ? (
+            <div className="p-4" style={{ borderRadius: "20px", background: "rgba(255,255,255,0.7)", backdropFilter: "blur(12px)", boxShadow: `0 4px 20px rgba(0,0,0,0.04), 0 1px 4px rgba(0,0,0,0.06), 0 0 0 1px ${colors.accent}10` }}>
+              <h3 className="text-[10px] font-bold uppercase tracking-[0.15em] mb-3 flex items-center gap-2" style={{ color: expTc || colors.primary }}>
+                <span className="w-6 h-6 rounded-full flex items-center justify-center" style={{ background: `linear-gradient(135deg, ${colors.accent}20, ${colors.primary}15)` }}><GraduationCap className="w-3 h-3" style={{ color: colors.accent }} /></span>
+                {(formationTitle || "FORMATION").toUpperCase()}
+              </h3>
+              <FormationBlock formations={formations} colors={colors} bulletStyle={bulletStyle} bulletShape={bulletShape} textColor={expTc} onRemove={removeFormation} />
+            </div>
+          ) : null}
+          renderCompetences={() => (
+            <div className="p-4" style={{ borderRadius: "20px", background: "rgba(255,255,255,0.7)", backdropFilter: "blur(12px)", boxShadow: `0 4px 20px rgba(0,0,0,0.04), 0 1px 4px rgba(0,0,0,0.06), 0 0 0 1px ${colors.accent}10` }}>
+              <h3 className="text-[10px] font-bold uppercase tracking-[0.15em] mb-3 flex items-center gap-2" style={{ color: compTc || colors.primary }}>
+                <span className="w-6 h-6 rounded-full flex items-center justify-center" style={{ background: `linear-gradient(135deg, ${colors.accent}20, ${colors.primary}15)` }}><Layers className="w-3 h-3" style={{ color: colors.accent }} /></span>
+                COMPÉTENCES
+              </h3>
+              {competencyDomains && competencyDomains.length > 0 ? (
+                <DomainsBlock domains={competencyDomains} colors={colors} bulletStyle={bulletStyle} bulletShape={bulletShape} competencyBulletShape={competencyBulletShape} textColor={expTc} />
+              ) : experienceEntries.length > 0 ? (
+                <ul className="space-y-0.5">{experienceEntries.map(e => (
+                  <li key={e.id} className="flex items-start gap-2.5 group/item px-3 py-1.5 rounded-2xl transition-all hover:bg-white/80" style={{ boxShadow: "0 1px 3px rgba(0,0,0,0.03)" }}>
+                    <span className="mt-0.5"><ModernBullet type={e.bullet} color={e.bullet === "technique" ? colors.primary : colors.accent} style={bulletStyle} shape={bulletShape} /></span>
+                    <span className="flex-1" style={{ color: expTc || TEXT_BLACK }}>{e.selected}</span><DeleteBtn onClick={() => removeEntry(e.id)} />
+                  </li>
+                ))}</ul>
+              ) : <EmptyState color={colors.accent} />}
+            </div>
+          )}
+          renderDivers={() => (
+            <>
+              <div className="p-4" style={{ borderRadius: "20px", background: "rgba(255,255,255,0.7)", backdropFilter: "blur(12px)", boxShadow: `0 4px 20px rgba(0,0,0,0.04), 0 0 0 1px ${colors.primary}08` }}>
+                <h3 className="text-[10px] font-bold uppercase tracking-[0.15em] mb-3 flex items-center gap-2" style={{ color: compTc || colors.accent }}>
+                  <span className="w-6 h-6 rounded-full flex items-center justify-center" style={{ background: `linear-gradient(135deg, ${colors.primary}15, ${colors.accent}10)` }}><Star className="w-3 h-3" style={{ color: colors.primary }} /></span>
+                  QUALITÉS HUMAINES
+                </h3>
+                {atoutEntries.length > 0 ? (
+                  <div className="flex flex-wrap gap-2">{atoutEntries.map(e => (
+                    <span key={e.id} className="inline-flex items-center gap-1.5 px-3 py-1.5 text-[10px] group/item"
+                      style={{ color: compTc || TEXT_MUTED, borderRadius: "20px", background: `linear-gradient(135deg, ${colors.accent}08, ${colors.primary}05)`, border: `1px solid ${colors.accent}15`, boxShadow: `0 2px 6px ${colors.accent}06` }}>
+                      {e.selected}<DeleteBtn onClick={() => removeEntry(e.id)} />
+                    </span>
+                  ))}</div>
+                ) : <p className="text-gray-400 italic text-[9px]">Ajoutez des atouts…</p>}
+              </div>
+              {interests && interests.length > 0 && (
+                <div className="px-1 py-2">
+                  <p className="text-[8px] font-bold uppercase tracking-widest mb-1" style={{ color: compTc || colors.accent }}>DIVERS</p>
+                  <InterestsBlock interests={interests} colors={colors} bulletStyle={bulletStyle} bulletShape={bulletShape} textColor={expTc} onRemove={removeInterest} displayMode={interestDisplayMode} />
+                </div>
+              )}
+            </>
+          )}
+        />
       </div>
-      {interests && interests.length > 0 && (
-        <div className="px-5 py-2">
-          <p className="text-[8px] font-bold uppercase tracking-widest mb-1" style={{ color: compTc || colors.accent }}>Divers</p>
-          <InterestsBlock interests={interests} colors={colors} bulletStyle={bulletStyle} bulletShape={bulletShape} textColor={expTc} onRemove={removeInterest} displayMode={interestDisplayMode} />
-        </div>
-      )}
       <div className="px-6 py-2 text-[8px] text-gray-400 flex justify-between"><span>My CV Coach · Méthode Fred</span><span>Médical</span></div>
     </div>
   );
@@ -944,7 +980,7 @@ export const MedicalTemplate = ({ profile, experienceEntries, atoutEntries, remo
 // ═══════════════════════════════════════════════════════════════════
 // 8. FLUX — Photo removed.
 // ═══════════════════════════════════════════════════════════════════
-export const FluxTemplate = ({ profile, experienceEntries, atoutEntries, removeEntry, colors, bulletStyle, bulletShape, gradient, gradientTarget, textColors, titleColor, fontFamily, competencyDomains, competencyBulletShape, professionalExperiences, removeProfessionalExperience, formations, removeFormation, formationTitle, getCompanyLogoUrl, interests, removeInterest, interestDisplayMode }: TemplateProps) => {
+export const FluxTemplate = ({ profile, experienceEntries, atoutEntries, removeEntry, colors, bulletStyle, bulletShape, gradient, gradientTarget, textColors, titleColor, fontFamily, competencyDomains, competencyBulletShape, professionalExperiences, removeProfessionalExperience, formations, removeFormation, formationTitle, getCompanyLogoUrl, interests, removeInterest, interestDisplayMode, sectionOrder }: TemplateProps) => {
   const fondStyle = useGradientBg(gradient, gradientTarget);
   const headerTc = sectionTextColor("header", textColors, TEXT_WHITE);
   const compTc = sectionTextColor("competences", textColors, colors.primary);
@@ -956,8 +992,8 @@ export const FluxTemplate = ({ profile, experienceEntries, atoutEntries, removeE
         <div className="absolute top-0 right-0 w-2/5 h-full" style={{ background: `linear-gradient(135deg, ${colors.accent}, ${colors.accent}cc)`, clipPath: "polygon(25% 0, 100% 0, 100% 100%, 0% 100%)" }} />
         <Blob color="rgba(255,255,255,0.04)" className="absolute -bottom-16 left-10 w-36 h-36" />
         <div className="relative z-10">
+          <p className="text-2xl font-black uppercase tracking-wider leading-none" style={{ color: titleTc }}>{profile.titre || "TITRE DU POSTE"}</p>
           <NameBlock profile={profile} light size="lg" fontFamily={fontFamily} color={headerTc} />
-          <p className="text-xs font-bold mt-1 uppercase tracking-wider" style={{ color: titleTc }}>{profile.titre || "Titre du poste"}</p>
           <div className="mt-3"><ContactLine profile={profile} light colors={colors} fontFamily={fontFamily} textColor={withAlpha(headerTc, 0.72)} iconColor={titleTc} /></div>
         </div>
       </div>
@@ -1036,7 +1072,7 @@ export const FluxTemplate = ({ profile, experienceEntries, atoutEntries, removeE
 // ═══════════════════════════════════════════════════════════════════
 // 9. SÉRÉNITÉ — Photo removed. Contacts bug fixed.
 // ═══════════════════════════════════════════════════════════════════
-export const SereniteTemplate = ({ profile, experienceEntries, atoutEntries, removeEntry, colors, bulletStyle, bulletShape, gradient, gradientTarget, textColors, titleColor, fontFamily, competencyDomains, competencyBulletShape, professionalExperiences, removeProfessionalExperience, formations, removeFormation, formationTitle, getCompanyLogoUrl, interests, removeInterest, interestDisplayMode }: TemplateProps) => {
+export const SereniteTemplate = ({ profile, experienceEntries, atoutEntries, removeEntry, colors, bulletStyle, bulletShape, gradient, gradientTarget, textColors, titleColor, fontFamily, competencyDomains, competencyBulletShape, professionalExperiences, removeProfessionalExperience, formations, removeFormation, formationTitle, getCompanyLogoUrl, interests, removeInterest, interestDisplayMode, sectionOrder }: TemplateProps) => {
   const fondStyle = useGradientBg(gradient, gradientTarget);
   const headerTc = sectionTextColor("header", textColors, TEXT_WHITE);
   const compTc = sectionTextColor("competences", textColors, colors.primary);
@@ -1053,8 +1089,8 @@ export const SereniteTemplate = ({ profile, experienceEntries, atoutEntries, rem
         <Blob color="rgba(255,255,255,0.06)" className="absolute -top-12 -right-12 w-44 h-44" />
         <Blob color="rgba(255,255,255,0.04)" className="absolute bottom-0 left-0 w-32 h-32" />
         <div className="relative z-10">
+          <p className="text-2xl font-black uppercase tracking-wider leading-none" style={{ color: titleTc }}>{profile.titre || "TITRE DU POSTE"}</p>
           <NameBlock profile={profile} light size="lg" fontFamily={fontFamily} color={headerTc} />
-          <p className="text-xs font-medium mt-0.5" style={{ color: titleTc }}>{profile.titre || "Titre du poste"}</p>
           <div className="mt-3">
             <ContactLine profile={profile} light colors={colors} fontFamily={fontFamily} textColor={withAlpha(headerTc, 0.72)} iconColor={titleTc} />
           </div>

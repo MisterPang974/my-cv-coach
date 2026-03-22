@@ -2,7 +2,7 @@ import { useState, useRef, useEffect, useMemo } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import {
-  Wand2, Copy, Check, Plus, Trash2, User, Briefcase, Palette, Star, Settings2, ChevronRight, Type, AlertTriangle, ToggleLeft, ToggleRight, Gauge, Layers, Send, FolderPlus, GraduationCap, Building2, Eye, EyeOff
+  Wand2, Copy, Check, Plus, Trash2, User, Briefcase, Palette, Star, Settings2, ChevronRight, Type, AlertTriangle, ToggleLeft, ToggleRight, Gauge, Layers, Send, FolderPlus, GraduationCap, Building2, Eye, EyeOff, ArrowUp, ArrowDown, GripVertical
 } from "lucide-react";
 import { detectSector, sectorConfigs, layoutMeta, gradientLibrary, bulletShapes, type SectorId, type LayoutId, type SidebarPosition, type BulletStyle, type SectorPalette, type SectorGradient, type BulletShapeId } from "@/lib/cv-sectors";
 import { templateRegistry, ModernBullet, ShapeBullet, fontOptions, type TemplateProps, type TextColorSection, type FontId } from "@/components/cv-templates";
@@ -302,6 +302,19 @@ const CvGenerator = () => {
   const [newInterestText, setNewInterestText] = useState("");
   const [interestDisplayMode, setInterestDisplayMode] = useState<"badges" | "list">("badges");
 
+  // Section order for reordering
+  type CvSection = "experiences" | "competences" | "formation" | "divers";
+  const [sectionOrder, setSectionOrder] = useState<CvSection[]>(["experiences", "competences", "formation", "divers"]);
+  const moveSectionUp = (idx: number) => {
+    if (idx <= 0) return;
+    setSectionOrder(prev => { const next = [...prev]; [next[idx - 1], next[idx]] = [next[idx], next[idx - 1]]; return next; });
+  };
+  const moveSectionDown = (idx: number) => {
+    if (idx >= sectionOrder.length - 1) return;
+    setSectionOrder(prev => { const next = [...prev]; [next[idx], next[idx + 1]] = [next[idx + 1], next[idx]]; return next; });
+  };
+  const SECTION_LABELS: Record<CvSection, string> = { experiences: "Expériences", competences: "Compétences", formation: "Formation", divers: "Divers & Intérêts" };
+
   // White palette option (always available)
   const whitePalette: SectorPalette = { id: "blanc", label: "Blanc pur", primary: "#2d2d2d", accent: "#555555", swatch: "#ffffff", bg: "#ffffff" };
 
@@ -468,7 +481,7 @@ const CvGenerator = () => {
   const Template = templateRegistry[activeLayout];
   const activeDomains = domains.filter(d => d.enabled).map(d => ({ ...d, items: d.items.filter(i => i.enabled) })).filter(d => d.items.length > 0);
   const formationTitle = formationMode === "parcours" ? "Parcours de formation" : "Formation & Diplômes";
-  const templateProps: TemplateProps = { profile, experienceEntries, atoutEntries, entries, removeEntry, colors, sidebarPos, bulletStyle, bulletShape: activeBulletShape || undefined, competencyBulletShape: competencyBulletShape || undefined, gradient: activeGradient || undefined, gradientTarget, bgCircleColor: bgCircleColor || undefined, textColors, titleColor: titleColor || undefined, fontFamily: currentFont, competencyDomains: activeDomains, professionalExperiences: experiences, removeProfessionalExperience: removeExperience, formations, removeFormation, formationTitle, getCompanyLogoUrl, interests, removeInterest, interestDisplayMode };
+  const templateProps: TemplateProps = { profile, experienceEntries, atoutEntries, entries, removeEntry, colors, sidebarPos, bulletStyle, bulletShape: activeBulletShape || undefined, competencyBulletShape: competencyBulletShape || undefined, gradient: activeGradient || undefined, gradientTarget, bgCircleColor: bgCircleColor || undefined, textColors, titleColor: titleColor || undefined, fontFamily: currentFont, competencyDomains: activeDomains, professionalExperiences: experiences, removeProfessionalExperience: removeExperience, formations, removeFormation, formationTitle, getCompanyLogoUrl, interests, removeInterest, interestDisplayMode, sectionOrder };
 
   return (
     <div className="min-h-screen bg-background">
@@ -726,6 +739,31 @@ const CvGenerator = () => {
                     ))}
                   </div>
                 </div>
+               </div>
+
+              {/* Row 6: Réorganiser les rubriques */}
+              <div className="rounded-xl bg-card border border-border px-4 py-3 space-y-2">
+                <div className="flex items-center gap-2 mb-1">
+                  <GripVertical className="w-4 h-4 text-muted-foreground" />
+                  <span className="text-xs font-semibold text-muted-foreground">Ordre des rubriques</span>
+                </div>
+                <p className="text-[10px] text-muted-foreground">L'en-tête reste fixe. Déplacez les rubriques ci-dessous.</p>
+                <div className="space-y-1.5">
+                  {sectionOrder.map((sec, idx) => (
+                    <div key={sec} className="flex items-center gap-2 rounded-lg bg-secondary/50 border border-border px-3 py-2">
+                      <GripVertical className="w-3.5 h-3.5 text-muted-foreground/50" />
+                      <span className="text-xs font-medium text-foreground flex-1">{SECTION_LABELS[sec]}</span>
+                      <button onClick={() => moveSectionUp(idx)} disabled={idx === 0}
+                        className="p-1 rounded hover:bg-background transition-colors disabled:opacity-20">
+                        <ArrowUp className="w-3.5 h-3.5 text-muted-foreground" />
+                      </button>
+                      <button onClick={() => moveSectionDown(idx)} disabled={idx === sectionOrder.length - 1}
+                        className="p-1 rounded hover:bg-background transition-colors disabled:opacity-20">
+                        <ArrowDown className="w-3.5 h-3.5 text-muted-foreground" />
+                      </button>
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
 
@@ -866,13 +904,13 @@ const CvGenerator = () => {
                       <div className="grid sm:grid-cols-2 gap-2">
                         <div className="flex gap-2 items-center">
                           <input value={editingExp.dateDebut} onChange={e => setEditingExp(p => ({ ...p, dateDebut: e.target.value }))}
-                            placeholder="Date début (ex: Jan 2022)" className="flex-1 rounded-lg border border-input bg-background px-3 py-2 text-xs placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring" />
+                            placeholder="MM/AAAA (ex: 01/2022)" className="flex-1 rounded-lg border border-input bg-background px-3 py-2 text-xs placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring" />
                           <span className="text-muted-foreground text-xs">—</span>
                           {editingExp.aujourdhui ? (
                             <span className="flex-1 rounded-lg border border-primary/30 bg-primary/5 px-3 py-2 text-xs text-primary font-medium text-center">Aujourd'hui</span>
                           ) : (
                             <input value={editingExp.dateFin} onChange={e => setEditingExp(p => ({ ...p, dateFin: e.target.value }))}
-                              placeholder="Date fin" className="flex-1 rounded-lg border border-input bg-background px-3 py-2 text-xs placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring" />
+                              placeholder="MM/AAAA (ex: 09/2024)" className="flex-1 rounded-lg border border-input bg-background px-3 py-2 text-xs placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring" />
                           )}
                         </div>
                         <label className="flex items-center gap-2 text-xs text-muted-foreground cursor-pointer">
@@ -949,9 +987,9 @@ const CvGenerator = () => {
                       <p className="text-xs font-semibold text-primary">+ {formationMode === "parcours" ? "Nouvelle formation" : "Nouveau diplôme"}</p>
                       <div className="grid sm:grid-cols-2 gap-2">
                         <input value={editingFormation.dateDebut} onChange={e => setEditingFormation(p => ({ ...p, dateDebut: e.target.value }))}
-                          placeholder="Date début (ex: 2018)" className="rounded-lg border border-input bg-background px-3 py-2 text-xs placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring" />
+                          placeholder="MM/AAAA (ex: 09/2018)" className="rounded-lg border border-input bg-background px-3 py-2 text-xs placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring" />
                         <input value={editingFormation.dateFin} onChange={e => setEditingFormation(p => ({ ...p, dateFin: e.target.value }))}
-                          placeholder="Date fin (ex: 2020)" className="rounded-lg border border-input bg-background px-3 py-2 text-xs placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring" />
+                          placeholder="MM/AAAA (ex: 06/2020)" className="rounded-lg border border-input bg-background px-3 py-2 text-xs placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring" />
                       </div>
                       <input value={editingFormation.intitule} onChange={e => setEditingFormation(p => ({ ...p, intitule: e.target.value }))}
                         placeholder={formationMode === "parcours" ? "Intitulé de la formation / VAE *" : "Intitulé du diplôme *"}
