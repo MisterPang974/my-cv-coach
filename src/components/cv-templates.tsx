@@ -541,6 +541,71 @@ export const FluxTemplate = ({ profile, experienceEntries, atoutEntries, removeE
   </div>
 );
 
+// ═══════════════════════════════════════════════════════════════════
+// 9. SÉRÉNITÉ — Ultra-rounded, soft fades, calming elegance
+// ═══════════════════════════════════════════════════════════════════
+export const SereniteTemplate = ({ profile, experienceEntries, atoutEntries, removeEntry, colors, bulletStyle }: TemplateProps) => (
+  <div className="h-full flex flex-col text-[11px] leading-[1.6] relative overflow-hidden" style={{ fontFamily: "'DM Sans', system-ui, sans-serif", background: `linear-gradient(180deg, ${colors.primary}05, white 40%, ${colors.accent}04 100%)` }}>
+    {/* Soft radial glows */}
+    <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[80%] h-48 rounded-full" style={{ background: `radial-gradient(ellipse, ${colors.primary}08, transparent)` }} />
+    <div className="absolute bottom-0 right-0 w-64 h-64 rounded-full" style={{ background: `radial-gradient(circle, ${colors.accent}06, transparent)` }} />
+
+    {/* Floating header with mega round corners */}
+    <div className="relative mx-5 mt-5 px-6 py-6 flex items-center gap-5 overflow-hidden"
+      style={{ borderRadius: "32px", background: `linear-gradient(160deg, ${colors.primary}ee, ${colors.accent}dd)`, boxShadow: `0 12px 40px ${colors.primary}18, 0 4px 16px ${colors.accent}12` }}>
+      <Blob color="rgba(255,255,255,0.06)" className="absolute -top-12 -right-12 w-44 h-44" />
+      <Blob color="rgba(255,255,255,0.04)" className="absolute bottom-0 left-0 w-32 h-32" />
+      <div className="w-16 h-16 rounded-[20px] flex items-center justify-center text-white text-xl font-bold relative z-10"
+        style={{ background: "rgba(255,255,255,0.15)", backdropFilter: "blur(16px)", border: "2px solid rgba(255,255,255,0.2)", boxShadow: "0 8px 24px rgba(0,0,0,0.08), inset 0 1px 2px rgba(255,255,255,0.15)" }}>
+        {profile.nom?.[0]?.toUpperCase() || "?"}
+      </div>
+      <div className="relative z-10 flex-1">
+        <h2 className="text-white text-base font-bold leading-tight">{profile.nom || "Votre Nom"}</h2>
+        <p className="text-white/65 text-xs font-medium mt-0.5">{profile.titre || "Titre du poste"}</p>
+        <div className="mt-2.5"><ContactLine profile={profile} light colors={colors} /></div>
+      </div>
+    </div>
+
+    {/* Content with soft pills */}
+    <div className="flex-1 flex px-5 pt-4 pb-3 gap-4 overflow-y-auto relative z-10">
+      <div className="flex-1 space-y-3">
+        <h3 className="text-[10px] font-bold uppercase tracking-[0.15em] flex items-center gap-2" style={{ color: colors.primary }}>
+          <span className="w-8 h-8 rounded-2xl flex items-center justify-center" style={{ background: `linear-gradient(135deg, ${colors.primary}10, ${colors.accent}08)` }}>
+            <Layers className="w-3.5 h-3.5" style={{ color: colors.accent }} />
+          </span>
+          Compétences
+        </h3>
+        {experienceEntries.length > 0 ? (
+          <ul className="space-y-2">{experienceEntries.map(e => (
+            <li key={e.id} className="flex items-start gap-2.5 group/item px-4 py-2.5 transition-all hover:translate-x-0.5"
+              style={{ borderRadius: "20px", background: "rgba(255,255,255,0.65)", backdropFilter: "blur(8px)", boxShadow: `0 2px 12px rgba(0,0,0,0.03), 0 0 0 1px ${colors.accent}08` }}>
+              <span className="mt-0.5"><ModernBullet type={e.bullet} color={e.bullet === "technique" ? colors.primary : colors.accent} style={bulletStyle} /></span>
+              <span className="flex-1 text-gray-700">{e.selected}</span><DeleteBtn onClick={() => removeEntry(e.id)} />
+            </li>
+          ))}</ul>
+        ) : <EmptyState color={colors.accent} />}
+      </div>
+
+      <div className="w-[34%] space-y-3">
+        <div className="p-4" style={{ borderRadius: "24px", background: `linear-gradient(160deg, ${colors.primary}06, ${colors.accent}04)`, backdropFilter: "blur(12px)", boxShadow: `0 4px 16px rgba(0,0,0,0.03)` }}>
+          <h3 className="text-[10px] font-bold uppercase tracking-[0.12em] mb-3 flex items-center gap-2" style={{ color: colors.accent }}>
+            <Heart className="w-3.5 h-3.5" /> Qualités
+          </h3>
+          {atoutEntries.length > 0 ? (
+            <div className="flex flex-wrap gap-1.5">{atoutEntries.map(e => (
+              <span key={e.id} className="inline-flex items-center gap-1 px-3 py-1.5 text-[10px] text-gray-600 group/item"
+                style={{ borderRadius: "16px", background: "rgba(255,255,255,0.6)", border: `1px solid ${colors.accent}12`, boxShadow: `0 1px 4px ${colors.accent}06` }}>
+                {e.selected}<DeleteBtn onClick={() => removeEntry(e.id)} />
+              </span>
+            ))}</div>
+          ) : <p className="text-gray-400 italic text-[9px]">Ajoutez des qualités…</p>}
+        </div>
+      </div>
+    </div>
+    <div className="px-6 py-2 text-[8px] text-gray-400 flex justify-between"><span>My CV Coach · Méthode Fred</span><span>Sérénité</span></div>
+  </div>
+);
+
 // ─── Template registry ─────────────────────────────────────────────
 export const templateRegistry: Record<string, React.FC<TemplateProps>> = {
   impact: ImpactTemplate,
@@ -550,4 +615,5 @@ export const templateRegistry: Record<string, React.FC<TemplateProps>> = {
   magazine: MagazineTemplate,
   medical: MedicalTemplate,
   flux: FluxTemplate,
+  serenite: SereniteTemplate,
 };
