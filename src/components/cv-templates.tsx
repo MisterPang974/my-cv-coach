@@ -421,14 +421,16 @@ interface SectionRendererProps {
   renderExperiences: () => React.ReactNode;
   renderCompetences: () => React.ReactNode;
   renderFormation: () => React.ReactNode;
+  renderQualites: () => React.ReactNode;
   renderDivers: () => React.ReactNode;
 }
-const OrderedSections = ({ sectionOrder, renderExperiences, renderCompetences, renderFormation, renderDivers }: SectionRendererProps) => {
-  const order = sectionOrder || ["experiences", "competences", "formation", "divers"];
+const OrderedSections = ({ sectionOrder, renderExperiences, renderCompetences, renderFormation, renderQualites, renderDivers }: SectionRendererProps) => {
+  const order = sectionOrder || ["experiences", "competences", "formation", "qualites", "divers"];
   const renderers: Record<CvSectionId, () => React.ReactNode> = {
     experiences: renderExperiences,
     competences: renderCompetences,
     formation: renderFormation,
+    qualites: renderQualites,
     divers: renderDivers,
   };
   return <>{order.map(s => <React.Fragment key={s}>{renderers[s]()}</React.Fragment>)}</>;
