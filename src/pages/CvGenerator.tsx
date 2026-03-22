@@ -73,51 +73,51 @@ interface CompetencyDomain { id: string; label: string; enabled: boolean; items:
 const DEFAULT_DOMAINS: CompetencyDomain[] = [
   {
     id: "administratif", label: "Administratif", enabled: true, items: [
-      { id: "a1", text: "Gestion documentaire et archivage", enabled: true },
-      { id: "a2", text: "Rédaction de courriers et comptes-rendus", enabled: true },
-      { id: "a3", text: "Maîtrise des outils bureautiques (Pack Office)", enabled: true },
-      { id: "a4", text: "Organisation et planification d'agendas", enabled: false },
+      { id: "a1", text: "Gestion documentaire et archivage", enabled: true, level: 4 },
+      { id: "a2", text: "Rédaction de courriers et comptes-rendus", enabled: true, level: 3 },
+      { id: "a3", text: "Maîtrise des outils bureautiques (Pack Office)", enabled: true, level: 4 },
+      { id: "a4", text: "Organisation et planification d'agendas", enabled: false, level: 3 },
     ],
   },
   {
     id: "technique", label: "Technique", enabled: true, items: [
-      { id: "t1", text: "Application des procédures et normes en vigueur", enabled: true },
-      { id: "t2", text: "Utilisation d'outils et équipements spécialisés", enabled: true },
-      { id: "t3", text: "Lecture de plans et documentation technique", enabled: false },
-      { id: "t4", text: "Maintenance préventive et curative", enabled: false },
+      { id: "t1", text: "Application des procédures et normes en vigueur", enabled: true, level: 4 },
+      { id: "t2", text: "Utilisation d'outils et équipements spécialisés", enabled: true, level: 3 },
+      { id: "t3", text: "Lecture de plans et documentation technique", enabled: false, level: 2 },
+      { id: "t4", text: "Maintenance préventive et curative", enabled: false, level: 2 },
     ],
   },
   {
     id: "relationnel", label: "Relationnel", enabled: true, items: [
-      { id: "r1", text: "Communication professionnelle et écoute active", enabled: true },
-      { id: "r2", text: "Travail en équipe pluridisciplinaire", enabled: true },
-      { id: "r3", text: "Gestion des conflits et médiation", enabled: false },
-      { id: "r4", text: "Accueil et orientation du public", enabled: false },
+      { id: "r1", text: "Communication professionnelle et écoute active", enabled: true, level: 4 },
+      { id: "r2", text: "Travail en équipe pluridisciplinaire", enabled: true, level: 4 },
+      { id: "r3", text: "Gestion des conflits et médiation", enabled: false, level: 3 },
+      { id: "r4", text: "Accueil et orientation du public", enabled: false, level: 3 },
     ],
   },
   {
     id: "manutention", label: "Manutention / Logistique", enabled: false, items: [
-      { id: "m1", text: "Chargement / déchargement de marchandises", enabled: true },
-      { id: "m2", text: "Conduite d'engins de manutention (CACES)", enabled: true },
-      { id: "m3", text: "Gestion des stocks et inventaires", enabled: false },
-      { id: "m4", text: "Préparation de commandes", enabled: false },
+      { id: "m1", text: "Chargement / déchargement de marchandises", enabled: true, level: 3 },
+      { id: "m2", text: "Conduite d'engins de manutention (CACES)", enabled: true, level: 3 },
+      { id: "m3", text: "Gestion des stocks et inventaires", enabled: false, level: 2 },
+      { id: "m4", text: "Préparation de commandes", enabled: false, level: 3 },
     ],
   },
   {
     id: "securite", label: "Sécurité / Normes", enabled: false, items: [
-      { id: "s1", text: "Respect des consignes de sécurité et EPI", enabled: true },
-      { id: "s2", text: "Application des normes HACCP / hygiène", enabled: true },
-      { id: "s3", text: "Gestes de premiers secours (SST)", enabled: false },
-      { id: "s4", text: "Veille réglementaire", enabled: false },
+      { id: "s1", text: "Respect des consignes de sécurité et EPI", enabled: true, level: 4 },
+      { id: "s2", text: "Application des normes HACCP / hygiène", enabled: true, level: 3 },
+      { id: "s3", text: "Gestes de premiers secours (SST)", enabled: false, level: 2 },
+      { id: "s4", text: "Veille réglementaire", enabled: false, level: 2 },
     ],
   },
   {
     id: "informatique", label: "Informatique & Digital", enabled: false, items: [
-      { id: "i1", text: "Bureautique : Pack Office (Word, Excel, PowerPoint)", enabled: true },
-      { id: "i2", text: "Google Workspace (Docs, Sheets, Drive)", enabled: true },
-      { id: "i3", text: "Outils collaboratifs : Teams, Zoom, Slack", enabled: true },
-      { id: "i4", text: "Logiciels métiers : ERP, CRM, outils de gestion", enabled: false },
-      { id: "i5", text: "Veille numérique et culture digitale", enabled: false },
+      { id: "i1", text: "Bureautique : Pack Office (Word, Excel, PowerPoint)", enabled: true, level: 4 },
+      { id: "i2", text: "Google Workspace (Docs, Sheets, Drive)", enabled: true, level: 3 },
+      { id: "i3", text: "Outils collaboratifs : Teams, Zoom, Slack", enabled: true, level: 3 },
+      { id: "i4", text: "Logiciels métiers : ERP, CRM, outils de gestion", enabled: false, level: 2 },
+      { id: "i5", text: "Veille numérique et culture digitale", enabled: false, level: 2 },
     ],
   },
 ];
