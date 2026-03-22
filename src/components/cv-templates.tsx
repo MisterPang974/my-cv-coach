@@ -773,7 +773,9 @@ export const SereniteTemplate = ({ profile, experienceEntries, atoutEntries, rem
             </span>
             Compétences
           </h3>
-          {experienceEntries.length > 0 ? (
+          {competencyDomains && competencyDomains.length > 0 ? (
+            <DomainsBlock domains={competencyDomains} colors={colors} bulletStyle={bulletStyle} bulletShape={bulletShape} textColor={expTc} />
+          ) : experienceEntries.length > 0 ? (
             <ul className="space-y-2">{experienceEntries.map(e => (
               <li key={e.id} className="flex items-start gap-2.5 group/item px-4 py-2.5 transition-all hover:translate-x-0.5"
                 style={{ borderRadius: "20px", background: "rgba(255,255,255,0.65)", backdropFilter: "blur(8px)", boxShadow: `0 2px 12px rgba(0,0,0,0.03), 0 0 0 1px ${colors.accent}08` }}>
