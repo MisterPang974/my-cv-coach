@@ -548,6 +548,12 @@ export const ArtisanTemplate = ({ profile, experienceEntries, atoutEntries, remo
           </div>
         </div>
       </div>
+      {interests && interests.length > 0 && (
+        <div className="px-5 py-2">
+          <p className="text-[8px] font-bold uppercase tracking-widest mb-1" style={{ color: compTc || colors.accent }}>Divers</p>
+          <InterestsBlock interests={interests} colors={colors} bulletStyle={bulletStyle} bulletShape={bulletShape} textColor={expTc} onRemove={removeInterest} displayMode={interestDisplayMode} />
+        </div>
+      )}
       <div className="px-6 py-2 text-[8px] text-gray-400 flex justify-between" style={{ fontFamily: "'DM Sans', sans-serif" }}><span>My CV Coach · Méthode Fred</span><span>L'Artisan</span></div>
     </div>
   );
@@ -652,6 +658,12 @@ export const CreatifTemplate = ({ profile, experienceEntries, atoutEntries, remo
           </div>
         </div>
       </div>
+      {interests && interests.length > 0 && (
+        <div className="px-5 py-2">
+          <p className="text-[8px] font-bold uppercase tracking-widest mb-1" style={{ color: compTc || colors.accent }}>Divers</p>
+          <InterestsBlock interests={interests} colors={colors} bulletStyle={bulletStyle} bulletShape={bulletShape} textColor={expTc} onRemove={removeInterest} displayMode={interestDisplayMode} />
+        </div>
+      )}
       <div className="px-7 py-2 text-[8px] text-gray-300 flex justify-between"><span>My CV Coach · Méthode Fred</span><span>Le Créatif</span></div>
     </div>
   );
@@ -736,6 +748,12 @@ export const MuralTemplate = ({ profile, experienceEntries, atoutEntries, remove
           ) : <p className="text-gray-400 italic text-[9px] ml-2">Ajoutez…</p>}
         </div>
       </div>
+      {interests && interests.length > 0 && (
+        <div className="px-5 py-2">
+          <p className="text-[8px] font-bold uppercase tracking-widest mb-1" style={{ color: compTc || colors.accent }}>Divers</p>
+          <InterestsBlock interests={interests} colors={colors} bulletStyle={bulletStyle} bulletShape={bulletShape} textColor={expTc} onRemove={removeInterest} displayMode={interestDisplayMode} />
+        </div>
+      )}
       <div className="px-5 py-2 text-[8px] text-gray-400 flex justify-between" style={{ background: `linear-gradient(90deg, ${colors.primary}08, transparent)` }}><span>My CV Coach · Méthode Fred</span><span>Mural</span></div>
     </div>
   );
@@ -827,6 +845,12 @@ export const MagazineTemplate = ({ profile, experienceEntries, atoutEntries, rem
           ) : <p className="text-gray-400 italic text-[9px]">Ajoutez des atouts…</p>}
         </div>
       </div>
+      {interests && interests.length > 0 && (
+        <div className="px-5 py-2">
+          <p className="text-[8px] font-bold uppercase tracking-widest mb-1" style={{ color: compTc || colors.accent }}>Divers</p>
+          <InterestsBlock interests={interests} colors={colors} bulletStyle={bulletStyle} bulletShape={bulletShape} textColor={expTc} onRemove={removeInterest} displayMode={interestDisplayMode} />
+        </div>
+      )}
       <div className="px-6 py-2 text-[8px] text-gray-400 flex justify-between" style={{ background: `linear-gradient(90deg, ${colors.primary}05, transparent)` }}><span>My CV Coach · Méthode Fred</span><span>Magazine</span></div>
     </div>
   );
@@ -906,6 +930,12 @@ export const MedicalTemplate = ({ profile, experienceEntries, atoutEntries, remo
           ) : <p className="text-gray-400 italic text-[9px]">Ajoutez des atouts…</p>}
         </div>
       </div>
+      {interests && interests.length > 0 && (
+        <div className="px-5 py-2">
+          <p className="text-[8px] font-bold uppercase tracking-widest mb-1" style={{ color: compTc || colors.accent }}>Divers</p>
+          <InterestsBlock interests={interests} colors={colors} bulletStyle={bulletStyle} bulletShape={bulletShape} textColor={expTc} onRemove={removeInterest} displayMode={interestDisplayMode} />
+        </div>
+      )}
       <div className="px-6 py-2 text-[8px] text-gray-400 flex justify-between"><span>My CV Coach · Méthode Fred</span><span>Médical</span></div>
     </div>
   );
@@ -992,6 +1022,12 @@ export const FluxTemplate = ({ profile, experienceEntries, atoutEntries, removeE
           ) : <p className="text-gray-400 italic text-[9px]">Ajoutez des atouts…</p>}
         </div>
       </div>
+      {interests && interests.length > 0 && (
+        <div className="px-5 py-2">
+          <p className="text-[8px] font-bold uppercase tracking-widest mb-1" style={{ color: compTc || colors.accent }}>Divers</p>
+          <InterestsBlock interests={interests} colors={colors} bulletStyle={bulletStyle} bulletShape={bulletShape} textColor={expTc} onRemove={removeInterest} displayMode={interestDisplayMode} />
+        </div>
+      )}
       <div className="px-6 py-2 text-[8px] text-gray-400 flex justify-between" style={{ background: `linear-gradient(90deg, transparent, ${colors.accent}08, transparent)` }}><span>My CV Coach · Méthode Fred</span><span>Flux</span></div>
     </div>
   );
@@ -1084,6 +1120,12 @@ export const SereniteTemplate = ({ profile, experienceEntries, atoutEntries, rem
           </div>
         </div>
       </div>
+      {interests && interests.length > 0 && (
+        <div className="px-5 py-2">
+          <p className="text-[8px] font-bold uppercase tracking-widest mb-1" style={{ color: compTc || colors.accent }}>Divers</p>
+          <InterestsBlock interests={interests} colors={colors} bulletStyle={bulletStyle} bulletShape={bulletShape} textColor={expTc} onRemove={removeInterest} displayMode={interestDisplayMode} />
+        </div>
+      )}
       <div className="px-6 py-2 text-[8px] text-gray-400 flex justify-between"><span>My CV Coach · Méthode Fred</span><span>Sérénité</span></div>
     </div>
   );
