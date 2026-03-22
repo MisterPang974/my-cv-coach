@@ -390,72 +390,6 @@ export const MagazineTemplate = ({ profile, experienceEntries, atoutEntries, rem
   </div>
 );
 
-// ═══════════════════════════════════════════════════════════════════
-// 6. DASHBOARD — Full dark, glassmorphism widgets, neon glow
-// ═══════════════════════════════════════════════════════════════════
-export const DashboardTemplate = ({ profile, experienceEntries, atoutEntries, removeEntry, colors, bulletStyle }: TemplateProps) => (
-  <div className="h-full flex flex-col text-[11px] leading-[1.6] relative overflow-hidden" style={{ fontFamily: "'DM Sans', system-ui, sans-serif", background: `linear-gradient(170deg, ${colors.primary}, ${colors.swatch} 60%, ${colors.primary})` }}>
-    {/* Ambient glow */}
-    <div className="absolute top-10 right-10 w-40 h-40 rounded-full" style={{ background: `radial-gradient(circle, ${colors.accent}12, transparent)`, filter: "blur(40px)" }} />
-    <div className="absolute bottom-20 left-5 w-28 h-28 rounded-full" style={{ background: `radial-gradient(circle, ${colors.accent}08, transparent)`, filter: "blur(30px)" }} />
-
-    {/* Top bar */}
-    <div className="relative z-10 px-6 py-3 flex items-center justify-between" style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
-      <div className="flex items-center gap-2">
-        <div className="w-2 h-2 rounded-full" style={{ background: colors.accent, boxShadow: `0 0 8px ${colors.accent}, 0 0 16px ${colors.accent}60` }} />
-        <span className="text-white/50 text-[10px] font-mono uppercase tracking-[0.2em]">cv.dashboard</span>
-      </div>
-      <div className="flex gap-1">
-        <span className="w-2 h-2 rounded-full bg-red-400/60" /><span className="w-2 h-2 rounded-full bg-yellow-400/60" /><span className="w-2 h-2 rounded-full bg-green-400/60" />
-      </div>
-    </div>
-
-    {/* Name area */}
-    <div className="relative z-10 px-6 py-5">
-      <h2 className="text-white text-xl font-black tracking-tight">{profile.nom || "Votre Nom"}</h2>
-      <p className="font-mono text-[11px] mt-1 font-bold" style={{ color: colors.accent, textShadow: `0 0 12px ${colors.accent}40` }}>{`> ${profile.titre || "titre_poste"}`}</p>
-      <div className="mt-3 flex flex-wrap gap-2">
-        {[profile.email, profile.telephone, profile.ville].filter(Boolean).map((v, i) => (
-          <span key={i} className="inline-flex items-center gap-1.5 px-2.5 py-1 text-[9px] text-white/55 font-mono"
-            style={{ borderRadius: "8px", background: "rgba(255,255,255,0.04)", backdropFilter: "blur(12px)", border: "1px solid rgba(255,255,255,0.06)", boxShadow: "0 2px 8px rgba(0,0,0,0.15)" }}>
-            {i === 0 ? <Mail className="w-2.5 h-2.5" /> : i === 1 ? <Phone className="w-2.5 h-2.5" /> : <MapPin className="w-2.5 h-2.5" />}{v}
-          </span>
-        ))}
-      </div>
-    </div>
-
-    {/* Widgets */}
-    <div className="flex-1 relative z-10 px-5 pb-4 grid grid-cols-2 gap-3 overflow-y-auto">
-      <div className="col-span-2 p-4" style={{ borderRadius: "16px", background: "rgba(255,255,255,0.03)", backdropFilter: "blur(16px)", border: "1px solid rgba(255,255,255,0.05)", boxShadow: "0 4px 24px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.04)" }}>
-        <h3 className="text-[9px] font-mono uppercase tracking-[0.2em] mb-3 flex items-center gap-2" style={{ color: colors.accent, textShadow: `0 0 8px ${colors.accent}30` }}>
-          <Layers className="w-3 h-3" /> skills.map()
-        </h3>
-        {experienceEntries.length > 0 ? (
-          <div className="space-y-1.5">{experienceEntries.map(e => (
-            <div key={e.id} className="flex items-start gap-2 group/item px-3 py-1.5 rounded-lg transition-all"
-              style={{ background: "rgba(255,255,255,0.02)", border: `1px solid rgba(255,255,255,0.03)` }}>
-              <span className="mt-0.5"><ModernBullet type={e.bullet} color={colors.accent} style={bulletStyle} /></span>
-              <span className="flex-1 text-white/70 font-mono text-[10px]">{e.selected}</span><DeleteBtn onClick={() => removeEntry(e.id)} light />
-            </div>
-          ))}</div>
-        ) : <p className="text-white/15 italic text-[9px] font-mono">// skills.push(…)</p>}
-      </div>
-      <div className="col-span-2 p-4" style={{ borderRadius: "16px", background: "rgba(255,255,255,0.03)", backdropFilter: "blur(16px)", border: "1px solid rgba(255,255,255,0.05)", boxShadow: "0 4px 24px rgba(0,0,0,0.2)" }}>
-        <h3 className="text-[9px] font-mono uppercase tracking-[0.2em] mb-3" style={{ color: colors.accent }}>const atouts = [</h3>
-        {atoutEntries.length > 0 ? (
-          <div className="flex flex-wrap gap-2">{atoutEntries.map(e => (
-            <span key={e.id} className="inline-flex items-center gap-1.5 px-3 py-1.5 text-[10px] text-white/65 font-mono group/item"
-              style={{ borderRadius: "10px", background: "rgba(255,255,255,0.04)", border: `1px solid ${colors.accent}20`, boxShadow: `0 0 8px ${colors.accent}08` }}>
-              "{e.selected}"<DeleteBtn onClick={() => removeEntry(e.id)} light />
-            </span>
-          ))}</div>
-        ) : <p className="text-white/15 italic text-[9px] font-mono">  // …empty</p>}
-        <p className="text-white/20 text-[9px] font-mono mt-2">];</p>
-      </div>
-    </div>
-    <div className="relative z-10 px-5 py-2 text-[7px] text-white/12 font-mono flex justify-between tracking-wider"><span>my-cv-coach://méthode-fred</span><span>Dashboard v2026</span></div>
-  </div>
-);
 
 // ═══════════════════════════════════════════════════════════════════
 // 7. MÉDICAL — Soft circles, calming gradient, floating pill cards
@@ -588,7 +522,6 @@ export const templateRegistry: Record<string, React.FC<TemplateProps>> = {
   creatif: CreatifTemplate,
   mural: MuralTemplate,
   magazine: MagazineTemplate,
-  dashboard: DashboardTemplate,
   medical: MedicalTemplate,
   flux: FluxTemplate,
 };

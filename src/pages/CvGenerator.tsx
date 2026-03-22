@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import {
-  Wand2, Copy, Check, Plus, Trash2, User, Briefcase, Palette, Star, Settings2
+  Wand2, Copy, Check, Plus, Trash2, User, Briefcase, Palette, Star, Settings2, ChevronRight
 } from "lucide-react";
 import { detectSector, sectorConfigs, layoutMeta, type SectorId, type LayoutId, type SidebarPosition, type BulletStyle, type SectorPalette } from "@/lib/cv-sectors";
 import { templateRegistry, ModernBullet, type TemplateProps } from "@/components/cv-templates";
@@ -148,6 +148,7 @@ const CvGenerator = () => {
   const [copied, setCopied] = useState(false);
   const [searching, setSearching] = useState(false);
   const [profile, setProfile] = useState<CvProfile>({ nom: "", titre: "", email: "", telephone: "", ville: "" });
+  const [step, setStep] = useState<"titre" | "details">("titre");
 
   // Sector-aware state
   const [detectedSector, setDetectedSector] = useState<SectorId>("tertiaire");
@@ -162,12 +163,15 @@ const CvGenerator = () => {
   useEffect(() => {
     if (profile.titre.length > 2) {
       const sector = detectSector(profile.titre);
-      if (sector !== detectedSector) {
-        setDetectedSector(sector);
-        const cfg = sectorConfigs[sector];
-        setActiveLayout(cfg.layouts[0]);
-        setActivePalette(cfg.palettes[0]);
-      }
+      setDetectedSector(sector);
+      const cfg = sectorConfigs[sector];
+      setActiveLayout(cfg.layouts[0]);
+      setActivePalette(cfg.palettes[0]);
+      // Auto-set bullet style per sector
+      if (sector === "manuel") setBulletStyle("carres");
+      else if (sector === "tertiaire" || sector === "creatif") setBulletStyle("fleches");
+      else if (sector === "soin") setBulletStyle("cercles");
+      else setBulletStyle("mixte");
     }
   }, [profile.titre]);
 
@@ -207,13 +211,59 @@ const CvGenerator = () => {
               <p className="text-muted-foreground">L'IA détecte votre secteur et propose les meilleurs designs 2026.</p>
             </div>
 
-            {/* Sector badge */}
-            <div className="animate-fade-up-delay-1 mb-5">
-              <div className="inline-flex items-center gap-2 rounded-xl bg-card border border-border px-4 py-2 text-sm">
-                <span>{sectorCfg.emoji}</span>
-                <span className="font-medium">Secteur détecté :</span>
-                <span className="font-bold text-primary">{sectorCfg.label}</span>
-                <span className="text-muted-foreground text-xs">— renseignez votre titre pour changer</span>
+            {/* ═══ STEP 1: TITRE VISÉ — Hero block ═══ */}
+            <div className="animate-fade-up-delay-1 mb-8 rounded-2xl p-6 relative overflow-hidden"
+              style={{
+                background: "linear-gradient(135deg, hsl(24, 85%, 52%), hsl(24, 90%, 46%))",
+                boxShadow: "0 8px 32px hsla(24, 85%, 52%, 0.25), 0 2px 8px hsla(24, 85%, 52%, 0.15)",
+              }}>
+              {/* Decorative blobs */}
+              <div className="absolute -top-10 -right-10 w-40 h-40 rounded-full opacity-20" style={{ background: "radial-gradient(circle, white, transparent)" }} />
+              <div className="absolute -bottom-8 -left-8 w-32 h-32 rounded-full opacity-10" style={{ background: "radial-gradient(circle, white, transparent)" }} />
+
+              <div className="relative z-10">
+                <div className="flex items-center gap-3 mb-3">
+                  <span className="text-2xl">🎯</span>
+                  <div>
+                    <h2 className="text-white text-lg font-black tracking-tight">Quel poste visez-vous ?</h2>
+                    <p className="text-white/70 text-xs">Saisissez votre titre — l'algorithme adapte tout automatiquement</p>
+                  </div>
+                </div>
+                <input
+                  value={profile.titre}
+                  onChange={e => updateProfile("titre", e.target.value)}
+                  placeholder="Ex : Commercial, Maçon, Développeur, Aide-soignant…"
+                  className="w-full rounded-xl px-5 py-4 text-base font-semibold bg-white/95 text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:ring-4 focus:ring-white/30 shadow-lg"
+                  style={{ backdropFilter: "blur(8px)" }}
+                />
+
+                {/* Sector detected badge + Suivant */}
+                <div className="mt-4 flex items-center justify-between flex-wrap gap-3">
+                  <div className="inline-flex items-center gap-2 rounded-xl bg-white/15 backdrop-blur-sm border border-white/20 px-4 py-2 text-sm text-white">
+                    <span>{sectorCfg.emoji}</span>
+                    <span className="font-medium">Secteur :</span>
+                    <span className="font-black">{sectorCfg.label}</span>
+                    <span className="text-white/50 text-xs ml-1">· {sectorCfg.layouts.length} modèles</span>
+                  </div>
+
+                  {profile.titre.length > 2 && step === "titre" && (
+                    <button
+                      onClick={() => setStep("details")}
+                      className="inline-flex items-center gap-2 rounded-xl bg-white px-6 py-2.5 text-sm font-bold shadow-lg hover:shadow-xl transition-all active:scale-[0.97]"
+                      style={{ color: "hsl(24, 85%, 45%)" }}
+                    >
+                      Suivant <ChevronRight className="w-4 h-4" />
+                    </button>
+                  )}
+                  {step === "details" && (
+                    <button
+                      onClick={() => setStep("titre")}
+                      className="inline-flex items-center gap-2 rounded-xl bg-white/15 backdrop-blur-sm border border-white/20 px-5 py-2 text-sm text-white font-medium hover:bg-white/25 transition-all active:scale-[0.97]"
+                    >
+                      ← Modifier le titre
+                    </button>
+                  )}
+                </div>
               </div>
             </div>
 
@@ -234,7 +284,6 @@ const CvGenerator = () => {
 
             {/* Palette + customization row */}
             <div className="animate-fade-up-delay-2 flex flex-wrap gap-4 mb-8">
-              {/* Palette picker */}
               <div className="flex items-center gap-2 rounded-xl bg-card border border-border px-4 py-2">
                 <Palette className="w-4 h-4 text-muted-foreground" />
                 {sectorCfg.palettes.map(p => (
@@ -243,7 +292,6 @@ const CvGenerator = () => {
                     style={{ background: p.swatch }} />
                 ))}
               </div>
-              {/* Sidebar position */}
               <div className="flex items-center gap-1.5 rounded-xl bg-card border border-border px-3 py-2">
                 <Settings2 className="w-4 h-4 text-muted-foreground" />
                 {(["left", "right", "top"] as SidebarPosition[]).map(pos => (
@@ -253,7 +301,6 @@ const CvGenerator = () => {
                   </button>
                 ))}
               </div>
-              {/* Bullet style */}
               <div className="flex items-center gap-2 rounded-xl bg-card border border-border px-3 py-2">
                 <span className="text-xs text-muted-foreground font-medium">Puces :</span>
                 {(["mixte", "fleches", "carres", "cercles"] as BulletStyle[]).map(bs => (
@@ -265,85 +312,104 @@ const CvGenerator = () => {
               </div>
             </div>
 
-            <div className="grid lg:grid-cols-[1fr,minmax(460px,580px)] gap-8 items-start">
-              {/* LEFT — Controls */}
-              <div className="space-y-5">
-                <div className="rounded-2xl bg-card p-5 shadow-sm border border-border/50 space-y-3">
-                  <h3 className="font-semibold text-sm flex items-center gap-2"><User className="w-4 h-4 text-primary" />Informations personnelles</h3>
-                  <div className="grid sm:grid-cols-2 gap-3">
-                    {(["nom", "titre", "email", "telephone", "ville"] as (keyof CvProfile)[]).map(f => (
-                      <input key={f} value={profile[f]} onChange={e => updateProfile(f, e.target.value)}
-                        placeholder={{ nom: "Nom complet", titre: "Titre visé (ex: Commercial, Maçon…)", email: "Email", telephone: "Téléphone", ville: "Ville" }[f]}
-                        className="rounded-xl border border-input bg-background px-4 py-2.5 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring" />
-                    ))}
+            {/* ═══ STEP 2: Détails (shown after Suivant) ═══ */}
+            {step === "details" && (
+              <div className="grid lg:grid-cols-[1fr,minmax(460px,580px)] gap-8 items-start animate-fade-up">
+                {/* LEFT — Controls */}
+                <div className="space-y-5">
+                  <div className="rounded-2xl bg-card p-5 shadow-sm border border-border/50 space-y-3">
+                    <h3 className="font-semibold text-sm flex items-center gap-2"><User className="w-4 h-4 text-primary" />Informations personnelles</h3>
+                    <div className="grid sm:grid-cols-2 gap-3">
+                      {(["nom", "email", "telephone", "ville"] as (keyof CvProfile)[]).map(f => (
+                        <input key={f} value={profile[f]} onChange={e => updateProfile(f, e.target.value)}
+                          placeholder={{ nom: "Nom complet", email: "Email", telephone: "Téléphone", ville: "Ville" }[f]}
+                          className="rounded-xl border border-input bg-background px-4 py-2.5 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring" />
+                      ))}
+                    </div>
                   </div>
-                </div>
 
-                <div className="rounded-2xl bg-card p-5 shadow-sm border border-border/50">
-                  <h3 className="font-semibold text-sm flex items-center gap-2 mb-3"><Briefcase className="w-4 h-4 text-primary" />Saisissez une expérience ou tâche</h3>
-                  <div className="flex gap-3">
-                    <input value={input} onChange={e => setInput(e.target.value)} onKeyDown={e => e.key === "Enter" && handleTransform()}
-                      placeholder="Ex : agent de nettoyage, vente, cuisine…"
-                      className="flex-1 rounded-xl border border-input bg-background px-4 py-3 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring" />
-                    <button onClick={handleTransform} disabled={!input.trim() || searching}
-                      className="inline-flex items-center gap-2 rounded-xl bg-accent px-5 py-3 text-accent-foreground font-medium shadow-md hover:shadow-lg transition-shadow disabled:opacity-40 active:scale-[0.97]">
-                      <Wand2 className={`w-4 h-4 ${searching ? "animate-spin" : ""}`} /> Transformer
-                    </button>
+                  <div className="rounded-2xl bg-card p-5 shadow-sm border border-border/50">
+                    <h3 className="font-semibold text-sm flex items-center gap-2 mb-3"><Briefcase className="w-4 h-4 text-primary" />Saisissez une expérience ou tâche</h3>
+                    <div className="flex gap-3">
+                      <input value={input} onChange={e => setInput(e.target.value)} onKeyDown={e => e.key === "Enter" && handleTransform()}
+                        placeholder="Ex : agent de nettoyage, vente, cuisine…"
+                        className="flex-1 rounded-xl border border-input bg-background px-4 py-3 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring" />
+                      <button onClick={handleTransform} disabled={!input.trim() || searching}
+                        className="inline-flex items-center gap-2 rounded-xl bg-accent px-5 py-3 text-accent-foreground font-medium shadow-md hover:shadow-lg transition-shadow disabled:opacity-40 active:scale-[0.97]">
+                        <Wand2 className={`w-4 h-4 ${searching ? "animate-spin" : ""}`} /> Transformer
+                      </button>
+                    </div>
+                    <div className="mt-3 flex gap-4 text-xs text-muted-foreground">
+                      <span className="inline-flex items-center gap-1.5"><ModernBullet type="action" color="hsl(24, 85%, 52%)" /> Action</span>
+                      <span className="inline-flex items-center gap-1.5"><ModernBullet type="technique" color="hsl(213, 65%, 38%)" /> Technique</span>
+                      <span className="inline-flex items-center gap-1.5"><ModernBullet type="relationnel" color="hsl(24, 85%, 52%)" /> Relationnel</span>
+                    </div>
+                    {suggestions.length > 0 && (
+                      <div className="mt-5 space-y-2">
+                        <p className="text-sm text-muted-foreground">Compétences suggérées pour « <span className="font-medium text-foreground">{input}</span> » :</p>
+                        {suggestions.map((s, i) => (
+                          <button key={i} onClick={() => addEntry(s)}
+                            className="w-full text-left rounded-xl border border-border bg-background p-3.5 hover:bg-secondary hover:shadow-sm transition-all active:scale-[0.98] group flex items-start gap-3">
+                            <span className="mt-0.5"><ModernBullet type={s.bullet} color={s.bullet === "technique" ? "hsl(213, 65%, 38%)" : "hsl(24, 85%, 52%)"} /></span>
+                            <span className="text-sm leading-relaxed">{s.text}</span>
+                            <Plus className="w-4 h-4 ml-auto mt-0.5 text-accent opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0" />
+                          </button>
+                        ))}
+                      </div>
+                    )}
                   </div>
-                  <div className="mt-3 flex gap-4 text-xs text-muted-foreground">
-                    <span className="inline-flex items-center gap-1.5"><ModernBullet type="action" color="hsl(24, 85%, 52%)" /> Action</span>
-                    <span className="inline-flex items-center gap-1.5"><ModernBullet type="technique" color="hsl(213, 65%, 38%)" /> Technique</span>
-                    <span className="inline-flex items-center gap-1.5"><ModernBullet type="relationnel" color="hsl(24, 85%, 52%)" /> Relationnel</span>
-                  </div>
-                  {suggestions.length > 0 && (
-                    <div className="mt-5 space-y-2">
-                      <p className="text-sm text-muted-foreground">Compétences suggérées pour « <span className="font-medium text-foreground">{input}</span> » :</p>
-                      {suggestions.map((s, i) => (
-                        <button key={i} onClick={() => addEntry(s)}
-                          className="w-full text-left rounded-xl border border-border bg-background p-3.5 hover:bg-secondary hover:shadow-sm transition-all active:scale-[0.98] group flex items-start gap-3">
-                          <span className="mt-0.5"><ModernBullet type={s.bullet} color={s.bullet === "technique" ? "hsl(213, 65%, 38%)" : "hsl(24, 85%, 52%)"} /></span>
-                          <span className="text-sm leading-relaxed">{s.text}</span>
-                          <Plus className="w-4 h-4 ml-auto mt-0.5 text-accent opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0" />
+
+                  <div className="rounded-2xl bg-accent/8 border border-accent/20 p-5">
+                    <h3 className="font-semibold text-sm mb-3 flex items-center gap-2"><Star className="w-4 h-4 text-accent" /> Atouts à valoriser</h3>
+                    <div className="grid sm:grid-cols-2 gap-2">
+                      {atouts.map(a => (
+                        <button key={a} onClick={() => addAtout(a)}
+                          className="text-left rounded-xl border border-border bg-background p-3 text-sm hover:bg-secondary hover:shadow-sm transition-all active:scale-[0.98] group flex items-center gap-2">
+                          <Plus className="w-3.5 h-3.5 text-accent opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0" />{a}
                         </button>
                       ))}
                     </div>
+                  </div>
+
+                  {entries.length > 0 && (
+                    <button onClick={copyAll}
+                      className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-primary px-5 py-3 text-primary-foreground font-medium shadow-md hover:shadow-lg transition-shadow active:scale-[0.97]">
+                      {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+                      {copied ? "Copié !" : "Copier toutes les compétences"}
+                    </button>
                   )}
                 </div>
 
-                <div className="rounded-2xl bg-accent/8 border border-accent/20 p-5">
-                  <h3 className="font-semibold text-sm mb-3 flex items-center gap-2"><Star className="w-4 h-4 text-accent" /> Atouts à valoriser</h3>
-                  <div className="grid sm:grid-cols-2 gap-2">
-                    {atouts.map(a => (
-                      <button key={a} onClick={() => addAtout(a)}
-                        className="text-left rounded-xl border border-border bg-background p-3 text-sm hover:bg-secondary hover:shadow-sm transition-all active:scale-[0.98] group flex items-center gap-2">
-                        <Plus className="w-3.5 h-3.5 text-accent opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0" />{a}
-                      </button>
-                    ))}
+                {/* RIGHT — A4 Preview */}
+                <div className="animate-fade-up-delay-2 sticky top-20">
+                  <div ref={a4Ref}
+                    className="bg-white rounded-2xl overflow-hidden mx-auto"
+                    style={{
+                      aspectRatio: "210 / 297",
+                      maxHeight: "82vh",
+                      boxShadow: `0 4px 24px -4px rgba(0,0,0,0.12), 0 0 0 1px rgba(0,0,0,0.04), 0 20px 40px -12px ${colors.primary}15`,
+                    }}>
+                    {Template && <Template {...templateProps} />}
                   </div>
                 </div>
-
-                {entries.length > 0 && (
-                  <button onClick={copyAll}
-                    className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-primary px-5 py-3 text-primary-foreground font-medium shadow-md hover:shadow-lg transition-shadow active:scale-[0.97]">
-                    {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
-                    {copied ? "Copié !" : "Copier toutes les compétences"}
-                  </button>
-                )}
               </div>
+            )}
 
-              {/* RIGHT — A4 Preview */}
-              <div className="animate-fade-up-delay-2 sticky top-20">
-                <div ref={a4Ref}
+            {/* A4 Preview shown even in step titre (below) */}
+            {step === "titre" && profile.titre.length > 2 && (
+              <div className="animate-fade-up max-w-xl mx-auto">
+                <p className="text-center text-sm text-muted-foreground mb-4">Aperçu du modèle <span className="font-bold text-foreground">{layoutMeta[activeLayout].label}</span></p>
+                <div
                   className="bg-white rounded-2xl overflow-hidden mx-auto"
                   style={{
                     aspectRatio: "210 / 297",
-                    maxHeight: "82vh",
+                    maxHeight: "50vh",
                     boxShadow: `0 4px 24px -4px rgba(0,0,0,0.12), 0 0 0 1px rgba(0,0,0,0.04), 0 20px 40px -12px ${colors.primary}15`,
                   }}>
                   {Template && <Template {...templateProps} />}
                 </div>
               </div>
-            </div>
+            )}
           </div>
         </section>
       </main>

@@ -1,7 +1,7 @@
 // ─── Sector detection & palette system ─────────────────────────────
 
 export type SectorId = "manuel" | "tertiaire" | "tech" | "soin" | "creatif";
-export type LayoutId = "impact" | "artisan" | "creatif" | "mural" | "magazine" | "dashboard" | "medical" | "flux";
+export type LayoutId = "impact" | "artisan" | "creatif" | "mural" | "magazine" | "medical" | "flux";
 export type SidebarPosition = "left" | "right" | "top";
 export type BulletStyle = "fleches" | "cercles" | "carres" | "mixte";
 
@@ -86,7 +86,7 @@ export const layoutMeta: Record<LayoutId, { label: string; desc: string; emoji: 
   creatif: { label: "Créatif", desc: "Asymétrique, formes flottantes", emoji: "🎨" },
   mural: { label: "Mural", desc: "Blocs robustes, structuré", emoji: "🧱" },
   magazine: { label: "Magazine", desc: "Colonnes nettes, chiffres", emoji: "📰" },
-  dashboard: { label: "Dashboard", desc: "Widgets, monospace, tech", emoji: "💻" },
+  
   medical: { label: "Médical", desc: "Formes douces, apaisant", emoji: "💚" },
   flux: { label: "Flux", desc: "Connexions, flèches directionnelles", emoji: "➡️" },
 };
@@ -110,7 +110,7 @@ export const sectorConfigs: Record<SectorId, SectorConfig> = {
     id: "tertiaire",
     label: "Tertiaire / Vente",
     emoji: "💼",
-    layouts: ["magazine", "impact", "creatif", "mural", "dashboard"],
+    layouts: ["magazine", "impact", "creatif", "mural", "flux"],
     palettes: [
       { id: "corporate", label: "Corporate", primary: "hsl(213, 65%, 28%)", accent: "hsl(24, 85%, 52%)", swatch: "hsl(213, 65%, 35%)" },
       { id: "prestige", label: "Prestige", primary: "hsl(220, 20%, 18%)", accent: "hsl(45, 80%, 55%)", swatch: "hsl(220, 20%, 25%)" },
@@ -123,7 +123,7 @@ export const sectorConfigs: Record<SectorId, SectorConfig> = {
     id: "tech",
     label: "Tech / Digital",
     emoji: "💻",
-    layouts: ["dashboard", "impact", "flux", "magazine", "creatif"],
+    layouts: ["impact", "flux", "magazine", "creatif", "mural"],
     palettes: [
       { id: "midnight", label: "Midnight", primary: "hsl(230, 25%, 15%)", accent: "hsl(180, 70%, 50%)", swatch: "hsl(230, 25%, 20%)" },
       { id: "matrix", label: "Matrix", primary: "hsl(150, 40%, 18%)", accent: "hsl(140, 70%, 50%)", swatch: "hsl(150, 40%, 25%)" },
@@ -149,7 +149,7 @@ export const sectorConfigs: Record<SectorId, SectorConfig> = {
     id: "creatif",
     label: "Créatif / Communication",
     emoji: "🎨",
-    layouts: ["creatif", "magazine", "dashboard", "impact", "flux"],
+    layouts: ["creatif", "magazine", "impact", "flux", "artisan"],
     palettes: [
       { id: "bold", label: "Bold", primary: "hsl(350, 70%, 40%)", accent: "hsl(45, 90%, 55%)", swatch: "hsl(350, 70%, 48%)" },
       { id: "neon", label: "Néon", primary: "hsl(250, 40%, 22%)", accent: "hsl(55, 95%, 55%)", swatch: "hsl(250, 40%, 30%)" },
