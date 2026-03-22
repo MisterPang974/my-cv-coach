@@ -1044,7 +1044,7 @@ const CvGenerator = () => {
 
                     if (sec === "competences") return (
                       <div key="competences" className="rounded-2xl bg-card p-5 shadow-sm border border-border/50 space-y-4">
-                        <div className="flex items-center justify-between">
+                        <div className="flex items-center justify-between flex-wrap gap-2">
                           <h3 className="font-semibold text-sm flex items-center gap-2"><Layers className="w-4 h-4 text-primary" /> COMPÉTENCES PAR DOMAINE</h3>
                           <div className="flex items-center gap-2">
                             <Gauge className="w-3.5 h-3.5 text-muted-foreground" />
@@ -1052,6 +1052,19 @@ const CvGenerator = () => {
                               <div className="h-full rounded-full transition-all duration-300" style={{ width: `${usagePercent}%`, background: isOverloaded ? "hsl(0, 70%, 55%)" : usagePercent > 75 ? "hsl(35, 90%, 55%)" : "hsl(150, 50%, 45%)" }} />
                             </div>
                             <span className={`text-[10px] font-medium ${isOverloaded ? "text-red-500" : "text-muted-foreground"}`}>{activeCompetencyCount}/{maxCompetencies}</span>
+                          </div>
+                        </div>
+
+                        {/* Level display mode */}
+                        <div className="rounded-xl bg-secondary/40 border border-border px-4 py-3">
+                          <p className="text-xs font-semibold text-muted-foreground mb-2">📊 Indicateurs de niveau</p>
+                          <div className="flex items-center gap-1 rounded-lg bg-secondary p-0.5">
+                            {(["none", "dots", "bars"] as const).map(m => (
+                              <button key={m} onClick={() => setLevelDisplay(m)}
+                                className={`px-3 py-1.5 rounded-md text-[10px] font-medium transition-all ${levelDisplay === m ? "bg-primary text-primary-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"}`}>
+                                {m === "none" ? "Masqué" : m === "dots" ? "●●●○○ Points" : "▬▬▬ Barres"}
+                              </button>
+                            ))}
                           </div>
                         </div>
 
