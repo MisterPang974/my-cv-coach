@@ -659,6 +659,15 @@ export const MagazineTemplate = ({ profile, experienceEntries, atoutEntries, rem
 
       <div className="flex-1 flex overflow-y-auto bg-white">
         <div className="flex-1 px-6 py-5">
+          {professionalExperiences && professionalExperiences.length > 0 && (
+            <>
+              <div className="mb-4 pb-2" style={{ borderBottom: "2px solid transparent", borderImage: `linear-gradient(90deg, ${colors.accent}, ${colors.primary}, transparent) 1` }}>
+                <h3 className="text-[10px] font-black uppercase tracking-[0.25em]" style={{ color: expTc || colors.primary }}>Expérience Professionnelle</h3>
+              </div>
+              <ExperiencesBlock experiences={professionalExperiences} colors={colors} bulletStyle={bulletStyle} bulletShape={bulletShape} textColor={expTc} onRemove={removeProfessionalExperience} />
+              <div className="my-3" />
+            </>
+          )}
           <div className="mb-4 pb-2" style={{ borderBottom: "2px solid transparent", borderImage: `linear-gradient(90deg, ${colors.accent}, ${colors.primary}, transparent) 1` }}>
             <h3 className="text-[10px] font-black uppercase tracking-[0.25em]" style={{ color: compTc || colors.primary }}>Compétences professionnelles</h3>
           </div>
