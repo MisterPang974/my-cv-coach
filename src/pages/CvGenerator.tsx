@@ -325,7 +325,7 @@ const CvGenerator = () => {
     if (idx >= sectionOrder.length - 1) return;
     setSectionOrder(prev => { const next = [...prev]; [next[idx], next[idx + 1]] = [next[idx + 1], next[idx]]; return next; });
   };
-  const SECTION_LABELS: Record<CvSection, string> = { experiences: "Expériences", competences: "Compétences", formation: "Formation", divers: "Divers & Intérêts" };
+  const SECTION_LABELS: Record<CvSection, string> = { experiences: "Expériences", competences: "Compétences", formation: "Formation", qualites: "Qualités", divers: "Divers & Intérêts" };
 
   // White palette option (always available)
   const whitePalette: SectorPalette = { id: "blanc", label: "Blanc pur", primary: "#2d2d2d", accent: "#555555", swatch: "#ffffff", bg: "#ffffff" };
