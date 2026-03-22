@@ -263,8 +263,13 @@ const CvGenerator = () => {
 
   // Professional experiences state
   const [experiences, setExperiences] = useState<ExperienceEntry[]>([]);
-  const [editingExp, setEditingExp] = useState<ExperienceEntry>({ id: 0, dateDebut: "", dateFin: "", aujourdhui: false, poste: "", entreprise: "", ville: "", missions: [] });
+  const [editingExp, setEditingExp] = useState<ExperienceEntry>({ id: 0, dateDebut: "", dateFin: "", aujourdhui: false, poste: "", entreprise: "", ville: "", missions: [], showLogo: true });
   const [newMission, setNewMission] = useState("");
+
+  // Formation state
+  const [formations, setFormations] = useState<FormationEntry[]>([]);
+  const [editingFormation, setEditingFormation] = useState<FormationEntry>({ id: 0, dateDebut: "", dateFin: "", intitule: "", etablissement: "", ville: "" });
+  const [formationMode, setFormationMode] = useState<"diplomes" | "parcours">("diplomes");
 
   // White palette option (always available)
   const whitePalette: SectorPalette = { id: "blanc", label: "Blanc pur", primary: "#2d2d2d", accent: "#555555", swatch: "#ffffff", bg: "#ffffff" };
@@ -275,9 +280,9 @@ const CvGenerator = () => {
   }, [domains]);
 
   const maxCompetencies = LAYOUT_MAX_COMPETENCIES[activeLayout] || 12;
-  const totalContentItems = activeCompetencyCount + entries.length + atouts.filter((_, i) => entries.some(e => e.input === "Atout" && e.selected === atouts[i])).length;
+  const totalContentItems = activeCompetencyCount + entries.length + formations.length + experiences.length;
   const isOverloaded = activeCompetencyCount > maxCompetencies;
-  const usagePercent = Math.min(100, Math.round((activeCompetencyCount / maxCompetencies) * 100));
+  const usagePercent = Math.min(100, Math.round((totalContentItems / (maxCompetencies + 8)) * 100));
 
   const toggleDomain = (domainId: string) => {
     setDomains(prev => prev.map(d => d.id === domainId ? { ...d, enabled: !d.enabled } : d));
@@ -306,9 +311,10 @@ const CvGenerator = () => {
   const addExperience = () => {
     if (!editingExp.poste.trim()) return;
     setExperiences(prev => [...prev, { ...editingExp, id: Date.now(), missions: editingExp.missions.filter(m => m.trim()) }]);
-    setEditingExp({ id: 0, dateDebut: "", dateFin: "", aujourdhui: false, poste: "", entreprise: "", ville: "", missions: [] });
+    setEditingExp({ id: 0, dateDebut: "", dateFin: "", aujourdhui: false, poste: "", entreprise: "", ville: "", missions: [], showLogo: true });
   };
   const removeExperience = (id: number) => setExperiences(prev => prev.filter(e => e.id !== id));
+  const toggleExpLogo = (id: number) => setExperiences(prev => prev.map(e => e.id === id ? { ...e, showLogo: !e.showLogo } : e));
   const addMissionToEditing = () => {
     if (!newMission.trim()) return;
     setEditingExp(prev => ({ ...prev, missions: [...prev.missions, newMission.trim()] }));
@@ -318,6 +324,21 @@ const CvGenerator = () => {
     setEditingExp(prev => ({ ...prev, missions: prev.missions.filter((_, i) => i !== idx) }));
   };
   const MAX_EXPERIENCES = 5;
+
+  // Formation CRUD
+  const addFormation = () => {
+    if (!editingFormation.intitule.trim()) return;
+    setFormations(prev => [...prev, { ...editingFormation, id: Date.now() }]);
+    setEditingFormation({ id: 0, dateDebut: "", dateFin: "", intitule: "", etablissement: "", ville: "" });
+  };
+  const removeFormation = (id: number) => setFormations(prev => prev.filter(f => f.id !== id));
+
+  // Company logo URL helper (Google S2 Favicon service - free, no API key)
+  const getCompanyLogoUrl = (company: string): string | null => {
+    if (!company || company.trim().length < 2) return null;
+    const domain = company.toLowerCase().replace(/\s+/g, "").replace(/[^a-z0-9]/g, "") + ".com";
+    return `https://www.google.com/s2/favicons?domain=${domain}&sz=32`;
+  };
 
   const a4Ref = useRef<HTMLDivElement>(null);
 
