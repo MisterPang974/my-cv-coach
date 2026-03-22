@@ -114,11 +114,11 @@ const DeleteBtn = ({ onClick, light }: { onClick: () => void; light?: boolean })
   </button>
 );
 
-const ContactLine = ({ profile, light, colors }: { profile: CvProfile; light?: boolean; colors: Colors }) => {
+const ContactLine = ({ profile, light, colors, fontFamily }: { profile: CvProfile; light?: boolean; colors: Colors; fontFamily?: string }) => {
   const iconColor = light ? "currentColor" : colors.accent;
   const fullAddress = [profile.adresse, profile.codePostal, profile.ville].filter(Boolean).join(", ");
   return (
-    <div className={`flex flex-wrap gap-x-4 gap-y-1 text-[10px] ${light ? "text-white/60" : "text-gray-500"}`}>
+    <div className={`flex flex-wrap gap-x-4 gap-y-1 text-[10px] ${light ? "text-white/60" : "text-gray-500"}`} style={fontFamily ? { fontFamily } : undefined}>
       {profile.telephone && <span className="flex items-center gap-1.5"><Phone className="w-3 h-3" style={{ color: iconColor }} />{profile.telephone}</span>}
       {profile.email && <span className="flex items-center gap-1.5"><Mail className="w-3 h-3" style={{ color: iconColor }} />{profile.email}</span>}
       {fullAddress && <span className="flex items-center gap-1.5"><MapPin className="w-3 h-3" style={{ color: iconColor }} />{fullAddress}</span>}
@@ -126,10 +126,16 @@ const ContactLine = ({ profile, light, colors }: { profile: CvProfile; light?: b
   );
 };
 
-const NameBlock = ({ profile, light, size = "md" }: { profile: CvProfile; light?: boolean; size?: "sm" | "md" | "lg" }) => {
+const NameBlock = ({ profile, light, size = "md", fontFamily }: { profile: CvProfile; light?: boolean; size?: "sm" | "md" | "lg"; fontFamily?: string }) => {
   const fullName = [profile.prenom, profile.nom].filter(Boolean).join(" ") || "Votre Nom";
   const sizeClasses = size === "lg" ? "text-xl" : size === "md" ? "text-base" : "text-sm";
-  return <span className={`font-black leading-tight ${sizeClasses} ${light ? "text-white" : ""}`}>{fullName}</span>;
+  return <span className={`font-black leading-tight ${sizeClasses} ${light ? "text-white" : ""}`} style={fontFamily ? { fontFamily } : undefined}>{fullName}</span>;
+};
+
+/** Resolve text color for a section */
+const sectionTextColor = (section: TextColorSection, textColors?: Record<TextColorSection, "noir" | "blanc">, fallback?: string): string => {
+  if (!textColors) return fallback || "";
+  return textColors[section] === "blanc" ? "white" : "hsl(215, 25%, 12%)";
 };
 
 // ─── Gradient helper ───────────────────────────────────────────────
