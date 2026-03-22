@@ -393,6 +393,25 @@ const Blob = ({ color, className, style }: { color: string; className?: string; 
   </svg>
 );
 
+/** Ordered section renderer — renders CV sections in the order specified by sectionOrder */
+interface SectionRendererProps {
+  sectionOrder?: CvSectionId[];
+  renderExperiences: () => React.ReactNode;
+  renderCompetences: () => React.ReactNode;
+  renderFormation: () => React.ReactNode;
+  renderDivers: () => React.ReactNode;
+}
+const OrderedSections = ({ sectionOrder, renderExperiences, renderCompetences, renderFormation, renderDivers }: SectionRendererProps) => {
+  const order = sectionOrder || ["experiences", "competences", "formation", "divers"];
+  const renderers: Record<CvSectionId, () => React.ReactNode> = {
+    experiences: renderExperiences,
+    competences: renderCompetences,
+    formation: renderFormation,
+    divers: renderDivers,
+  };
+  return <>{order.map(s => <React.Fragment key={s}>{renderers[s]()}</React.Fragment>)}</>;
+};
+
 // ═══════════════════════════════════════════════════════════════════
 // 1. IMPACT — Glassmorphism sidebar, gradient accents, floating depth
 //    - Photo removed. Competences moved to sidebar to fill right void.
