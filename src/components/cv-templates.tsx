@@ -964,20 +964,25 @@ export const MuralTemplate = ({ profile, experienceEntries, atoutEntries, remove
 };
 
 // ═══════════════════════════════════════════════════════════════════
-// 5. MAGAZINE — Structured sidebar layout (inspired by Sophie Martin)
-//    Left sidebar with contact + langues + divers. Main: exp + formation + comp.
+// 5. MAGAZINE — Horizontal bars + dot pattern decorative shapes
 // ═══════════════════════════════════════════════════════════════════
-export const MagazineTemplate = ({ profile, experienceEntries, atoutEntries, removeEntry, colors, bulletStyle, bulletShape, gradient, gradientTarget, textColors, titleColor, fontFamily, competencyDomains, competencyBulletShape, formationBulletShape, diversBulletShape, qualitesBulletShape, professionalExperiences, removeProfessionalExperience, formations, removeFormation, formationTitle, getCompanyLogoUrl, interests, removeInterest, interestDisplayMode, sectionOrder, qualities, removeQuality, levelDisplay }: TemplateProps) => {
+export const MagazineTemplate = ({ profile, experienceEntries, atoutEntries, removeEntry, colors, bulletStyle, bulletShape, gradient, gradientTarget, bgCircleColor, textColors, titleColor, fontFamily, competencyDomains, competencyBulletShape, formationBulletShape, diversBulletShape, qualitesBulletShape, professionalExperiences, removeProfessionalExperience, formations, removeFormation, formationTitle, getCompanyLogoUrl, interests, removeInterest, interestDisplayMode, sectionOrder, qualities, removeQuality, levelDisplay }: TemplateProps) => {
   const fondStyle = useGradientBg(gradient, gradientTarget);
   const headerTc = sectionTextColor("header", textColors, TEXT_BLACK);
   const compTc = sectionTextColor("competences", textColors, colors.accent);
   const expTc = sectionTextColor("experiences", textColors, TEXT_BLACK);
   const titleTc = resolveTitleTextColor(titleColor, headerTc, colors.accent);
+  const shapeCol = bgCircleColor || colors.accent;
 
   return (
     <div className="h-full flex text-[11px] leading-[1.4]" style={{ fontFamily: fontFamily || "'DM Sans', system-ui, sans-serif", ...fondStyle }}>
       {/* LEFT SIDEBAR */}
-      <div className="w-[32%] flex flex-col" style={{ background: `linear-gradient(180deg, ${colors.accent}12, ${colors.accent}06)`, borderRight: `1px solid ${colors.accent}15` }}>
+      <div className="w-[32%] flex flex-col relative overflow-hidden" style={{ background: `linear-gradient(180deg, ${shapeCol}12, ${shapeCol}06)`, borderRight: `1px solid ${shapeCol}15` }}>
+        {/* Decorative bars */}
+        <MagazineBars color={shapeCol} className="absolute top-0 right-0 w-8 h-full" style={{ opacity: 0.7 }} />
+        <div className="absolute bottom-12 left-4 w-6 h-6" style={{ opacity: 0.08 }}>
+          <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke={shapeCol} strokeWidth="2" /><circle cx="12" cy="12" r="4" fill={shapeCol} /></svg>
+        </div>
         {/* Name + Title */}
         <div className="px-4 pt-6 pb-4">
           <h2 className="text-[18px] font-black leading-[1.1]" style={{ color: headerTc, fontFamily }}>
