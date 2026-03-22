@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import {
-  Wand2, Copy, Check, Plus, Trash2, User, Briefcase, Palette, Star, Settings2
+  Wand2, Copy, Check, Plus, Trash2, User, Briefcase, Palette, Star, Settings2, ChevronRight
 } from "lucide-react";
 import { detectSector, sectorConfigs, layoutMeta, type SectorId, type LayoutId, type SidebarPosition, type BulletStyle, type SectorPalette } from "@/lib/cv-sectors";
 import { templateRegistry, ModernBullet, type TemplateProps } from "@/components/cv-templates";
