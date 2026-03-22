@@ -86,7 +86,7 @@ export const layoutMeta: Record<LayoutId, { label: string; desc: string; emoji: 
   creatif: { label: "Créatif", desc: "Asymétrique, formes flottantes", emoji: "🎨" },
   mural: { label: "Mural", desc: "Blocs robustes, structuré", emoji: "🧱" },
   magazine: { label: "Magazine", desc: "Colonnes nettes, chiffres", emoji: "📰" },
-  dashboard: { label: "Dashboard", desc: "Widgets, monospace, tech", emoji: "💻" },
+  
   medical: { label: "Médical", desc: "Formes douces, apaisant", emoji: "💚" },
   flux: { label: "Flux", desc: "Connexions, flèches directionnelles", emoji: "➡️" },
 };
