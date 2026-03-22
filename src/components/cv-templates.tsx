@@ -85,11 +85,11 @@ const SectorLogo = ({ sector, color, size = 48 }: { sector?: string; color: stri
 };
 
 // ─── Shared pieces ─────────────────────────────────────────────────
-const EmptyState = ({ color, label }: { color: string; label?: string }) => (
-  <div className="rounded-2xl border-2 border-dashed p-5 text-center mt-3" style={{ borderColor: `${color}20`, background: `${color}03` }}>
-    <Briefcase className="w-7 h-7 mx-auto mb-1.5" style={{ color: `${color}25` }} />
-    <p className="text-gray-400 text-[10px] font-medium">{label || "Votre CV se construit ici en temps réel"}</p>
-    <p className="text-gray-300 text-[9px] mt-0.5">Style télégraphique · Verbes d'action</p>
+const EmptyState = ({ color, label, dark }: { color: string; label?: string; dark?: boolean }) => (
+  <div className="rounded-2xl border-2 border-dashed p-6 text-center mt-4" style={{ borderColor: `${color}20`, background: `${color}03` }}>
+    <Briefcase className="w-7 h-7 mx-auto mb-2" style={{ color: `${color}25` }} />
+    <p className={`text-[10px] font-medium ${dark ? "text-white/40" : "text-gray-400"}`}>{label || "Votre CV se construit ici en temps réel"}</p>
+    <p className={`text-[9px] mt-1 ${dark ? "text-white/25" : "text-gray-300"}`}>Style télégraphique · Verbes d'action</p>
   </div>
 );
 
