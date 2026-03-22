@@ -13,6 +13,18 @@ interface Transformation { text: string; bullet: BulletType; }
 interface CvEntry { id: number; input: string; selected: string; bullet: BulletType; }
 interface CvProfile { nom: string; prenom: string; titre: string; email: string; telephone: string; adresse: string; codePostal: string; ville: string; }
 
+// ─── Professional Experience ───────────────────────────────────────
+export interface ExperienceEntry {
+  id: number;
+  dateDebut: string;
+  dateFin: string;
+  aujourdhui: boolean;
+  poste: string;
+  entreprise: string;
+  ville: string;
+  missions: string[];
+}
+
 // ─── Competencies Domain System ────────────────────────────────────
 interface CompetencyItem { id: string; text: string; enabled: boolean; }
 interface CompetencyDomain { id: string; label: string; enabled: boolean; items: CompetencyItem[]; custom?: boolean; }
