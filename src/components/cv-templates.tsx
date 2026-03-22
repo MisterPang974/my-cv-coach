@@ -160,6 +160,7 @@ const Blob = ({ color, className, style }: { color: string; className?: string; 
 export const ImpactTemplate = ({ profile, experienceEntries, atoutEntries, removeEntry, colors, sidebarPos, bulletStyle, bulletShape, gradient, gradientTarget }: TemplateProps) => {
   const fondStyle = useGradientBg(gradient, gradientTarget);
   const rubriqueStyle = useGradientRubrique(gradient, gradientTarget, `linear-gradient(170deg, ${colors.primary}, ${colors.swatch})`);
+  const { isDark, textColor } = useAutoContrast(gradient, gradientTarget);
 
   const sidebar = (
     <div className="w-[38%] flex flex-col relative overflow-hidden" style={{ background: `linear-gradient(170deg, ${colors.primary}, ${colors.swatch})`, ...rubriqueStyle }}>
