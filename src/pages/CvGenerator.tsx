@@ -631,41 +631,6 @@ const CvGenerator = () => {
                 </div>
               )}
 
-              {/* Row 3: 15 bullet shapes — Expériences */}
-              <div className="rounded-xl bg-card border border-border px-4 py-3">
-                <div className="flex items-center gap-3 mb-2">
-                  <span className="text-xs font-semibold text-muted-foreground">✦ Puces Expériences</span>
-                  {activeBulletShape && (
-                    <button onClick={() => setActiveBulletShape(null)} className="text-[10px] text-muted-foreground hover:text-destructive transition-colors ml-auto">✕ Auto</button>
-                  )}
-                </div>
-                <div className="flex flex-wrap gap-1.5">
-                  {bulletShapes.map(bs => (
-                    <button key={bs.id} onClick={() => setActiveBulletShape(bs.id)} title={bs.label}
-                      className={`w-9 h-9 rounded-lg flex items-center justify-center transition-all active:scale-[0.95] ${activeBulletShape === bs.id ? "bg-primary text-primary-foreground ring-2 ring-offset-1 ring-ring" : "bg-secondary text-muted-foreground hover:bg-accent/20"}`}>
-                      <ShapeBullet shape={bs.id} color={activeBulletShape === bs.id ? "white" : "currentColor"} />
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              {/* Row 4: 15 bullet shapes — Compétences (independent) */}
-              <div className="rounded-xl bg-card border border-border px-4 py-3">
-                <div className="flex items-center gap-3 mb-2">
-                  <span className="text-xs font-semibold text-muted-foreground">✦ Puces Compétences</span>
-                  {competencyBulletShape && (
-                    <button onClick={() => setCompetencyBulletShape(null)} className="text-[10px] text-muted-foreground hover:text-destructive transition-colors ml-auto">✕ Auto</button>
-                  )}
-                </div>
-                <div className="flex flex-wrap gap-1.5">
-                  {bulletShapes.map(bs => (
-                    <button key={bs.id} onClick={() => setCompetencyBulletShape(bs.id)} title={bs.label}
-                      className={`w-9 h-9 rounded-lg flex items-center justify-center transition-all active:scale-[0.95] ${competencyBulletShape === bs.id ? "bg-accent text-accent-foreground ring-2 ring-offset-1 ring-ring" : "bg-secondary text-muted-foreground hover:bg-accent/20"}`}>
-                      <ShapeBullet shape={bs.id} color={competencyBulletShape === bs.id ? "white" : "currentColor"} />
-                    </button>
-                  ))}
-                </div>
-              </div>
 
               {/* Row 5: Style du texte — font, text colors per section, title color */}
               <div className="rounded-xl bg-card border border-border px-4 py-3 space-y-3">
