@@ -527,11 +527,13 @@ export const MagazineTemplate = ({ profile, experienceEntries, atoutEntries, rem
 // ═══════════════════════════════════════════════════════════════════
 // 7. MÉDICAL — Photo removed, contacts fixed.
 // ═══════════════════════════════════════════════════════════════════
-export const MedicalTemplate = ({ profile, experienceEntries, atoutEntries, removeEntry, colors, bulletStyle, bulletShape, gradient, gradientTarget }: TemplateProps) => {
+export const MedicalTemplate = ({ profile, experienceEntries, atoutEntries, removeEntry, colors, bulletStyle, bulletShape, gradient, gradientTarget, textColors, titleColor, fontFamily }: TemplateProps) => {
   const fondStyle = useGradientBg(gradient, gradientTarget);
   const { isDark } = useAutoContrast(gradient, gradientTarget);
+  const compTc = sectionTextColor("competences", textColors);
+  const expTc = sectionTextColor("experiences", textColors);
   return (
-    <div className="h-full flex flex-col text-[11px] leading-[1.8] relative overflow-hidden" style={{ fontFamily: "'DM Sans', system-ui, sans-serif", background: `linear-gradient(180deg, ${colors.primary}06, white, ${colors.accent}04)`, ...fondStyle }}>
+    <div className="h-full flex flex-col text-[11px] leading-[1.8] relative overflow-hidden" style={{ fontFamily: fontFamily || "'DM Sans', system-ui, sans-serif", background: `linear-gradient(180deg, ${colors.primary}06, white, ${colors.accent}04)`, ...fondStyle }}>
       <div className="absolute top-20 -right-16 w-48 h-48 rounded-full" style={{ background: `radial-gradient(circle, ${colors.accent}08, transparent)` }} />
       <div className="absolute -bottom-10 -left-10 w-36 h-36 rounded-full" style={{ background: `radial-gradient(circle, ${colors.primary}06, transparent)` }} />
 
