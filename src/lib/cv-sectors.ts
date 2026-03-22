@@ -123,7 +123,7 @@ export const sectorConfigs: Record<SectorId, SectorConfig> = {
     id: "tech",
     label: "Tech / Digital",
     emoji: "💻",
-    layouts: ["dashboard", "impact", "flux", "magazine", "creatif"],
+    layouts: ["impact", "flux", "magazine", "creatif", "mural"],
     palettes: [
       { id: "midnight", label: "Midnight", primary: "hsl(230, 25%, 15%)", accent: "hsl(180, 70%, 50%)", swatch: "hsl(230, 25%, 20%)" },
       { id: "matrix", label: "Matrix", primary: "hsl(150, 40%, 18%)", accent: "hsl(140, 70%, 50%)", swatch: "hsl(150, 40%, 25%)" },
