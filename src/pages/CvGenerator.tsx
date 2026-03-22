@@ -976,6 +976,24 @@ const CvGenerator = () => {
                           </div>
                         </div>
 
+                        {/* Puces Formation */}
+                        <div className="rounded-xl bg-secondary/40 border border-border px-4 py-3">
+                          <div className="flex items-center gap-3 mb-2">
+                            <span className="text-xs font-semibold text-muted-foreground">✦ Puces Formation</span>
+                            {formationBulletShape && (
+                              <button onClick={() => setFormationBulletShape(null)} className="text-[10px] text-muted-foreground hover:text-destructive transition-colors ml-auto">✕ Auto</button>
+                            )}
+                          </div>
+                          <div className="flex flex-wrap gap-1.5">
+                            {bulletShapes.map(bs => (
+                              <button key={bs.id} onClick={() => setFormationBulletShape(bs.id)} title={bs.label}
+                                className={`w-9 h-9 rounded-lg flex items-center justify-center transition-all active:scale-[0.95] ${formationBulletShape === bs.id ? "bg-primary text-primary-foreground ring-2 ring-offset-1 ring-ring" : "bg-secondary text-muted-foreground hover:bg-accent/20"}`}>
+                                <ShapeBullet shape={bs.id} color={formationBulletShape === bs.id ? "white" : "currentColor"} />
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+
                         {/* Existing formations */}
                         {formations.map(f => (
                           <div key={f.id} className="rounded-xl border border-border bg-background p-3.5 space-y-0.5">
