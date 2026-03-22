@@ -864,17 +864,24 @@ export const CreatifTemplate = ({ profile, experienceEntries, atoutEntries, remo
 };
 
 // ═══════════════════════════════════════════════════════════════════
-// 4. MURAL — Photo removed.
+// 4. MURAL — Grid overlays + diagonal accent shapes
 // ═══════════════════════════════════════════════════════════════════
-export const MuralTemplate = ({ profile, experienceEntries, atoutEntries, removeEntry, colors, sidebarPos, bulletStyle, bulletShape, gradient, gradientTarget, textColors, titleColor, fontFamily, competencyDomains, competencyBulletShape, formationBulletShape, diversBulletShape, qualitesBulletShape, professionalExperiences, removeProfessionalExperience, formations, removeFormation, formationTitle, getCompanyLogoUrl, interests, removeInterest, interestDisplayMode, sectionOrder, qualities, removeQuality }: TemplateProps) => {
+export const MuralTemplate = ({ profile, experienceEntries, atoutEntries, removeEntry, colors, sidebarPos, bulletStyle, bulletShape, gradient, gradientTarget, bgCircleColor, textColors, titleColor, fontFamily, competencyDomains, competencyBulletShape, formationBulletShape, diversBulletShape, qualitesBulletShape, professionalExperiences, removeProfessionalExperience, formations, removeFormation, formationTitle, getCompanyLogoUrl, interests, removeInterest, interestDisplayMode, sectionOrder, qualities, removeQuality }: TemplateProps) => {
   const fondStyle = useGradientBg(gradient, gradientTarget);
   const { isDark } = useAutoContrast(gradient, gradientTarget);
   const headerTc = sectionTextColor("header", textColors, TEXT_WHITE);
   const compTc = sectionTextColor("competences", textColors, colors.primary);
   const expTc = sectionTextColor("experiences", textColors, TEXT_BLACK);
   const titleTc = resolveTitleTextColor(titleColor, headerTc, colors.accent);
+  const shapeCol = bgCircleColor || colors.accent;
   return (
     <div className="h-full flex flex-col text-[11px] leading-[1.8] relative" style={{ fontFamily: fontFamily || "'DM Sans', system-ui, sans-serif", background: `linear-gradient(180deg, hsl(210,10%,96%), hsl(210,8%,93%))`, ...fondStyle }}>
+      {/* Decorative grid + diagonal shapes */}
+      <MuralGridAccent color={shapeCol} className="absolute top-24 -right-4 w-28 h-28" />
+      <MuralGridAccent color={shapeCol} className="absolute bottom-20 -left-6 w-24 h-24" style={{ transform: "rotate(90deg)" }} />
+      <div className="absolute top-[55%] right-12 w-8 h-8" style={{ opacity: 0.06 }}>
+        <svg viewBox="0 0 32 32" fill="none"><rect x="4" y="4" width="24" height="24" rx="2" fill={shapeCol} /></svg>
+      </div>
       <div className="px-7 py-5 relative overflow-hidden" style={{ background: `linear-gradient(135deg, ${colors.primary}, ${colors.swatch})`, boxShadow: `0 6px 24px ${colors.primary}30`, ...useGradientRubrique(gradient, gradientTarget) }}>
         <svg className="absolute inset-0 w-full h-full opacity-[0.04]"><pattern id="grid" width="20" height="20" patternUnits="userSpaceOnUse"><rect width="20" height="20" fill="none" stroke="white" strokeWidth="0.5"/></pattern><rect width="100%" height="100%" fill="url(#grid)"/></svg>
         <div className="relative">
