@@ -19,8 +19,10 @@ export interface TemplateProps {
 }
 
 // ─── Bullet renderers ──────────────────────────────────────────────
-export const ModernBullet = ({ type, color, style = "mixte" }: { type: BulletType; color: string; style?: BulletStyle }) => {
+export const ModernBullet = ({ type, color, style = "mixte", shape }: { type: BulletType; color: string; style?: BulletStyle; shape?: BulletShapeId }) => {
   const sz = 14;
+  // If a specific shape is chosen, use it
+  if (shape) return <ShapeBullet shape={shape} color={color} />;
   const effectiveType = style === "mixte" ? type : style === "fleches" ? "action" : style === "carres" ? "technique" : "relationnel";
   switch (effectiveType) {
     case "action":
@@ -29,6 +31,30 @@ export const ModernBullet = ({ type, color, style = "mixte" }: { type: BulletTyp
       return <svg width={sz} height={sz} viewBox="0 0 14 14" fill="none"><rect x="2" y="2" width="10" height="10" rx="2" stroke={color} strokeWidth="1.5" fill={color} fillOpacity="0.15" /></svg>;
     case "relationnel":
       return <svg width={sz} height={sz} viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="5" stroke={color} strokeWidth="1.5" fill={color} fillOpacity="0.15" /></svg>;
+  }
+};
+
+// ─── 15 shape bullets ──────────────────────────────────────────────
+export const ShapeBullet = ({ shape, color }: { shape: BulletShapeId; color: string }) => {
+  const sz = 14;
+  const svgProps = { width: sz, height: sz, viewBox: "0 0 14 14", fill: "none" as const };
+  switch (shape) {
+    case "fleche": return <svg {...svgProps}><path d="M3 7h6M9 4l3 3-3 3" stroke={color} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" /></svg>;
+    case "carre": return <svg {...svgProps}><rect x="2" y="2" width="10" height="10" rx="2" stroke={color} strokeWidth="1.5" fill={color} fillOpacity="0.15" /></svg>;
+    case "cercle": return <svg {...svgProps}><circle cx="7" cy="7" r="5" stroke={color} strokeWidth="1.5" fill={color} fillOpacity="0.15" /></svg>;
+    case "losange": return <svg {...svgProps}><rect x="2" y="2" width="7" height="7" rx="1" stroke={color} strokeWidth="1.5" fill={color} fillOpacity="0.15" transform="rotate(45 7 7)" /></svg>;
+    case "hexagone": return <svg {...svgProps}><polygon points="7,1 12.5,4 12.5,10 7,13 1.5,10 1.5,4" stroke={color} strokeWidth="1.3" fill={color} fillOpacity="0.1" /></svg>;
+    case "check": return <svg {...svgProps}><path d="M3 7.5l2.5 3L11 4" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>;
+    case "etoile": return <svg {...svgProps}><polygon points="7,1 8.8,5.2 13,5.5 9.8,8.3 10.8,12.5 7,10.2 3.2,12.5 4.2,8.3 1,5.5 5.2,5.2" stroke={color} strokeWidth="1" fill={color} fillOpacity="0.2" /></svg>;
+    case "triangle": return <svg {...svgProps}><polygon points="3,11 7,3 11,11" stroke={color} strokeWidth="1.5" fill={color} fillOpacity="0.12" /></svg>;
+    case "croix-plus": return <svg {...svgProps}><path d="M7 2v10M2 7h10" stroke={color} strokeWidth="2" strokeLinecap="round" /></svg>;
+    case "tiret": return <svg {...svgProps}><line x1="2" y1="7" x2="12" y2="7" stroke={color} strokeWidth="2.5" strokeLinecap="round" /></svg>;
+    case "chevron": return <svg {...svgProps}><path d="M4 3l5 4-5 4" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /><path d="M8 3l5 4-5 4" stroke={color} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" opacity="0.4" /></svg>;
+    case "double-fleche": return <svg {...svgProps}><path d="M1 7h10M8 4l3 3-3 3" stroke={color} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /><path d="M5 5l2 2-2 2" stroke={color} strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" opacity="0.5" /></svg>;
+    case "puce-pleine": return <svg {...svgProps}><circle cx="7" cy="7" r="5" fill={color} /><circle cx="7" cy="7" r="2.5" fill="white" /></svg>;
+    case "anneau": return <svg {...svgProps}><circle cx="7" cy="7" r="5" stroke={color} strokeWidth="2" fill="none" /><circle cx="7" cy="7" r="1.5" fill={color} /></svg>;
+    case "eclair": return <svg {...svgProps}><path d="M8 1L4 8h3l-1 5 5-7H8l1-5z" fill={color} fillOpacity="0.8" /></svg>;
+    default: return <svg {...svgProps}><circle cx="7" cy="7" r="4" fill={color} fillOpacity="0.3" /></svg>;
   }
 };
 
