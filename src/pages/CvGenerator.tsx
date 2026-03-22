@@ -638,13 +638,32 @@ const CvGenerator = () => {
                 </div>
               </div>
 
-              {/* Row 2.5: Background circle color (Artisan/Créatif) */}
+              {/* Row 2.5: Background shape color — extended palette */}
               {activeLayout && (
                 <div className="rounded-xl bg-card border border-border px-4 py-3">
                   <span className="text-xs font-semibold text-muted-foreground mb-2 block">🎨 Couleur des formes d'arrière-plan</span>
                   <div className="flex flex-wrap gap-2">
-                    {["", "#1a1a1a", colors.primary, colors.accent, "hsl(24,85%,52%)", "hsl(213,65%,38%)", "hsl(150,40%,35%)", "hsl(350,60%,40%)", "#ffffff"].map((c, i) => (
-                      <button key={i} onClick={() => setBgCircleColor(c)} title={c || "Auto"}
+                    {[
+                      { c: "", label: "Auto" },
+                      { c: "#1a1a1a", label: "Noir" },
+                      { c: colors.primary, label: "Primaire" },
+                      { c: colors.accent, label: "Accent" },
+                      { c: "hsl(24,85%,52%)", label: "Orange" },
+                      { c: "hsl(213,65%,38%)", label: "Bleu" },
+                      { c: "hsl(150,40%,35%)", label: "Vert" },
+                      { c: "hsl(350,60%,40%)", label: "Rouge" },
+                      { c: "hsl(48,95%,55%)", label: "Jaune soleil" },
+                      { c: "hsl(330,80%,55%)", label: "Rose fuchsia" },
+                      { c: "hsl(285,50%,40%)", label: "Violet prune" },
+                      { c: "hsl(28,90%,55%)", label: "Orange mandarine" },
+                      { c: "hsl(178,65%,45%)", label: "Turquoise azur" },
+                      { c: "hsl(220,8%,72%)", label: "Gris perle" },
+                      { c: "hsl(200,70%,40%)", label: "Bleu océan" },
+                      { c: "hsl(145,55%,38%)", label: "Émeraude" },
+                      { c: "hsl(15,85%,55%)", label: "Corail" },
+                      { c: "#ffffff", label: "Blanc" },
+                    ].map(({ c, label }, i) => (
+                      <button key={i} onClick={() => setBgCircleColor(c)} title={label}
                         className={`w-7 h-7 rounded-full transition-all active:scale-[0.95] ${bgCircleColor === c ? "ring-2 ring-offset-2 ring-ring scale-110" : "hover:scale-105"}`}
                         style={{ background: c || colors.accent, border: c === "#ffffff" ? "2px solid hsl(0,0%,85%)" : "none" }} />
                     ))}
