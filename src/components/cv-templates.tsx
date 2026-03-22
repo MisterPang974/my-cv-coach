@@ -53,6 +53,8 @@ const TEXT_MUTED = "hsl(var(--muted-foreground))";
 
 export interface CompetencyDomainData { id: string; label: string; items: { id: string; text: string; enabled: boolean }[]; }
 
+export type CvSectionId = "experiences" | "competences" | "formation" | "divers";
+
 export interface TemplateProps {
   profile: CvProfile;
   experienceEntries: CvEntry[];
@@ -80,6 +82,7 @@ export interface TemplateProps {
   interests?: InterestEntry[];
   removeInterest?: (id: number) => void;
   interestDisplayMode?: "badges" | "list";
+  sectionOrder?: CvSectionId[];
 }
 
 // ─── Bullet renderers ──────────────────────────────────────────────
