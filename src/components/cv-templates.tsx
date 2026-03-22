@@ -412,12 +412,12 @@ export const ImpactTemplate = ({ profile, experienceEntries, atoutEntries, remov
       <Blob color="rgba(255,255,255,0.03)" className="absolute -top-16 -right-12 w-40 h-40" />
 
       <div className="relative px-5 pt-6 pb-3 z-10">
-        <NameBlock profile={profile} light size="md" fontFamily={fontFamily} color={headerTc} />
-        <p className="text-center text-[10px] mt-1 font-medium px-3 py-0.5 rounded-full mx-auto w-fit"
-          style={{ background: withAlpha(colors.accent, 0.18), color: titleTc, backdropFilter: "blur(8px)" }}>
-          {profile.titre || "Titre du poste"}
+        <p className="text-xl font-black uppercase tracking-wider leading-none"
+          style={{ color: titleTc, fontFamily: fontFamily || undefined }}>
+          {profile.titre || "TITRE DU POSTE"}
         </p>
-      </div>
+        <NameBlock profile={profile} light size="md" fontFamily={fontFamily} color={headerTc} />
+        
 
       <div className="relative px-4 space-y-3 flex-1 z-10">
         <div className="p-3" style={{ borderRadius: "16px 4px 16px 4px", background: "rgba(255,255,255,0.06)", backdropFilter: "blur(12px)", border: "1px solid rgba(255,255,255,0.08)", boxShadow: "0 4px 16px rgba(0,0,0,0.1)" }}>
