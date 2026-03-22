@@ -165,34 +165,69 @@ const DomainsBlock = ({ domains, colors, bulletStyle, bulletShape, competencyBul
     </div>
   );
 };
-/** Render professional experiences with timeline */
-const ExperiencesBlock = ({ experiences, colors, bulletStyle, bulletShape, textColor, light, onRemove, useTimeline = true }: { experiences?: ProfessionalExperience[]; colors: Colors; bulletStyle: BulletStyle; bulletShape?: BulletShapeId; textColor?: string; light?: boolean; onRemove?: (id: number) => void; useTimeline?: boolean }) => {
+/** Render professional experiences with timeline + optional company logos */
+const ExperiencesBlock = ({ experiences, colors, bulletStyle, bulletShape, textColor, light, onRemove, useTimeline = true, getCompanyLogoUrl }: { experiences?: ProfessionalExperience[]; colors: Colors; bulletStyle: BulletStyle; bulletShape?: BulletShapeId; textColor?: string; light?: boolean; onRemove?: (id: number) => void; useTimeline?: boolean; getCompanyLogoUrl?: (company: string) => string | null }) => {
   if (!experiences || experiences.length === 0) return null;
   return (
     <div className={useTimeline ? "relative pl-3" : "space-y-2"}>
       {useTimeline && <div className="absolute left-0 top-1 bottom-1 w-[2px] rounded-full" style={{ background: `linear-gradient(180deg, ${colors.accent}, ${colors.primary}40, transparent)` }} />}
-      {experiences.map((exp, idx) => (
-        <div key={exp.id} className={`${useTimeline ? "relative pl-3 pb-2" : "pb-2"} group/item`}>
-          {useTimeline && (
-            <div className="absolute -left-3 top-[3px] w-[8px] h-[8px] rounded-full border-2 z-10" style={{ borderColor: colors.accent, background: light ? colors.primary : "white" }} />
-          )}
-          <div className="flex items-baseline justify-between gap-2">
-            <p className="text-[10px] font-black leading-tight" style={{ color: textColor || (light ? "white" : colors.primary) }}>{exp.poste}</p>
-            {onRemove && <button onClick={() => onRemove(exp.id)} className={`opacity-0 group-hover/item:opacity-100 transition-opacity ${light ? "text-white/30 hover:text-red-300" : "text-gray-300 hover:text-red-400"}`}><Trash2 className="w-2.5 h-2.5" /></button>}
+      {experiences.map((exp, idx) => {
+        const logoUrl = exp.showLogo && getCompanyLogoUrl ? getCompanyLogoUrl(exp.entreprise) : null;
+        return (
+          <div key={exp.id} className={`${useTimeline ? "relative pl-3 pb-2" : "pb-2"} group/item`}>
+            {useTimeline && (
+              <div className="absolute -left-3 top-[3px] w-[8px] h-[8px] rounded-full border-2 z-10" style={{ borderColor: colors.accent, background: light ? colors.primary : "white" }} />
+            )}
+            <div className="flex items-start justify-between gap-2">
+              <div className="flex items-start gap-1.5">
+                {logoUrl && (
+                  <img src={logoUrl} alt="" className="w-4 h-4 rounded-sm mt-[1px] object-contain flex-shrink-0" onError={e => { (e.target as HTMLImageElement).style.display = 'none'; }} />
+                )}
+                {!logoUrl && exp.entreprise && exp.showLogo !== false && (
+                  <Building2 className="w-3.5 h-3.5 mt-[1px] flex-shrink-0 opacity-20" style={{ color: textColor || (light ? "white" : colors.primary) }} />
+                )}
+                <div>
+                  <p className="text-[10px] font-black leading-tight" style={{ color: textColor || (light ? "white" : colors.primary) }}>{exp.poste}</p>
+                  <p className="text-[8px]" style={{ color: textColor ? `${textColor}99` : (light ? "rgba(255,255,255,0.6)" : TEXT_MUTED) }}>
+                    {exp.entreprise}{exp.ville ? ` · ${exp.ville}` : ""}{exp.dateDebut ? ` | ${exp.dateDebut}` : ""}{exp.aujourdhui ? " — Aujourd'hui" : exp.dateFin ? ` — ${exp.dateFin}` : ""}
+                  </p>
+                </div>
+              </div>
+              {onRemove && <button onClick={() => onRemove(exp.id)} className={`opacity-0 group-hover/item:opacity-100 transition-opacity ${light ? "text-white/30 hover:text-red-300" : "text-gray-300 hover:text-red-400"}`}><Trash2 className="w-2.5 h-2.5" /></button>}
+            </div>
+            {exp.missions.length > 0 && (
+              <ul style={{ margin: 0, padding: 0, listStyle: "none" }}>
+                {exp.missions.map((m, mi) => (
+                  <li key={mi} className="flex items-center gap-1.5" style={{ color: textColor || (light ? "rgba(255,255,255,0.85)" : undefined), fontSize: "9px", lineHeight: "1.3", paddingTop: "1px", paddingBottom: "1px" }}>
+                    <span className="flex-shrink-0 w-[12px] h-[12px] flex items-center justify-center"><ModernBullet type="action" color={colors.accent} style={bulletStyle} shape={bulletShape} /></span>
+                    <span className="flex-1">{m}</span>
+                  </li>
+                ))}
+              </ul>
+            )}
           </div>
-          <p className="text-[8px]" style={{ color: textColor ? `${textColor}99` : (light ? "rgba(255,255,255,0.6)" : TEXT_MUTED) }}>
-            {exp.entreprise}{exp.ville ? ` · ${exp.ville}` : ""}{exp.dateDebut ? ` | ${exp.dateDebut}` : ""}{exp.aujourdhui ? " — Aujourd'hui" : exp.dateFin ? ` — ${exp.dateFin}` : ""}
-          </p>
-          {exp.missions.length > 0 && (
-            <ul style={{ margin: 0, padding: 0, listStyle: "none" }}>
-              {exp.missions.map((m, mi) => (
-                <li key={mi} className="flex items-center gap-1.5" style={{ color: textColor || (light ? "rgba(255,255,255,0.85)" : undefined), fontSize: "9px", lineHeight: "1.3", paddingTop: "1px", paddingBottom: "1px" }}>
-                  <span className="flex-shrink-0 w-[12px] h-[12px] flex items-center justify-center"><ModernBullet type="action" color={colors.accent} style={bulletStyle} shape={bulletShape} /></span>
-                  <span className="flex-1">{m}</span>
-                </li>
-              ))}
-            </ul>
-          )}
+        );
+      })}
+    </div>
+  );
+};
+
+/** Render formation/diplômes block */
+const FormationBlock = ({ formations, colors, bulletStyle, bulletShape, textColor, light, onRemove, title }: { formations?: FormationEntry[]; colors: Colors; bulletStyle: BulletStyle; bulletShape?: BulletShapeId; textColor?: string; light?: boolean; onRemove?: (id: number) => void; title?: string }) => {
+  if (!formations || formations.length === 0) return null;
+  return (
+    <div className="space-y-1">
+      {formations.map(f => (
+        <div key={f.id} className="group/item pb-1.5">
+          <div className="flex items-start justify-between gap-2">
+            <div>
+              <p className="text-[10px] font-black leading-tight" style={{ color: textColor || (light ? "white" : colors.primary) }}>{f.intitule}</p>
+              <p className="text-[8px]" style={{ color: textColor ? `${textColor}99` : (light ? "rgba(255,255,255,0.6)" : TEXT_MUTED) }}>
+                {f.etablissement}{f.ville ? ` · ${f.ville}` : ""}{f.dateDebut ? ` | ${f.dateDebut}` : ""}{f.dateFin ? ` — ${f.dateFin}` : ""}
+              </p>
+            </div>
+            {onRemove && <button onClick={() => onRemove(f.id)} className={`opacity-0 group-hover/item:opacity-100 transition-opacity ${light ? "text-white/30 hover:text-red-300" : "text-gray-300 hover:text-red-400"}`}><Trash2 className="w-2.5 h-2.5" /></button>}
+          </div>
         </div>
       ))}
     </div>
