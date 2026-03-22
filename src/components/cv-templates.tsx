@@ -1091,18 +1091,23 @@ export const MagazineTemplate = ({ profile, experienceEntries, atoutEntries, rem
 };
 
 // ═══════════════════════════════════════════════════════════════════
-// 7. MÉDICAL — Photo removed, contacts fixed.
+// 7. MÉDICAL — Cross motifs + soft arc decorative shapes
 // ═══════════════════════════════════════════════════════════════════
-export const MedicalTemplate = ({ profile, experienceEntries, atoutEntries, removeEntry, colors, bulletStyle, bulletShape, gradient, gradientTarget, textColors, titleColor, fontFamily, competencyDomains, competencyBulletShape, formationBulletShape, diversBulletShape, qualitesBulletShape, professionalExperiences, removeProfessionalExperience, formations, removeFormation, formationTitle, getCompanyLogoUrl, interests, removeInterest, interestDisplayMode, sectionOrder, qualities, removeQuality }: TemplateProps) => {
+export const MedicalTemplate = ({ profile, experienceEntries, atoutEntries, removeEntry, colors, bulletStyle, bulletShape, gradient, gradientTarget, bgCircleColor, textColors, titleColor, fontFamily, competencyDomains, competencyBulletShape, formationBulletShape, diversBulletShape, qualitesBulletShape, professionalExperiences, removeProfessionalExperience, formations, removeFormation, formationTitle, getCompanyLogoUrl, interests, removeInterest, interestDisplayMode, sectionOrder, qualities, removeQuality }: TemplateProps) => {
   const fondStyle = useGradientBg(gradient, gradientTarget);
   const headerTc = sectionTextColor("header", textColors, TEXT_WHITE);
   const compTc = sectionTextColor("competences", textColors, colors.primary);
   const expTc = sectionTextColor("experiences", textColors, TEXT_BLACK);
   const titleTc = resolveTitleTextColor(titleColor, headerTc, withAlpha(TEXT_WHITE, 0.72));
+  const shapeCol = bgCircleColor || colors.accent;
   return (
-    <div className="h-full flex flex-col text-[11px] leading-[1.8] relative overflow-hidden" style={{ fontFamily: fontFamily || "'DM Sans', system-ui, sans-serif", background: `linear-gradient(180deg, ${colors.primary}06, white, ${colors.accent}04)`, ...fondStyle }}>
-      <div className="absolute top-20 -right-16 w-48 h-48 rounded-full" style={{ background: `radial-gradient(circle, ${colors.accent}08, transparent)` }} />
-      <div className="absolute -bottom-10 -left-10 w-36 h-36 rounded-full" style={{ background: `radial-gradient(circle, ${colors.primary}06, transparent)` }} />
+    <div className="h-full flex flex-col text-[11px] leading-[1.8] relative overflow-hidden" style={{ fontFamily: fontFamily || "'DM Sans', system-ui, sans-serif", background: `linear-gradient(180deg, ${colors.primary}06, white, ${shapeCol}04)`, ...fondStyle }}>
+      {/* Decorative medical crosses + arcs */}
+      <MedicalCrosses color={shapeCol} className="absolute top-16 -right-8 w-36 h-36" />
+      <MedicalCrosses color={shapeCol} className="absolute bottom-8 -left-10 w-32 h-32" style={{ transform: "rotate(180deg)" }} />
+      <div className="absolute top-[40%] right-6 w-10 h-10" style={{ opacity: 0.05 }}>
+        <svg viewBox="0 0 40 40" fill="none"><path d="M15 10h10v8h8v10h-8v8h-10v-8h-8v-10h8z" fill={shapeCol} /></svg>
+      </div>
 
       <div className="relative mx-5 mt-4 px-6 py-5 overflow-hidden" style={{ borderRadius: "24px", background: `linear-gradient(135deg, ${colors.primary}, ${colors.accent})`, boxShadow: `0 8px 32px ${colors.primary}20, 0 4px 12px ${colors.accent}15`, ...useGradientRubrique(gradient, gradientTarget) }}>
         <Blob color="rgba(255,255,255,0.05)" className="absolute -bottom-12 -right-8 w-40 h-40" />
