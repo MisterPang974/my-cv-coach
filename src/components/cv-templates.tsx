@@ -56,6 +56,10 @@ export interface CompetencyDomainData { id: string; label: string; items: { id: 
 
 export type CvSectionId = "experiences" | "competences" | "formation" | "qualites" | "divers";
 
+export type CaseStyle = "majuscules" | "standard";
+export type TitleDecoration = "none" | "underline" | "border";
+export type TextAlign = "left" | "center";
+
 export interface TemplateProps {
   profile: CvProfile;
   experienceEntries: CvEntry[];
@@ -90,6 +94,9 @@ export interface TemplateProps {
   qualities?: string[];
   removeQuality?: (idx: number) => void;
   levelDisplay?: "dots" | "bars" | "none";
+  caseStyle?: CaseStyle;
+  titleDecoration?: TitleDecoration;
+  textAlign?: TextAlign;
 }
 
 // ─── Bullet renderers ──────────────────────────────────────────────
