@@ -462,97 +462,137 @@ const OrderedSections = ({ sectionOrder, renderExperiences, renderCompetences, r
 };
 
 // ═══════════════════════════════════════════════════════════════════
-// 1. IMPACT — Glassmorphism sidebar, gradient accents, floating depth
-//    - Photo removed. Competences moved to sidebar to fill right void.
+// 1. IMPACT — Contrasted sidebar (inspired by Marine Dupont)
+//    Professional sidebar with contact, competences, qualités, divers.
 // ═══════════════════════════════════════════════════════════════════
-export const ImpactTemplate = ({ profile, experienceEntries, atoutEntries, removeEntry, colors, sidebarPos, bulletStyle, bulletShape, gradient, gradientTarget, textColors, titleColor, fontFamily, competencyDomains, competencyBulletShape, formationBulletShape, diversBulletShape, qualitesBulletShape, professionalExperiences, removeProfessionalExperience, formations, removeFormation, formationTitle, getCompanyLogoUrl, interests, removeInterest, interestDisplayMode, sectionOrder, qualities, removeQuality }: TemplateProps) => {
+export const ImpactTemplate = ({ profile, experienceEntries, atoutEntries, removeEntry, colors, sidebarPos, bulletStyle, bulletShape, gradient, gradientTarget, textColors, titleColor, fontFamily, competencyDomains, competencyBulletShape, formationBulletShape, diversBulletShape, qualitesBulletShape, professionalExperiences, removeProfessionalExperience, formations, removeFormation, formationTitle, getCompanyLogoUrl, interests, removeInterest, interestDisplayMode, sectionOrder, qualities, removeQuality, levelDisplay }: TemplateProps) => {
   const fondStyle = useGradientBg(gradient, gradientTarget);
-  const rubriqueStyle = useGradientRubrique(gradient, gradientTarget, `linear-gradient(170deg, ${colors.primary}, ${colors.swatch})`);
+  const rubriqueStyle = useGradientRubrique(gradient, gradientTarget, colors.primary);
   const { isDark } = useAutoContrast(gradient, gradientTarget);
   const headerTc = sectionTextColor("header", textColors, TEXT_WHITE);
   const compTc = sectionTextColor("competences", textColors, TEXT_WHITE);
-  const expTc = sectionTextColor("experiences", textColors, TEXT_WHITE);
-  const titleTc = resolveTitleTextColor(titleColor, headerTc, colors.accent);
+  const expTc = sectionTextColor("experiences", textColors, TEXT_BLACK);
+  const titleTc = resolveTitleTextColor(titleColor, headerTc, "white");
 
   const sidebar = (
-    <div className="w-[38%] flex flex-col relative overflow-hidden" style={{ background: `linear-gradient(170deg, ${colors.primary}, ${colors.swatch})`, ...rubriqueStyle }}>
-      <Blob color="rgba(255,255,255,0.04)" className="absolute -bottom-20 -left-10 w-48 h-48" />
-      <Blob color="rgba(255,255,255,0.03)" className="absolute -top-16 -right-12 w-40 h-40" />
-
-      <div className="relative px-5 pt-6 pb-3 z-10">
-        <p className="text-xl font-black uppercase tracking-wider leading-none"
-          style={{ color: titleTc, fontFamily: fontFamily || undefined }}>
-          {profile.titre || "TITRE DU POSTE"}
+    <div className="w-[36%] flex flex-col overflow-hidden" style={{ background: rubriqueStyle.background || colors.primary, color: "white" }}>
+      {/* Name & Title — strong presence */}
+      <div className="px-5 pt-6 pb-4">
+        <h2 className="text-[20px] font-black uppercase leading-[1.08] tracking-tight" style={{ color: titleTc, fontFamily }}>
+          {[profile.prenom, profile.nom].filter(Boolean).join("\n").split("\n").map((n, i) => <span key={i} className="block">{n || (i === 0 ? "PRÉNOM" : "NOM")}</span>)}
+        </h2>
+        <p className="text-[9px] font-medium uppercase tracking-[0.15em] mt-2 leading-snug" style={{ color: `${titleTc}bb` }}>
+          {profile.titre || "Titre du poste visé"}
         </p>
-        <NameBlock profile={profile} light size="md" fontFamily={fontFamily} color={headerTc} />
       </div>
 
-      <div className="relative px-4 space-y-3 flex-1 z-10">
-        <div className="p-3" style={{ borderRadius: "16px 4px 16px 4px", background: "rgba(255,255,255,0.06)", backdropFilter: "blur(12px)", border: "1px solid rgba(255,255,255,0.08)", boxShadow: "0 4px 16px rgba(0,0,0,0.1)" }}>
-          <p className="text-[8px] uppercase tracking-[0.2em] font-bold mb-2" style={{ color: withAlpha(headerTc, 0.55) }}>Contact</p>
-          <ContactLine profile={profile} light colors={colors} fontFamily={fontFamily} textColor={withAlpha(headerTc, 0.72)} iconColor={titleTc} />
+      <div className="w-[85%] mx-auto h-[1px]" style={{ background: "rgba(255,255,255,0.12)" }} />
+
+      <div className="px-5 py-3 space-y-3 flex-1 overflow-y-auto text-[9px]">
+        {/* Contact */}
+        <div>
+          <p className="text-[7px] uppercase tracking-[0.25em] font-bold mb-1.5" style={{ color: "rgba(255,255,255,0.4)" }}>Contact</p>
+          <div className="space-y-1" style={{ color: withAlpha(headerTc, 0.8) }}>
+            {profile.telephone && <div className="flex items-center gap-2"><Phone className="w-3 h-3 flex-shrink-0" style={{ color: colors.accent }} />{profile.telephone}</div>}
+            {profile.email && <div className="flex items-center gap-2"><Mail className="w-3 h-3 flex-shrink-0" style={{ color: colors.accent }} />{profile.email}</div>}
+            {(profile.adresse || profile.ville) && <div className="flex items-center gap-2"><MapPin className="w-3 h-3 flex-shrink-0" style={{ color: colors.accent }} />{[profile.adresse, profile.codePostal, profile.ville].filter(Boolean).join(", ")}</div>}
+          </div>
         </div>
-        <div className="p-3" style={{ borderRadius: "4px 16px 4px 16px", background: "rgba(255,255,255,0.06)", backdropFilter: "blur(12px)", border: "1px solid rgba(255,255,255,0.08)", boxShadow: "0 4px 16px rgba(0,0,0,0.1)" }}>
-          <p className="text-[8px] text-white/35 uppercase tracking-[0.2em] font-bold mb-2" style={compTc ? { color: compTc } : undefined}>Compétences</p>
-          {competencyDomains && competencyDomains.length > 0 ? (
-            <DomainsBlock domains={competencyDomains} colors={colors} bulletStyle={bulletStyle} bulletShape={bulletShape} competencyBulletShape={competencyBulletShape} textColor={compTc} light />
-          ) : experienceEntries.length > 0 ? (
-            <ul className="space-y-0.5">{experienceEntries.map(e => (
-              <li key={e.id} className="flex items-start gap-2 text-white/80 text-[10px] group/item" style={compTc ? { color: compTc } : undefined}>
-                <span className="mt-0.5"><ModernBullet type={e.bullet} color={colors.accent} style={bulletStyle} shape={bulletShape} /></span>
-                <span className="flex-1">{e.selected}</span><DeleteBtn onClick={() => removeEntry(e.id)} light />
-              </li>
-            ))}</ul>
-          ) : <p className="text-white/25 italic text-[9px]">Ajoutez des compétences…</p>}
-        </div>
+
+        <div className="w-full h-[1px]" style={{ background: "rgba(255,255,255,0.08)" }} />
+
+        {/* Compétences in sidebar with levels */}
+        {competencyDomains && competencyDomains.length > 0 && (
+          <div>
+            <p className="text-[7px] uppercase tracking-[0.25em] font-bold mb-1.5" style={{ color: "rgba(255,255,255,0.4)" }}>Compétences</p>
+            <DomainsBlock domains={competencyDomains} colors={colors} bulletStyle={bulletStyle} bulletShape={bulletShape} competencyBulletShape={competencyBulletShape} textColor={withAlpha(compTc, 0.85)} light levelDisplay={levelDisplay} />
+          </div>
+        )}
+
+        {competencyDomains && competencyDomains.length > 0 && <div className="w-full h-[1px]" style={{ background: "rgba(255,255,255,0.08)" }} />}
+
+        {/* Qualités */}
+        {qualities && qualities.length > 0 && (
+          <div>
+            <p className="text-[7px] uppercase tracking-[0.25em] font-bold mb-1.5" style={{ color: "rgba(255,255,255,0.4)" }}>Qualités</p>
+            <QualitiesBlock qualities={qualities} colors={colors} bulletStyle={bulletStyle} bulletShape={qualitesBulletShape} textColor="rgba(255,255,255,0.85)" light onRemove={removeQuality} />
+          </div>
+        )}
+
+        {/* Divers */}
+        {interests && interests.length > 0 && (
+          <div>
+            <p className="text-[7px] uppercase tracking-[0.25em] font-bold mb-1.5" style={{ color: "rgba(255,255,255,0.4)" }}>Centres d'intérêt</p>
+            <InterestsBlock interests={interests} colors={colors} bulletStyle={bulletStyle} bulletShape={diversBulletShape} textColor="rgba(255,255,255,0.85)" light onRemove={removeInterest} displayMode="list" />
+          </div>
+        )}
       </div>
-      <div className="relative z-10 px-5 py-2 text-[7px] text-white/15 text-center font-medium tracking-wider uppercase">My CV Coach</div>
     </div>
   );
 
   const main = (
-    <div className="flex-1 flex flex-col relative overflow-hidden" style={{ background: isDark ? undefined : "white", ...fondStyle }}>
-      <div className="h-1.5" style={{ background: `linear-gradient(90deg, ${colors.accent}, ${colors.primary}, ${colors.accent})` }} />
-      <div className="absolute top-0 right-0 w-40 h-40 opacity-[0.04] rounded-full" style={{ background: `radial-gradient(circle, ${colors.accent}, transparent)` }} />
+    <div className="flex-1 flex flex-col bg-white relative overflow-hidden" style={{ ...fondStyle }}>
+      <div className="h-[3px]" style={{ background: `linear-gradient(90deg, ${colors.accent}, ${colors.primary})` }} />
+      <div className="absolute top-0 right-0 w-40 h-40 opacity-[0.03] rounded-full" style={{ background: `radial-gradient(circle, ${colors.accent}, transparent)` }} />
 
-      <div className="flex-1 px-7 py-6 overflow-y-auto relative z-10">
-        {/* Professional Experiences */}
+      <div className="flex-1 px-6 py-5 overflow-y-auto relative z-10">
+        {/* Expériences */}
         {professionalExperiences && professionalExperiences.length > 0 && (
           <>
-            <h3 className="text-[10px] font-black uppercase tracking-[0.25em] mb-3 pb-2 flex items-center gap-2" style={{ color: expTc || (isDark ? "white" : colors.primary), borderBottom: `2px solid transparent`, borderImage: `linear-gradient(90deg, ${colors.accent}, ${colors.primary}) 1` }}>
-              <Briefcase className="w-3.5 h-3.5" /> Expérience Professionnelle
-            </h3>
+            <SectionHeading color={expTc || colors.primary} icon={<Briefcase className="w-3.5 h-3.5" />}>Expérience Professionnelle</SectionHeading>
             <ExperiencesBlock experiences={professionalExperiences} colors={colors} bulletStyle={bulletStyle} bulletShape={bulletShape} getCompanyLogoUrl={getCompanyLogoUrl} textColor={expTc || (isDark ? "white" : undefined)} light={isDark} onRemove={removeProfessionalExperience} />
-            <div className="my-3" />
+            <div className="my-4" />
           </>
         )}
+
+        {/* Formation */}
         {formations && formations.length > 0 && (
           <>
-            <h3 className="text-[10px] font-black uppercase tracking-[0.25em] mb-3 pb-2 flex items-center gap-2" style={{ color: expTc || colors.primary }}>
-              <GraduationCap className="w-3.5 h-3.5" /> {formationTitle || "Formation"}</h3>
-            <FormationBlock formations={formations} colors={colors} bulletStyle={bulletStyle} bulletShape={bulletShape} textColor={expTc} onRemove={removeFormation} />
-            <div className="my-3" />
+            <SectionHeading color={expTc || colors.primary} icon={<GraduationCap className="w-3.5 h-3.5" />}>{formationTitle || "Formation"}</SectionHeading>
+            <FormationBlock formations={formations} colors={colors} bulletStyle={bulletStyle} bulletShape={formationBulletShape} textColor={expTc} onRemove={removeFormation} />
+            <div className="my-4" />
           </>
         )}
-        <h3 className="text-[10px] font-black uppercase tracking-[0.25em] mb-5 pb-2.5 flex items-center gap-2" style={{ color: expTc || (isDark ? "white" : colors.primary), borderBottom: `2px solid transparent`, borderImage: `linear-gradient(90deg, ${colors.accent}, ${colors.primary}) 1` }}>
-          <Star className="w-3.5 h-3.5" /> Atouts
-        </h3>
-        {atoutEntries.length > 0 ? (
-          <ul className="space-y-0.5">{atoutEntries.map(e => (
-            <li key={e.id} className="flex items-start gap-2.5 group/item rounded-xl px-4 py-3 transition-all hover:translate-x-0.5"
-              style={{ background: isDark ? "rgba(255,255,255,0.08)" : `${colors.primary}04`, boxShadow: `0 1px 4px ${colors.primary}08`, border: `1px solid ${isDark ? "rgba(255,255,255,0.1)" : `${colors.primary}08`}` }}>
-              <ChevronRight className="w-3 h-3 mt-0.5 flex-shrink-0" style={{ color: colors.accent }} />
-              <span className="flex-1" style={{ color: expTc || (isDark ? "rgba(255,255,255,0.85)" : undefined) }}>{e.selected}</span><DeleteBtn onClick={() => removeEntry(e.id)} light={isDark} />
-            </li>
-          ))}</ul>
-        ) : <EmptyState color={colors.primary} label="Ajoutez des atouts…" dark={isDark} />}
+
+        {/* Atouts */}
+        {atoutEntries.length > 0 && (
+          <>
+            <SectionHeading color={expTc || colors.primary} icon={<Star className="w-3.5 h-3.5" />}>Atouts</SectionHeading>
+            <ul style={{ margin: 0, padding: 0, listStyle: "none" }}>
+              {atoutEntries.map(e => (
+                <li key={e.id} className="flex items-center gap-2 group/item" style={{ fontSize: "9px", lineHeight: "1.3", paddingTop: "2px", paddingBottom: "2px" }}>
+                  <ChevronRight className="w-3 h-3 flex-shrink-0" style={{ color: colors.accent }} />
+                  <span className="flex-1" style={{ color: expTc || undefined }}>{e.selected}</span>
+                  <DeleteBtn onClick={() => removeEntry(e.id)} />
+                </li>
+              ))}
+            </ul>
+          </>
+        )}
+
+        {/* Fallback: show competences in main if none in sidebar */}
+        {(!competencyDomains || competencyDomains.length === 0) && experienceEntries.length > 0 && (
+          <>
+            <SectionHeading color={expTc || colors.primary} icon={<Layers className="w-3.5 h-3.5" />}>Compétences</SectionHeading>
+            <ul className="space-y-0.5">{experienceEntries.map(e => (
+              <li key={e.id} className="flex items-start gap-2 text-[10px] group/item" style={{ color: expTc || undefined }}>
+                <span className="mt-0.5"><ModernBullet type={e.bullet} color={colors.accent} style={bulletStyle} shape={bulletShape} /></span>
+                <span className="flex-1">{e.selected}</span><DeleteBtn onClick={() => removeEntry(e.id)} />
+              </li>
+            ))}</ul>
+          </>
+        )}
+
+        {professionalExperiences?.length === 0 && atoutEntries.length === 0 && (!competencyDomains || competencyDomains.length === 0) && (
+          <EmptyState color={colors.primary} />
+        )}
       </div>
     </div>
   );
 
   return (
-    <div className="h-full flex text-[11px] leading-[1.8]" style={{ fontFamily: fontFamily || "'DM Sans', system-ui, sans-serif", flexDirection: sidebarPos === "right" ? "row-reverse" : "row" }}>
-      {sidebarPos === "top" ? <div className="h-full flex flex-col">{sidebar}{main}</div> : <>{sidebar}{main}</>}
+    <div className="h-full flex text-[11px] leading-[1.4]" style={{ fontFamily: fontFamily || "'DM Sans', system-ui, sans-serif", flexDirection: sidebarPos === "right" ? "row-reverse" : "row" }}>
+      {sidebar}{main}
     </div>
   );
 };
