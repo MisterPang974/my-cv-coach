@@ -1,32 +1,9 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import { Wand2, Copy, Check, Plus, Trash2, BookOpen, ChevronDown, ChevronUp, ArrowRight, Square, Circle } from "lucide-react";
+import { Wand2, Copy, Check, Plus, Trash2, ArrowRight, Square, Circle, User, Briefcase, Mail, Phone, MapPin } from "lucide-react";
 
-// Verbes d'action par domaine (Annexe 4 - Evolution Pro)
-const verbesAction: Record<string, string[]> = {
-  "Administratif": ["Acheter", "Agencer", "Archiver", "Cataloguer", "Centraliser", "Classifier", "Commander", "Compiler", "Constituer", "Contrôler", "Documenter", "Effectuer", "Élaborer", "Enregistrer", "Envoyer", "Inspecter", "Inventorier", "Mettre en œuvre", "Organiser", "Présenter"],
-  "Financier": ["Administrer", "Analyser", "Anticiper", "Auditer", "Budgétiser", "Calculer", "Chiffrer", "Commercialiser", "Consolider", "Engager", "Équilibrer", "Estimer", "Évaluer", "Gérer", "Planifier", "Prévoir", "Réguler", "Vérifier"],
-  "Gestion": ["Affecter", "Améliorer", "Analyser", "Anticiper", "Auditer", "Augmenter", "Centraliser", "Concevoir", "Coordonner", "Décider", "Déléguer", "Diriger", "Élaborer", "Engager", "Établir", "Évaluer", "Générer", "Optimiser", "Piloter"],
-  "Service & Conseil": ["Accueillir", "Aider", "Arranger", "Changer", "Clarifier", "Commander", "Conseiller", "Démontrer", "Diagnostiquer", "Écouter", "Éduquer", "Évaluer", "Expliquer", "Faciliter", "Guider", "Intervenir", "Livrer", "Optimiser", "Préparer", "Présenter"],
-  "Communication": ["Activer", "Animer", "Comprendre", "Consolider", "Correspondre", "Créer", "Développer", "Écrire", "Exposer", "Exprimer", "Formuler", "Identifier", "Influencer", "Interpréter", "Lancer", "Négocier", "Persuader", "Promouvoir", "Publier", "Recruter"],
-};
-
-// 10 Commandements du CV Créatif (MON CV CREATIF BON)
-const commandements = [
-  "Avant de rédiger ton CV, un bilan de compétences tu feras.",
-  "Avec précision ton projet professionnel (fonction, secteur, lieu) tu définiras.",
-  "La finalité du CV (décrocher des entretiens) jamais tu n'oublieras.",
-  "Les 4C (Créativité, Clarté, Cohérence, Commercial), tu respecteras.",
-  "Grâce à la créativité, ton CV jamais on n'oubliera.",
-  "Au recruteur, ton parcours cohérent semblera.",
-  "Au recruteur, ton CV toujours clair apparaîtra.",
-  "De chaque point de ton CV, un atout tu feras.",
-  "Les avis et conseils de tous, tu écouteras.",
-  "Les chiffres tu regarderas, les résultats tu chercheras.",
-];
-
-// Bullet type mapping: action = arrow, technique = square, relationnel = circle
+// Bullet types
 type BulletType = "action" | "technique" | "relationnel";
 
 interface Transformation {
@@ -34,12 +11,19 @@ interface Transformation {
   bullet: BulletType;
 }
 
-// Mapping tâches → compétences percutantes (style télégraphique, pas de "Je")
+// Mapping tâches → compétences (Méthode Fred)
 const transformations: Record<string, Transformation[]> = {
   "nettoyage": [
     { text: "Application rigoureuse des normes d'hygiène et de propreté", bullet: "technique" },
     { text: "Maîtrise des protocoles de nettoyage et désinfection", bullet: "technique" },
+    { text: "Organisation autonome du poste de travail", bullet: "action" },
     { text: "Respect des standards sanitaires en environnement professionnel", bullet: "action" },
+  ],
+  "agent de nettoyage": [
+    { text: "Application rigoureuse des normes d'hygiène et de propreté", bullet: "technique" },
+    { text: "Organisation méthodique des interventions de nettoyage", bullet: "action" },
+    { text: "Gestion autonome du matériel et des produits d'entretien", bullet: "technique" },
+    { text: "Respect des plannings et des consignes de sécurité", bullet: "action" },
   ],
   "ménage": [
     { text: "Entretien méthodique des espaces professionnels", bullet: "action" },
@@ -106,15 +90,25 @@ const transformations: Record<string, Transformation[]> = {
     { text: "Optimisation des flux logistiques et réduction des coûts", bullet: "technique" },
     { text: "Coordination des transporteurs et planification des expéditions", bullet: "action" },
   ],
-  "service": [
-    { text: "Service en salle selon les standards de l'établissement", bullet: "action" },
-    { text: "Maîtrise des techniques de mise en place et de découpe", bullet: "technique" },
-    { text: "Conseil œnologique et gastronomique personnalisé", bullet: "relationnel" },
-  ],
   "garde d'enfants": [
     { text: "Prise en charge éducative et sécuritaire d'enfants", bullet: "relationnel" },
     { text: "Animation d'activités d'éveil adaptées par tranche d'âge", bullet: "action" },
     { text: "Communication bienveillante avec les familles", bullet: "relationnel" },
+  ],
+  "restauration": [
+    { text: "Service en salle selon les standards de l'établissement", bullet: "action" },
+    { text: "Maîtrise des techniques de mise en place et de découpe", bullet: "technique" },
+    { text: "Conseil gastronomique personnalisé auprès de la clientèle", bullet: "relationnel" },
+  ],
+  "sécurité": [
+    { text: "Surveillance et protection des biens et des personnes", bullet: "action" },
+    { text: "Application des procédures de sécurité et gestion des incidents", bullet: "technique" },
+    { text: "Rédaction de rapports d'intervention et main courante", bullet: "technique" },
+  ],
+  "btp": [
+    { text: "Réalisation de travaux de construction selon les normes en vigueur", bullet: "technique" },
+    { text: "Lecture et interprétation de plans techniques", bullet: "technique" },
+    { text: "Respect des consignes de sécurité sur chantier", bullet: "action" },
   ],
 };
 
@@ -152,10 +146,10 @@ const BulletIcon = ({ type, className }: { type: BulletType; className?: string 
   }
 };
 
-const bulletLabel: Record<BulletType, string> = {
-  action: "Action",
-  technique: "Technique",
-  relationnel: "Relationnel",
+const bulletColors: Record<BulletType, string> = {
+  action: "text-accent",
+  technique: "text-primary",
+  relationnel: "text-accent",
 };
 
 interface CvEntry {
@@ -165,15 +159,28 @@ interface CvEntry {
   bullet: BulletType;
 }
 
+interface CvProfile {
+  nom: string;
+  titre: string;
+  email: string;
+  telephone: string;
+  ville: string;
+}
+
 const CvGenerator = () => {
   const [input, setInput] = useState("");
   const [suggestions, setSuggestions] = useState<Transformation[]>([]);
   const [entries, setEntries] = useState<CvEntry[]>([]);
   const [copied, setCopied] = useState(false);
   const [searching, setSearching] = useState(false);
-  const [showCommandements, setShowCommandements] = useState(false);
-  const [showVerbes, setShowVerbes] = useState(false);
-  const [showAtouts, setShowAtouts] = useState(false);
+  const [profile, setProfile] = useState<CvProfile>({
+    nom: "",
+    titre: "",
+    email: "",
+    telephone: "",
+    ville: "",
+  });
+  const a4Ref = useRef<HTMLDivElement>(null);
 
   const handleTransform = () => {
     if (!input.trim()) return;
@@ -181,7 +188,7 @@ const CvGenerator = () => {
     setTimeout(() => {
       setSuggestions(findSuggestions(input));
       setSearching(false);
-    }, 400);
+    }, 350);
   };
 
   const addEntry = (t: Transformation) => {
@@ -206,90 +213,106 @@ const CvGenerator = () => {
     setTimeout(() => setCopied(false), 2000);
   };
 
+  const updateProfile = (field: keyof CvProfile, value: string) => {
+    setProfile((prev) => ({ ...prev, [field]: value }));
+  };
+
+  // Group entries by source
+  const experienceEntries = entries.filter((e) => e.input !== "Atout");
+  const atoutEntries = entries.filter((e) => e.input === "Atout");
+
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-background">
       <Navbar />
       <main className="pt-16">
-        <section className="py-24">
-          <div className="container mx-auto px-6 max-w-3xl">
-            <div className="animate-fade-up mb-12">
-              <p className="text-sm font-semibold text-accent uppercase tracking-widest mb-3">
+        <section className="py-12 md:py-16">
+          <div className="container mx-auto px-4 md:px-6">
+            {/* Header */}
+            <div className="animate-fade-up max-w-2xl mb-10">
+              <p className="text-sm font-semibold text-accent uppercase tracking-widest mb-2">
                 Méthode Fred · Générateur intelligent
               </p>
-              <h1 className="text-3xl md:text-4xl tracking-tight mb-4">
-                Transformez vos tâches en compétences
+              <h1 className="text-3xl md:text-4xl tracking-tight mb-3">
+                Générateur de CV
               </h1>
-              <p className="text-muted-foreground text-lg max-w-xl">
-                Style télégraphique, verbes d'action, résultats chiffrés.
-                Jamais de « Je… » — toujours des preuves.
+              <p className="text-muted-foreground">
+                Saisissez vos expériences, l'intelligence métier transforme vos tâches en compétences percutantes.
               </p>
             </div>
 
-            {/* Bullet legend */}
-            <div className="animate-fade-up mb-6 flex flex-wrap gap-4 text-xs text-muted-foreground">
-              <span className="inline-flex items-center gap-1.5"><ArrowRight className="w-3.5 h-3.5 text-accent" /> Action</span>
-              <span className="inline-flex items-center gap-1.5"><Square className="w-3.5 h-3.5 text-primary" /> Technique</span>
-              <span className="inline-flex items-center gap-1.5"><Circle className="w-3.5 h-3.5 text-accent" /> Relationnel</span>
-            </div>
-
-            {/* 10 Commandements */}
-            <div className="animate-fade-up-delay-1 mb-4">
-              <button
-                onClick={() => setShowCommandements(!showCommandements)}
-                className="w-full flex items-center justify-between rounded-xl bg-primary/5 border border-primary/20 p-4 text-left hover:bg-primary/10 transition-colors active:scale-[0.99]"
-              >
-                <div className="flex items-center gap-3">
-                  <BookOpen className="w-5 h-5 text-primary" />
-                  <span className="font-semibold text-sm">Les 10 Commandements du CV Créatif</span>
+            <div className="grid lg:grid-cols-[1fr,minmax(520px,640px)] gap-8 items-start">
+              {/* LEFT — Controls */}
+              <div className="space-y-6">
+                {/* Profile fields */}
+                <div className="animate-fade-up rounded-xl bg-card p-6 shadow-sm space-y-4">
+                  <h3 className="font-semibold text-sm flex items-center gap-2">
+                    <User className="w-4 h-4 text-primary" />
+                    Informations personnelles
+                  </h3>
+                  <div className="grid sm:grid-cols-2 gap-3">
+                    <input value={profile.nom} onChange={(e) => updateProfile("nom", e.target.value)} placeholder="Nom complet" className="rounded-lg border border-input bg-background px-4 py-2.5 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring" />
+                    <input value={profile.titre} onChange={(e) => updateProfile("titre", e.target.value)} placeholder="Titre visé (ex: Agent polyvalent)" className="rounded-lg border border-input bg-background px-4 py-2.5 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring" />
+                    <input value={profile.email} onChange={(e) => updateProfile("email", e.target.value)} placeholder="Email" className="rounded-lg border border-input bg-background px-4 py-2.5 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring" />
+                    <input value={profile.telephone} onChange={(e) => updateProfile("telephone", e.target.value)} placeholder="Téléphone" className="rounded-lg border border-input bg-background px-4 py-2.5 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring" />
+                    <input value={profile.ville} onChange={(e) => updateProfile("ville", e.target.value)} placeholder="Ville" className="col-span-full sm:col-span-1 rounded-lg border border-input bg-background px-4 py-2.5 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring" />
+                  </div>
                 </div>
-                {showCommandements ? <ChevronUp className="w-4 h-4 text-muted-foreground" /> : <ChevronDown className="w-4 h-4 text-muted-foreground" />}
-              </button>
-              {showCommandements && (
-                <div className="mt-2 rounded-xl bg-card p-5 shadow-sm">
-                  <ol className="space-y-2">
-                    {commandements.map((c, i) => (
-                      <li key={i} className="flex gap-3 text-sm">
-                        <span className="text-accent font-bold flex-shrink-0">{i + 1}.</span>
-                        <span className="text-muted-foreground">{c}</span>
-                      </li>
-                    ))}
-                  </ol>
-                </div>
-              )}
-            </div>
 
-            {/* Verbes d'action */}
-            <div className="animate-fade-up-delay-1 mb-4">
-              <button
-                onClick={() => setShowVerbes(!showVerbes)}
-                className="w-full flex items-center justify-between rounded-xl bg-secondary border border-border p-4 text-left hover:bg-secondary/80 transition-colors active:scale-[0.99]"
-              >
-                <span className="font-semibold text-sm">📋 Verbes d'action par domaine</span>
-                {showVerbes ? <ChevronUp className="w-4 h-4 text-muted-foreground" /> : <ChevronDown className="w-4 h-4 text-muted-foreground" />}
-              </button>
-              {showVerbes && (
-                <div className="mt-2 rounded-xl bg-card p-5 shadow-sm space-y-4">
-                  {Object.entries(verbesAction).map(([domain, verbes]) => (
-                    <div key={domain}>
-                      <h4 className="text-sm font-semibold text-primary mb-1">{domain}</h4>
-                      <p className="text-xs text-muted-foreground leading-relaxed">{verbes.join(" · ")}</p>
+                {/* Experience input */}
+                <div className="animate-fade-up-delay-1 rounded-xl bg-card p-6 shadow-sm">
+                  <h3 className="font-semibold text-sm flex items-center gap-2 mb-3">
+                    <Briefcase className="w-4 h-4 text-primary" />
+                    Saisissez une expérience ou tâche
+                  </h3>
+                  <div className="flex gap-3">
+                    <input
+                      value={input}
+                      onChange={(e) => setInput(e.target.value)}
+                      onKeyDown={(e) => e.key === "Enter" && handleTransform()}
+                      placeholder="Ex : agent de nettoyage, vente, cuisine…"
+                      className="flex-1 rounded-lg border border-input bg-background px-4 py-3 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+                    />
+                    <button
+                      onClick={handleTransform}
+                      disabled={!input.trim() || searching}
+                      className="inline-flex items-center gap-2 rounded-lg bg-accent px-5 py-3 text-accent-foreground font-medium shadow-sm hover:shadow-md transition-[box-shadow,opacity] disabled:opacity-40 active:scale-[0.97]"
+                    >
+                      <Wand2 className={`w-4 h-4 ${searching ? "animate-spin" : ""}`} />
+                      Transformer
+                    </button>
+                  </div>
+
+                  {/* Bullet legend */}
+                  <div className="mt-3 flex gap-4 text-xs text-muted-foreground">
+                    <span className="inline-flex items-center gap-1"><ArrowRight className="w-3 h-3 text-accent" /> Action</span>
+                    <span className="inline-flex items-center gap-1"><Square className="w-3 h-3 text-primary" /> Technique</span>
+                    <span className="inline-flex items-center gap-1"><Circle className="w-3 h-3 text-accent" /> Relationnel</span>
+                  </div>
+
+                  {/* Suggestions */}
+                  {suggestions.length > 0 && (
+                    <div className="mt-5 space-y-2">
+                      <p className="text-sm text-muted-foreground">
+                        Compétences suggérées pour « <span className="font-medium text-foreground">{input}</span> » :
+                      </p>
+                      {suggestions.map((s, i) => (
+                        <button
+                          key={i}
+                          onClick={() => addEntry(s)}
+                          className="w-full text-left rounded-lg border border-border bg-background p-3.5 hover:bg-secondary hover:shadow-sm transition-[background,box-shadow] active:scale-[0.98] group flex items-start gap-3"
+                        >
+                          <BulletIcon type={s.bullet} className={`w-4 h-4 mt-0.5 flex-shrink-0 ${bulletColors[s.bullet]}`} />
+                          <span className="text-sm leading-relaxed">{s.text}</span>
+                          <Plus className="w-4 h-4 ml-auto mt-0.5 text-accent opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0" />
+                        </button>
+                      ))}
                     </div>
-                  ))}
+                  )}
                 </div>
-              )}
-            </div>
 
-            {/* Atouts */}
-            <div className="animate-fade-up-delay-1 mb-8">
-              <button
-                onClick={() => setShowAtouts(!showAtouts)}
-                className="w-full flex items-center justify-between rounded-xl bg-accent/5 border border-accent/20 p-4 text-left hover:bg-accent/10 transition-colors active:scale-[0.99]"
-              >
-                <span className="font-semibold text-sm">⭐ Atouts clés à valoriser</span>
-                {showAtouts ? <ChevronUp className="w-4 h-4 text-muted-foreground" /> : <ChevronDown className="w-4 h-4 text-muted-foreground" />}
-              </button>
-              {showAtouts && (
-                <div className="mt-2 rounded-xl bg-card p-5 shadow-sm">
+                {/* Atouts rapides */}
+                <div className="animate-fade-up-delay-2 rounded-xl bg-accent/8 border border-accent/20 p-6">
+                  <h3 className="font-semibold text-sm mb-3">⭐ Atouts à valoriser</h3>
                   <div className="grid sm:grid-cols-2 gap-2">
                     {atouts.map((a) => (
                       <button
@@ -297,98 +320,139 @@ const CvGenerator = () => {
                         onClick={() => addAtout(a)}
                         className="text-left rounded-lg border border-border bg-background p-3 text-sm hover:bg-secondary hover:shadow-sm transition-[background,box-shadow] active:scale-[0.98] group flex items-center gap-2"
                       >
-                        <Plus className="w-3.5 h-3.5 text-accent opacity-0 group-hover:opacity-100 transition-opacity" />
+                        <Plus className="w-3.5 h-3.5 text-accent opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0" />
                         {a}
                       </button>
                     ))}
                   </div>
                 </div>
-              )}
-            </div>
 
-            {/* Input area */}
-            <div className="animate-fade-up-delay-2 bg-card rounded-xl p-6 shadow-sm mb-8">
-              <label className="text-sm font-medium mb-2 block">
-                Décrivez une tâche ou un domaine
-              </label>
-              <div className="flex gap-3">
-                <input
-                  value={input}
-                  onChange={(e) => setInput(e.target.value)}
-                  onKeyDown={(e) => e.key === "Enter" && handleTransform()}
-                  placeholder="Ex : nettoyage, vente, management, cuisine…"
-                  className="flex-1 rounded-lg border border-input bg-background px-4 py-3 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
-                />
-                <button
-                  onClick={handleTransform}
-                  disabled={!input.trim() || searching}
-                  className="inline-flex items-center gap-2 rounded-lg bg-accent px-5 py-3 text-accent-foreground font-medium shadow-sm hover:shadow-md transition-[box-shadow,opacity] disabled:opacity-40 active:scale-[0.97]"
-                >
-                  <Wand2 className={`w-4 h-4 ${searching ? "animate-spin" : ""}`} />
-                  Transformer
-                </button>
-              </div>
-
-              {suggestions.length > 0 && (
-                <div className="mt-6 space-y-3">
-                  <p className="text-sm text-muted-foreground">
-                    Suggestions pour « <span className="font-medium text-foreground">{input}</span> » :
-                  </p>
-                  {suggestions.map((s, i) => (
-                    <button
-                      key={i}
-                      onClick={() => addEntry(s)}
-                      className="w-full text-left rounded-lg border border-border bg-background p-4 hover:bg-secondary hover:shadow-sm transition-[background,box-shadow] active:scale-[0.98] group"
-                    >
-                      <div className="flex items-start gap-3">
-                        <BulletIcon type={s.bullet} className={`w-4 h-4 mt-0.5 flex-shrink-0 ${s.bullet === "technique" ? "text-primary" : "text-accent"}`} />
-                        <div>
-                          <span className="text-sm leading-relaxed">{s.text}</span>
-                          <span className="ml-2 text-[10px] uppercase tracking-wider text-muted-foreground">{bulletLabel[s.bullet]}</span>
-                        </div>
-                      </div>
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
-
-            {/* Selected entries */}
-            {entries.length > 0 && (
-              <div className="animate-fade-up bg-card rounded-xl p-6 shadow-sm">
-                <div className="flex items-center justify-between mb-4">
-                  <h3 className="font-semibold font-sans">
-                    Mes compétences ({entries.length})
-                  </h3>
+                {/* Copy all button */}
+                {entries.length > 0 && (
                   <button
                     onClick={copyAll}
-                    className="inline-flex items-center gap-2 text-sm text-primary hover:underline active:scale-[0.97]"
+                    className="w-full inline-flex items-center justify-center gap-2 rounded-lg bg-primary px-5 py-3 text-primary-foreground font-medium shadow-sm hover:shadow-md transition-[box-shadow] active:scale-[0.97]"
                   >
                     {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
-                    {copied ? "Copié !" : "Tout copier"}
+                    {copied ? "Copié !" : "Copier toutes les compétences"}
                   </button>
-                </div>
-                <div className="space-y-2">
-                  {entries.map((entry) => (
-                    <div key={entry.id} className="flex items-start gap-3 rounded-lg bg-background p-4 group">
-                      <BulletIcon type={entry.bullet} className={`w-4 h-4 mt-0.5 flex-shrink-0 ${entry.bullet === "technique" ? "text-primary" : "text-accent"}`} />
-                      <div className="flex-1">
-                        <p className="text-sm">{entry.selected}</p>
-                        <p className="text-xs text-muted-foreground mt-1">
-                          Source : « {entry.input} » · <span className="uppercase text-[10px] tracking-wider">{bulletLabel[entry.bullet]}</span>
-                        </p>
+                )}
+              </div>
+
+              {/* RIGHT — A4 Preview */}
+              <div className="animate-fade-up-delay-2 sticky top-24">
+                <div
+                  ref={a4Ref}
+                  className="bg-white rounded-lg shadow-xl ring-1 ring-black/5 mx-auto overflow-hidden"
+                  style={{ aspectRatio: "210 / 297", maxHeight: "85vh" }}
+                >
+                  <div className="h-full flex flex-col text-gray-800 text-[11px] leading-[1.5]">
+                    {/* A4 Header bar */}
+                    <div className="px-8 py-6" style={{ backgroundColor: "hsl(213, 65%, 38%)" }}>
+                      <h2 className="text-white text-xl font-bold tracking-wide">
+                        {profile.nom || "Votre Nom"}
+                      </h2>
+                      <p className="text-white/80 text-sm mt-0.5">
+                        {profile.titre || "Titre du poste visé"}
+                      </p>
+                      <div className="flex flex-wrap gap-x-4 gap-y-1 mt-3 text-white/70 text-[10px]">
+                        {profile.email && (
+                          <span className="inline-flex items-center gap-1">
+                            <Mail className="w-3 h-3" /> {profile.email}
+                          </span>
+                        )}
+                        {profile.telephone && (
+                          <span className="inline-flex items-center gap-1">
+                            <Phone className="w-3 h-3" /> {profile.telephone}
+                          </span>
+                        )}
+                        {profile.ville && (
+                          <span className="inline-flex items-center gap-1">
+                            <MapPin className="w-3 h-3" /> {profile.ville}
+                          </span>
+                        )}
                       </div>
-                      <button
-                        onClick={() => removeEntry(entry.id)}
-                        className="opacity-0 group-hover:opacity-100 text-muted-foreground hover:text-destructive transition-opacity"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
                     </div>
-                  ))}
+
+                    {/* A4 Body */}
+                    <div className="flex-1 px-8 py-6 overflow-y-auto space-y-5">
+                      {/* Compétences section */}
+                      <div>
+                        <h3 className="text-xs font-bold uppercase tracking-widest mb-3 pb-1.5 border-b-2" style={{ color: "hsl(213, 65%, 38%)", borderColor: "hsl(213, 65%, 38%)" }}>
+                          Compétences professionnelles
+                        </h3>
+                        {experienceEntries.length > 0 ? (
+                          <ul className="space-y-1.5">
+                            {experienceEntries.map((entry) => (
+                              <li key={entry.id} className="flex items-start gap-2 group/item">
+                                <BulletIcon type={entry.bullet} className={`w-3 h-3 mt-0.5 flex-shrink-0 ${entry.bullet === "technique" ? "text-blue-700" : "text-orange-500"}`} />
+                                <span className="flex-1">{entry.selected}</span>
+                                <button
+                                  onClick={() => removeEntry(entry.id)}
+                                  className="opacity-0 group-hover/item:opacity-100 text-gray-300 hover:text-red-400 transition-opacity"
+                                >
+                                  <Trash2 className="w-3 h-3" />
+                                </button>
+                              </li>
+                            ))}
+                          </ul>
+                        ) : (
+                          <p className="text-gray-400 italic text-[10px]">
+                            Saisissez une expérience à gauche pour voir les compétences apparaître ici…
+                          </p>
+                        )}
+                      </div>
+
+                      {/* Atouts section */}
+                      <div>
+                        <h3 className="text-xs font-bold uppercase tracking-widest mb-3 pb-1.5 border-b-2" style={{ color: "hsl(24, 85%, 52%)", borderColor: "hsl(24, 85%, 52%)" }}>
+                          Atouts
+                        </h3>
+                        {atoutEntries.length > 0 ? (
+                          <ul className="space-y-1.5">
+                            {atoutEntries.map((entry) => (
+                              <li key={entry.id} className="flex items-start gap-2 group/item">
+                                <ArrowRight className="w-3 h-3 mt-0.5 flex-shrink-0 text-orange-500" />
+                                <span className="flex-1">{entry.selected}</span>
+                                <button
+                                  onClick={() => removeEntry(entry.id)}
+                                  className="opacity-0 group-hover/item:opacity-100 text-gray-300 hover:text-red-400 transition-opacity"
+                                >
+                                  <Trash2 className="w-3 h-3" />
+                                </button>
+                              </li>
+                            ))}
+                          </ul>
+                        ) : (
+                          <p className="text-gray-400 italic text-[10px]">
+                            Ajoutez des atouts depuis la section à gauche…
+                          </p>
+                        )}
+                      </div>
+
+                      {/* Empty state guide */}
+                      {entries.length === 0 && (
+                        <div className="mt-4 rounded-lg border border-dashed border-gray-200 p-5 text-center">
+                          <Briefcase className="w-8 h-8 text-gray-300 mx-auto mb-2" />
+                          <p className="text-gray-400 text-[10px] font-medium">
+                            Votre CV se construit ici en temps réel
+                          </p>
+                          <p className="text-gray-300 text-[9px] mt-1">
+                            Style télégraphique · Verbes d'action · Pas de « Je… »
+                          </p>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* A4 Footer */}
+                    <div className="px-8 py-3 border-t border-gray-100 text-[9px] text-gray-400 flex justify-between">
+                      <span>My CV Coach · Méthode Fred</span>
+                      <span>→ Action · ■ Technique · ● Relationnel</span>
+                    </div>
+                  </div>
                 </div>
               </div>
-            )}
+            </div>
           </div>
         </section>
       </main>
