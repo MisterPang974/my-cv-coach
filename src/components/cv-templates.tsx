@@ -35,6 +35,7 @@ export interface TemplateProps {
   sidebarPos: SidebarPosition;
   bulletStyle: BulletStyle;
   bulletShape?: BulletShapeId;
+  competencyBulletShape?: BulletShapeId;
   gradient?: { id: string; label: string; from: string; to: string; angle?: number };
   gradientTarget?: "fond" | "rubriques";
   bgCircleColor?: string;
