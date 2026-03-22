@@ -162,7 +162,7 @@ const CvGenerator = () => {
   const [bgCircleColor, setBgCircleColor] = useState<string>("");
 
   // White palette option (always available)
-  const whitePalette: SectorPalette = { id: "blanc", label: "Blanc", primary: "#333333", accent: "#666666", swatch: "#ffffff" };
+  const whitePalette: SectorPalette = { id: "blanc", label: "Blanc pur", primary: "#2d2d2d", accent: "#555555", swatch: "#ffffff", bg: "#ffffff" };
 
   const a4Ref = useRef<HTMLDivElement>(null);
 
