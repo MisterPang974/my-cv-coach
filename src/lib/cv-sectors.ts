@@ -1,7 +1,7 @@
 // ─── Sector detection & palette system ─────────────────────────────
 
 export type SectorId = "manuel" | "tertiaire" | "tech" | "soin" | "creatif";
-export type LayoutId = "impact" | "artisan" | "creatif" | "mural" | "magazine" | "dashboard" | "medical" | "flux";
+export type LayoutId = "impact" | "artisan" | "creatif" | "mural" | "magazine" | "medical" | "flux";
 export type SidebarPosition = "left" | "right" | "top";
 export type BulletStyle = "fleches" | "cercles" | "carres" | "mixte";
 
