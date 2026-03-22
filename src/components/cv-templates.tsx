@@ -1216,25 +1216,60 @@ export const FluxTemplate = ({ profile, experienceEntries, atoutEntries, removeE
 };
 
 // ═══════════════════════════════════════════════════════════════════
-// 9. SÉRÉNITÉ — Soft, airy design (inspired by Amandine Chomet)
-//    Organic shapes, generous whitespace, elegant typography.
+// 9. SÉRÉNITÉ — Geometric waves, flowing lines, diamond accents
+//    Distinct from Artisan: uses angular/geometric decorative elements
+//    instead of organic blobs. bgCircleColor controls shape tint.
 // ═══════════════════════════════════════════════════════════════════
-export const SereniteTemplate = ({ profile, experienceEntries, atoutEntries, removeEntry, colors, bulletStyle, bulletShape, gradient, gradientTarget, textColors, titleColor, fontFamily, competencyDomains, competencyBulletShape, formationBulletShape, diversBulletShape, qualitesBulletShape, professionalExperiences, removeProfessionalExperience, formations, removeFormation, formationTitle, getCompanyLogoUrl, interests, removeInterest, interestDisplayMode, sectionOrder, qualities, removeQuality, levelDisplay }: TemplateProps) => {
+
+const SereniteWave = ({ color, className, style }: { color: string; className?: string; style?: React.CSSProperties }) => (
+  <svg className={className} style={style} viewBox="0 0 400 120" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+    <path d="M0 60C60 20 120 80 200 50C280 20 340 90 400 60V120H0Z" fill={color} />
+    <path d="M0 75C80 40 160 95 240 65C320 35 360 80 400 70V120H0Z" fill={color} opacity="0.5" />
+  </svg>
+);
+
+const SereniteCornerGeo = ({ color, className, style }: { color: string; className?: string; style?: React.CSSProperties }) => (
+  <svg className={className} style={style} viewBox="0 0 180 180" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <rect x="30" y="30" width="50" height="50" rx="6" transform="rotate(45 55 55)" fill={color} opacity="0.12" />
+    <rect x="70" y="10" width="35" height="35" rx="4" transform="rotate(30 87 27)" fill={color} opacity="0.08" />
+    <circle cx="140" cy="50" r="18" fill={color} opacity="0.06" />
+    <polygon points="20,120 50,90 80,120" fill={color} opacity="0.1" />
+    <line x1="10" y1="160" x2="170" y2="100" stroke={color} strokeWidth="1.5" opacity="0.08" />
+    <line x1="30" y1="170" x2="160" y2="130" stroke={color} strokeWidth="1" opacity="0.06" />
+  </svg>
+);
+
+const SereniteDiamondRow = ({ color, style }: { color: string; style?: React.CSSProperties }) => (
+  <svg style={style} viewBox="0 0 400 16" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-4">
+    {[40, 100, 160, 220, 280, 340].map((x, i) => (
+      <rect key={i} x={x - 4} y="4" width="8" height="8" rx="1" transform={`rotate(45 ${x} 8)`} fill={color} opacity={0.15 - i * 0.015} />
+    ))}
+    <line x1="0" y1="8" x2="400" y2="8" stroke={color} strokeWidth="0.5" opacity="0.1" />
+  </svg>
+);
+
+export const SereniteTemplate = ({ profile, experienceEntries, atoutEntries, removeEntry, colors, bulletStyle, bulletShape, gradient, gradientTarget, bgCircleColor, textColors, titleColor, fontFamily, competencyDomains, competencyBulletShape, formationBulletShape, diversBulletShape, qualitesBulletShape, professionalExperiences, removeProfessionalExperience, formations, removeFormation, formationTitle, getCompanyLogoUrl, interests, removeInterest, interestDisplayMode, sectionOrder, qualities, removeQuality, levelDisplay }: TemplateProps) => {
   const fondStyle = useGradientBg(gradient, gradientTarget);
   const headerTc = sectionTextColor("header", textColors, TEXT_BLACK);
   const compTc = sectionTextColor("competences", textColors, colors.primary);
   const expTc = sectionTextColor("experiences", textColors, TEXT_BLACK);
   const titleTc = resolveTitleTextColor(titleColor, headerTc, colors.accent);
+  const shapeCol = bgCircleColor || colors.accent;
 
   return (
-    <div className="h-full flex flex-col text-[11px] leading-[1.4] relative overflow-hidden" style={{ fontFamily: fontFamily || "'DM Sans', system-ui, sans-serif", background: `linear-gradient(180deg, ${colors.accent}08, white 50%, ${colors.primary}04)`, ...fondStyle }}>
-      {/* Decorative organic shapes */}
-      <Blob color={`${colors.accent}12`} className="absolute -top-20 -right-16 w-56 h-56" />
-      <Blob color={`${colors.primary}08`} className="absolute bottom-20 -left-20 w-48 h-48" />
-      <div className="absolute top-1/3 right-0 w-24 h-24 rounded-full" style={{ background: `radial-gradient(circle, ${colors.accent}08, transparent)` }} />
+    <div className="h-full flex flex-col text-[11px] leading-[1.4] relative overflow-hidden" style={{ fontFamily: fontFamily || "'DM Sans', system-ui, sans-serif", background: "#fcfcfd", ...fondStyle }}>
+      {/* Decorative geometric elements — NOT blobs */}
+      <SereniteCornerGeo color={shapeCol} className="absolute -top-4 -right-4 w-44 h-44" />
+      <SereniteCornerGeo color={shapeCol} className="absolute bottom-12 -left-8 w-36 h-36" style={{ transform: "rotate(180deg)" }} />
+      <div className="absolute top-[45%] right-4 w-12 h-12" style={{ opacity: 0.08 }}>
+        <svg viewBox="0 0 48 48" fill="none"><rect x="8" y="8" width="32" height="32" rx="4" transform="rotate(45 24 24)" fill={shapeCol} /></svg>
+      </div>
+      <div className="absolute top-[28%] left-6 w-8 h-8" style={{ opacity: 0.06 }}>
+        <svg viewBox="0 0 32 32" fill="none"><polygon points="16,2 30,16 16,30 2,16" fill={shapeCol} /></svg>
+      </div>
 
-      {/* Header — Name very prominent */}
-      <div className="relative px-7 pt-7 pb-4 z-10">
+      {/* Header — strong name identity */}
+      <div className="relative px-7 pt-7 pb-3 z-10">
         <h2 className="text-[26px] font-black uppercase leading-[1.05] tracking-tight" style={{ color: headerTc, fontFamily }}>
           {[profile.prenom, profile.nom].filter(Boolean).join(" ") || "PRÉNOM NOM"}
         </h2>
@@ -1242,16 +1277,19 @@ export const SereniteTemplate = ({ profile, experienceEntries, atoutEntries, rem
           {profile.titre || "Votre titre de poste"}
         </p>
         <div className="mt-3 flex flex-wrap gap-x-5 gap-y-1 text-[9px]" style={{ color: TEXT_MUTED }}>
-          {profile.telephone && <span className="flex items-center gap-1.5"><Phone className="w-3 h-3" style={{ color: colors.accent }} />{profile.telephone}</span>}
-          {profile.email && <span className="flex items-center gap-1.5"><Mail className="w-3 h-3" style={{ color: colors.accent }} />{profile.email}</span>}
-          {(profile.adresse || profile.ville) && <span className="flex items-center gap-1.5"><MapPin className="w-3 h-3" style={{ color: colors.accent }} />{[profile.adresse, profile.codePostal, profile.ville].filter(Boolean).join(", ")}</span>}
+          {profile.telephone && <span className="flex items-center gap-1.5"><Phone className="w-3 h-3" style={{ color: shapeCol }} />{profile.telephone}</span>}
+          {profile.email && <span className="flex items-center gap-1.5"><Mail className="w-3 h-3" style={{ color: shapeCol }} />{profile.email}</span>}
+          {(profile.adresse || profile.ville) && <span className="flex items-center gap-1.5"><MapPin className="w-3 h-3" style={{ color: shapeCol }} />{[profile.adresse, profile.codePostal, profile.ville].filter(Boolean).join(", ")}</span>}
         </div>
       </div>
 
-      <div className="mx-7 h-[1.5px] rounded-full" style={{ background: `linear-gradient(90deg, ${colors.accent}30, ${colors.primary}15, transparent)` }} />
+      {/* Diamond accent separator */}
+      <div className="relative z-10 mx-5">
+        <SereniteDiamondRow color={shapeCol} />
+      </div>
 
       {/* Two-column content */}
-      <div className="flex-1 flex px-5 pt-4 pb-3 gap-5 overflow-y-auto relative z-10">
+      <div className="flex-1 flex px-5 pt-3 pb-3 gap-5 overflow-y-auto relative z-10">
         {/* Left — Expériences + Formation */}
         <div className="flex-1 space-y-4">
           {professionalExperiences && professionalExperiences.length > 0 && (
@@ -1272,8 +1310,8 @@ export const SereniteTemplate = ({ profile, experienceEntries, atoutEntries, rem
             <div>
               <SectionHeading color={compTc || colors.primary} icon={<Layers className="w-3.5 h-3.5" />}>Compétences</SectionHeading>
               <ul className="space-y-0.5">{experienceEntries.map(e => (
-                <li key={e.id} className="flex items-start gap-2.5 group/item px-3 py-2 rounded-2xl" style={{ background: "rgba(255,255,255,0.6)", backdropFilter: "blur(6px)" }}>
-                  <span className="mt-0.5"><ModernBullet type={e.bullet} color={colors.accent} style={bulletStyle} shape={bulletShape} /></span>
+                <li key={e.id} className="flex items-start gap-2.5 group/item px-3 py-1.5 rounded-lg" style={{ background: `${shapeCol}04` }}>
+                  <span className="mt-0.5"><ModernBullet type={e.bullet} color={shapeCol} style={bulletStyle} shape={bulletShape} /></span>
                   <span className="flex-1" style={{ color: expTc || undefined }}>{e.selected}</span><DeleteBtn onClick={() => removeEntry(e.id)} />
                 </li>
               ))}</ul>
@@ -1281,15 +1319,14 @@ export const SereniteTemplate = ({ profile, experienceEntries, atoutEntries, rem
           )}
 
           {!professionalExperiences?.length && !formations?.length && experienceEntries.length === 0 && (
-            <EmptyState color={colors.accent} />
+            <EmptyState color={shapeCol} />
           )}
         </div>
 
         {/* Right — Compétences + Qualités + Divers */}
         <div className="w-[36%] space-y-3">
-          {/* Compétences with level dots */}
           {competencyDomains && competencyDomains.length > 0 && (
-            <div className="p-3 rounded-2xl" style={{ background: `${colors.primary}04`, border: `1px solid ${colors.primary}08` }}>
+            <div className="p-3 rounded-lg" style={{ background: `${shapeCol}06`, borderLeft: `2px solid ${shapeCol}20` }}>
               <p className="text-[8px] font-bold uppercase tracking-[0.15em] mb-2 flex items-center gap-1.5" style={{ color: compTc || colors.primary }}>
                 <Layers className="w-3 h-3" /> Compétences
               </p>
@@ -1297,9 +1334,8 @@ export const SereniteTemplate = ({ profile, experienceEntries, atoutEntries, rem
             </div>
           )}
 
-          {/* Qualités */}
           {qualities && qualities.length > 0 && (
-            <div className="p-3 rounded-2xl" style={{ background: `${colors.accent}06`, border: `1px solid ${colors.accent}10` }}>
+            <div className="p-3 rounded-lg" style={{ background: `${colors.accent}06`, borderLeft: `2px solid ${colors.accent}15` }}>
               <p className="text-[8px] font-bold uppercase tracking-[0.15em] mb-2 flex items-center gap-1.5" style={{ color: compTc || colors.accent }}>
                 <Heart className="w-3 h-3" /> Qualités
               </p>
@@ -1307,28 +1343,29 @@ export const SereniteTemplate = ({ profile, experienceEntries, atoutEntries, rem
             </div>
           )}
 
-          {/* Atouts */}
           {atoutEntries.length > 0 && (
-            <div className="p-3 rounded-2xl" style={{ background: "rgba(255,255,255,0.6)", backdropFilter: "blur(8px)", border: `1px solid ${colors.accent}10` }}>
+            <div className="p-3 rounded-lg" style={{ background: `${shapeCol}04`, borderLeft: `2px solid ${shapeCol}12` }}>
               <p className="text-[8px] font-bold uppercase tracking-[0.15em] mb-2" style={{ color: compTc || colors.accent }}>Atouts</p>
               <div className="flex flex-wrap gap-1">{atoutEntries.map(e => (
                 <span key={e.id} className="inline-flex items-center gap-1 px-2 py-0.5 text-[8px] group/item"
-                  style={{ borderRadius: "12px", background: `${colors.accent}08`, border: `1px solid ${colors.accent}12`, color: compTc || TEXT_MUTED }}>
+                  style={{ borderRadius: "4px", background: `${shapeCol}08`, border: `1px solid ${shapeCol}12`, color: compTc || TEXT_MUTED }}>
                   {e.selected}<DeleteBtn onClick={() => removeEntry(e.id)} />
                 </span>
               ))}</div>
             </div>
           )}
 
-          {/* Divers */}
           {interests && interests.length > 0 && (
-            <div className="p-3 rounded-2xl" style={{ background: "rgba(255,255,255,0.5)" }}>
+            <div className="p-3 rounded-lg" style={{ background: `${shapeCol}03` }}>
               <p className="text-[8px] font-bold uppercase tracking-[0.15em] mb-2" style={{ color: compTc || colors.accent }}>Centres d'intérêt</p>
               <InterestsBlock interests={interests} colors={colors} bulletStyle={bulletStyle} bulletShape={diversBulletShape || bulletShape} textColor={expTc} onRemove={removeInterest} displayMode={interestDisplayMode} />
             </div>
           )}
         </div>
       </div>
+
+      {/* Bottom wave decoration */}
+      <SereniteWave color={`${shapeCol}10`} className="absolute bottom-4 left-0 w-full h-12" />
 
       <div className="px-6 py-1.5 text-[7px] text-gray-300 flex justify-between relative z-10"><span>My CV Coach</span><span>Sérénité</span></div>
     </div>

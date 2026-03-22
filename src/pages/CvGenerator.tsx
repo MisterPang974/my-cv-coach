@@ -641,7 +641,7 @@ const CvGenerator = () => {
               {/* Row 2.5: Background circle color (Artisan/Créatif) */}
               {(activeLayout === "artisan" || activeLayout === "creatif" || activeLayout === "serenite") && (
                 <div className="rounded-xl bg-card border border-border px-4 py-3">
-                  <span className="text-xs font-semibold text-muted-foreground mb-2 block">🎨 Couleur des cercles d'arrière-plan</span>
+                  <span className="text-xs font-semibold text-muted-foreground mb-2 block">🎨 Couleur des formes d'arrière-plan</span>
                   <div className="flex flex-wrap gap-2">
                     {["", "#1a1a1a", colors.primary, colors.accent, "hsl(24,85%,52%)", "hsl(213,65%,38%)", "hsl(150,40%,35%)", "hsl(350,60%,40%)", "#ffffff"].map((c, i) => (
                       <button key={i} onClick={() => setBgCircleColor(c)} title={c || "Auto"}
