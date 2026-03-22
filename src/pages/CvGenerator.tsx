@@ -872,8 +872,66 @@ const CvGenerator = () => {
                     </div>
                   </div>
 
-
+                  {/* ═══ Formation & Diplômes Panel ═══ */}
                   <div className="rounded-2xl bg-card p-5 shadow-sm border border-border/50 space-y-4">
+                    <div className="flex items-center justify-between">
+                      <h3 className="font-semibold text-sm flex items-center gap-2"><GraduationCap className="w-4 h-4 text-primary" /> {formationTitle}</h3>
+                      <div className="flex items-center gap-1 rounded-lg bg-secondary p-0.5">
+                        {(["diplomes", "parcours"] as const).map(m => (
+                          <button key={m} onClick={() => setFormationMode(m)}
+                            className={`px-2.5 py-1 rounded-md text-[10px] font-medium transition-all ${formationMode === m ? "bg-primary text-primary-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"}`}>
+                            {m === "diplomes" ? "Diplômes" : "Parcours"}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Existing formations */}
+                    {formations.map(f => (
+                      <div key={f.id} className="rounded-xl border border-border bg-background p-3.5 space-y-0.5">
+                        <div className="flex items-start justify-between">
+                          <div>
+                            <p className="text-sm font-bold text-foreground">{f.intitule}</p>
+                            <p className="text-xs text-muted-foreground">{f.etablissement}{f.ville ? `, ${f.ville}` : ""}</p>
+                            <p className="text-[10px] text-muted-foreground">{f.dateDebut}{f.dateFin ? ` — ${f.dateFin}` : ""}</p>
+                          </div>
+                          <button onClick={() => removeFormation(f.id)} className="text-muted-foreground hover:text-destructive transition-colors"><Trash2 className="w-4 h-4" /></button>
+                        </div>
+                      </div>
+                    ))}
+
+                    {/* New formation form */}
+                    <div className="rounded-xl border border-dashed border-primary/30 bg-primary/[0.02] p-4 space-y-3">
+                      <p className="text-xs font-semibold text-primary">+ {formationMode === "parcours" ? "Nouvelle formation" : "Nouveau diplôme"}</p>
+                      <div className="grid sm:grid-cols-2 gap-2">
+                        <input value={editingFormation.dateDebut} onChange={e => setEditingFormation(p => ({ ...p, dateDebut: e.target.value }))}
+                          placeholder="Date début (ex: 2018)" className="rounded-lg border border-input bg-background px-3 py-2 text-xs placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring" />
+                        <input value={editingFormation.dateFin} onChange={e => setEditingFormation(p => ({ ...p, dateFin: e.target.value }))}
+                          placeholder="Date fin (ex: 2020)" className="rounded-lg border border-input bg-background px-3 py-2 text-xs placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring" />
+                      </div>
+                      <input value={editingFormation.intitule} onChange={e => setEditingFormation(p => ({ ...p, intitule: e.target.value }))}
+                        placeholder={formationMode === "parcours" ? "Intitulé de la formation / VAE *" : "Intitulé du diplôme *"}
+                        className="w-full rounded-lg border border-input bg-background px-3 py-2.5 text-sm font-semibold placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring" />
+                      <div className="grid sm:grid-cols-2 gap-2">
+                        <input value={editingFormation.etablissement} onChange={e => setEditingFormation(p => ({ ...p, etablissement: e.target.value }))}
+                          placeholder="Nom de l'école / organisme" className="rounded-lg border border-input bg-background px-3 py-2 text-xs placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring" />
+                        <input value={editingFormation.ville} onChange={e => setEditingFormation(p => ({ ...p, ville: e.target.value }))}
+                          placeholder="Ville" className="rounded-lg border border-input bg-background px-3 py-2 text-xs placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring" />
+                      </div>
+                      <button onClick={addFormation} disabled={!editingFormation.intitule.trim()}
+                        className="w-full rounded-xl bg-primary px-4 py-2.5 text-primary-foreground text-sm font-medium shadow-sm hover:shadow-md transition-all disabled:opacity-40 active:scale-[0.97]">
+                        Ajouter
+                      </button>
+                    </div>
+
+                    {formations.length > 3 && (
+                      <div className="flex items-start gap-2 rounded-xl bg-amber-50 border border-amber-200 px-4 py-3 text-[11px] text-amber-700">
+                        <AlertTriangle className="w-4 h-4 mt-0.5 flex-shrink-0 text-amber-500" />
+                        <p>Pour tenir sur une page A4, limitez-vous à <strong>2-3 formations</strong> maximum ou passez en mise en page deux colonnes.</p>
+                      </div>
+                    )}
+                  </div>
+
                     <div className="flex items-center justify-between">
                       <h3 className="font-semibold text-sm flex items-center gap-2"><Layers className="w-4 h-4 text-primary" /> Compétences par domaine</h3>
                       <div className="flex items-center gap-2">
