@@ -236,7 +236,7 @@ const FormationBlock = ({ formations, colors, bulletStyle, bulletShape, textColo
             <div>
               <p className="text-[10px] font-black leading-tight" style={{ color: textColor || (light ? "white" : colors.primary) }}>{f.intitule}</p>
               <p className="text-[8px]" style={{ color: textColor ? `${textColor}99` : (light ? "rgba(255,255,255,0.6)" : TEXT_MUTED) }}>
-                {f.etablissement}{f.ville ? ` · ${f.ville}` : ""}{f.dateDebut ? ` | ${f.dateDebut}` : ""}{f.dateFin ? ` — ${f.dateFin}` : ""}
+                {f.etablissement}{f.ville ? ` · ${f.ville}` : ""}{f.dateDebut ? ` | ${formatDateDisplay(f.dateDebut)}` : ""}{f.dateFin ? ` — ${formatDateDisplay(f.dateFin)}` : ""}
               </p>
             </div>
             {onRemove && <button onClick={() => onRemove(f.id)} className={`opacity-0 group-hover/item:opacity-100 transition-opacity ${light ? "text-white/30 hover:text-red-300" : "text-gray-300 hover:text-red-400"}`}><Trash2 className="w-2.5 h-2.5" /></button>}
