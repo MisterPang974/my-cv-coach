@@ -882,6 +882,17 @@ export const SereniteTemplate = ({ profile, experienceEntries, atoutEntries, rem
 
       <div className="flex-1 flex px-5 pt-4 pb-3 gap-4 overflow-y-auto relative z-10">
         <div className="flex-1 space-y-3">
+          {professionalExperiences && professionalExperiences.length > 0 && (
+            <>
+              <h3 className="text-[10px] font-bold uppercase tracking-[0.15em] flex items-center gap-2" style={{ color: expTc || colors.primary }}>
+                <span className="w-8 h-8 rounded-2xl flex items-center justify-center" style={{ background: `linear-gradient(135deg, ${colors.primary}10, ${colors.accent}08)` }}>
+                  <Briefcase className="w-3.5 h-3.5" style={{ color: colors.accent }} />
+                </span>
+                Expérience Professionnelle
+              </h3>
+              <ExperiencesBlock experiences={professionalExperiences} colors={colors} bulletStyle={bulletStyle} bulletShape={bulletShape} textColor={expTc} onRemove={removeProfessionalExperience} />
+            </>
+          )}
           <h3 className="text-[10px] font-bold uppercase tracking-[0.15em] flex items-center gap-2" style={{ color: compTc || colors.primary }}>
             <span className="w-8 h-8 rounded-2xl flex items-center justify-center" style={{ background: `linear-gradient(135deg, ${colors.primary}10, ${colors.accent}08)` }}>
               <Layers className="w-3.5 h-3.5" style={{ color: colors.accent }} />
