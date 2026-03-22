@@ -89,6 +89,7 @@ export interface TemplateProps {
   sectionOrder?: CvSectionId[];
   qualities?: string[];
   removeQuality?: (idx: number) => void;
+  levelDisplay?: "dots" | "bars" | "none";
 }
 
 // ─── Bullet renderers ──────────────────────────────────────────────
