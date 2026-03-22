@@ -1062,8 +1062,8 @@ export const SereniteTemplate = ({ profile, experienceEntries, atoutEntries, rem
         <Blob color="rgba(255,255,255,0.06)" className="absolute -top-12 -right-12 w-44 h-44" />
         <Blob color="rgba(255,255,255,0.04)" className="absolute bottom-0 left-0 w-32 h-32" />
         <div className="relative z-10">
+          <p className="text-2xl font-black uppercase tracking-wider leading-none" style={{ color: titleTc }}>{profile.titre || "TITRE DU POSTE"}</p>
           <NameBlock profile={profile} light size="lg" fontFamily={fontFamily} color={headerTc} />
-          <p className="text-xs font-medium mt-0.5" style={{ color: titleTc }}>{profile.titre || "Titre du poste"}</p>
           <div className="mt-3">
             <ContactLine profile={profile} light colors={colors} fontFamily={fontFamily} textColor={withAlpha(headerTc, 0.72)} iconColor={titleTc} />
           </div>
