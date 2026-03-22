@@ -500,7 +500,9 @@ export const MuralTemplate = ({ profile, experienceEntries, atoutEntries, remove
             <h3 className="text-[10px] font-black uppercase tracking-[0.25em]" style={{ color: compTc || colors.primary }}>Compétences</h3>
             <div className="flex-1 h-px" style={{ background: `linear-gradient(90deg, ${colors.primary}25, transparent)` }} />
           </div>
-          {experienceEntries.length > 0 ? (
+          {competencyDomains && competencyDomains.length > 0 ? (
+            <DomainsBlock domains={competencyDomains} colors={colors} bulletStyle={bulletStyle} bulletShape={bulletShape} textColor={expTc} />
+          ) : experienceEntries.length > 0 ? (
             <div className="grid grid-cols-1 gap-2">{experienceEntries.map(e => (
               <div key={e.id} className="flex items-start gap-2.5 group/item p-2.5 transition-all hover:translate-y-[-1px]"
                 style={{ borderRadius: "8px", background: "rgba(255,255,255,0.7)", backdropFilter: "blur(4px)", boxShadow: `0 2px 8px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04), inset 0 1px 0 rgba(255,255,255,0.8)`, borderLeft: `4px solid ${e.bullet === "technique" ? colors.primary : colors.accent}` }}>
