@@ -56,6 +56,10 @@ export interface CompetencyDomainData { id: string; label: string; items: { id: 
 
 export type CvSectionId = "experiences" | "competences" | "formation" | "qualites" | "divers";
 
+export type CaseStyle = "majuscules" | "standard";
+export type TitleDecoration = "none" | "underline" | "border";
+export type TextAlign = "left" | "center";
+
 export interface TemplateProps {
   profile: CvProfile;
   experienceEntries: CvEntry[];
@@ -90,6 +94,9 @@ export interface TemplateProps {
   qualities?: string[];
   removeQuality?: (idx: number) => void;
   levelDisplay?: "dots" | "bars" | "none";
+  caseStyle?: CaseStyle;
+  titleDecoration?: TitleDecoration;
+  textAlign?: TextAlign;
 }
 
 // ─── Bullet renderers ──────────────────────────────────────────────
@@ -179,12 +186,32 @@ const LevelBar = ({ level = 0, max = 5, color }: { level: number; max?: number; 
 );
 
 // ─── Section heading with separator line ───────────────────────────
-const SectionHeading = ({ children, color, icon }: { children: React.ReactNode; color: string; icon?: React.ReactNode }) => (
-  <div className="flex items-center gap-2" style={{ borderBottom: `1.5px solid ${color}20`, marginBottom: `calc(10px * var(--cv-gap-scale, 1))`, paddingBottom: `calc(6px * var(--cv-gap-scale, 1))` }}>
-    {icon && <span style={{ color }}>{icon}</span>}
-    <h3 className="font-black uppercase tracking-[0.2em]" style={{ color, fontSize: `calc(10px * var(--cv-title-scale, 1))` }}>{children}</h3>
-  </div>
-);
+/** Apply case style to text */
+const applyCase = (text: string, caseStyle?: CaseStyle): string => {
+  if (caseStyle === "majuscules") return text.toUpperCase();
+  return text;
+};
+
+const SectionHeading = ({ children, color, icon, caseStyle, decoration, align }: { children: React.ReactNode; color: string; icon?: React.ReactNode; caseStyle?: CaseStyle; decoration?: TitleDecoration; align?: TextAlign }) => {
+  const decoStyle: React.CSSProperties = {};
+  if (decoration === "underline") {
+    decoStyle.textDecoration = "underline";
+    decoStyle.textUnderlineOffset = "4px";
+    decoStyle.textDecorationColor = `${color}60`;
+  }
+  if (decoration === "border") {
+    decoStyle.border = `1.5px solid ${color}30`;
+    decoStyle.padding = "4px 8px";
+    decoStyle.borderRadius = "6px";
+    decoStyle.background = `${color}06`;
+  }
+  return (
+    <div className="flex items-center gap-2" style={{ borderBottom: decoration !== "border" ? `1.5px solid ${color}20` : undefined, marginBottom: `calc(10px * var(--cv-gap-scale, 1))`, paddingBottom: `calc(6px * var(--cv-gap-scale, 1))`, justifyContent: align === "center" ? "center" : undefined }}>
+      {icon && <span style={{ color }}>{icon}</span>}
+      <h3 className="font-black uppercase tracking-[0.2em]" style={{ color, fontSize: `calc(10px * var(--cv-title-scale, 1))`, ...decoStyle }}>{typeof children === "string" ? applyCase(children, caseStyle) : children}</h3>
+    </div>
+  );
+};
 
 /** Render competency domains with optional level indicators */
 const DomainsBlock = ({ domains, colors, bulletStyle, bulletShape, competencyBulletShape, textColor, light, levelDisplay = "none" }: { domains?: CompetencyDomainData[]; colors: Colors; bulletStyle: BulletStyle; bulletShape?: BulletShapeId; competencyBulletShape?: BulletShapeId; textColor?: string; light?: boolean; levelDisplay?: "dots" | "bars" | "none" }) => {
@@ -570,7 +597,7 @@ const FluxOrb = ({ color, className, style }: { color: string; className?: strin
 //    Professional sidebar with contact, competences, qualités, divers.
 //    Decorative: chevron stripes on sidebar + corner geometric accent.
 // ═══════════════════════════════════════════════════════════════════
-export const ImpactTemplate = ({ profile, experienceEntries, atoutEntries, removeEntry, colors, sidebarPos, bulletStyle, bulletShape, gradient, gradientTarget, bgCircleColor, textColors, titleColor, fontFamily, competencyDomains, competencyBulletShape, formationBulletShape, diversBulletShape, qualitesBulletShape, professionalExperiences, removeProfessionalExperience, formations, removeFormation, formationTitle, getCompanyLogoUrl, interests, removeInterest, interestDisplayMode, sectionOrder, qualities, removeQuality, levelDisplay }: TemplateProps) => {
+export const ImpactTemplate = ({ profile, experienceEntries, atoutEntries, removeEntry, colors, sidebarPos, bulletStyle, bulletShape, gradient, gradientTarget, bgCircleColor, textColors, titleColor, fontFamily, competencyDomains, competencyBulletShape, formationBulletShape, diversBulletShape, qualitesBulletShape, professionalExperiences, removeProfessionalExperience, formations, removeFormation, formationTitle, getCompanyLogoUrl, interests, removeInterest, interestDisplayMode, sectionOrder, qualities, removeQuality, levelDisplay, caseStyle, titleDecoration, textAlign }: TemplateProps) => {
   const fondStyle = useGradientBg(gradient, gradientTarget);
   const rubriqueStyle = useGradientRubrique(gradient, gradientTarget, colors.primary);
   const { isDark } = useAutoContrast(gradient, gradientTarget);
@@ -582,28 +609,25 @@ export const ImpactTemplate = ({ profile, experienceEntries, atoutEntries, remov
 
   const sidebar = (
     <div className="w-[36%] flex flex-col overflow-hidden relative" style={{ background: rubriqueStyle.background || colors.primary, color: "white" }}>
-      {/* Decorative chevron stripes */}
       <ImpactStripes color={shapeCol} className="absolute top-0 right-0 w-12 h-full" style={{ opacity: 0.8 }} />
       <div className="absolute bottom-8 left-3 w-10 h-10" style={{ opacity: 0.1 }}>
         <svg viewBox="0 0 40 40" fill="none"><rect x="5" y="5" width="30" height="30" rx="2" transform="rotate(45 20 20)" stroke={shapeCol} strokeWidth="2" /></svg>
       </div>
 
-      {/* Name & Title — strong presence */}
       <div className="px-5 pt-6 pb-4 relative z-10">
         <h2 className="text-[20px] font-black uppercase leading-[1.08] tracking-tight" style={{ color: titleTc, fontFamily }}>
           {[profile.prenom, profile.nom].filter(Boolean).join("\n").split("\n").map((n, i) => <span key={i} className="block">{n || (i === 0 ? "PRÉNOM" : "NOM")}</span>)}
         </h2>
         <p className="text-[9px] font-medium uppercase tracking-[0.15em] mt-2 leading-snug" style={{ color: `${titleTc}bb` }}>
-          {profile.titre || "Titre du poste visé"}
+          {applyCase(profile.titre || "Titre du poste visé", caseStyle)}
         </p>
       </div>
 
       <div className="w-[85%] mx-auto h-[1px] relative z-10" style={{ background: "rgba(255,255,255,0.12)" }} />
 
       <div className="px-5 py-3 space-y-3 flex-1 overflow-y-auto text-[9px] relative z-10">
-        {/* Contact */}
         <div>
-          <p className="text-[7px] uppercase tracking-[0.25em] font-bold mb-1.5" style={{ color: "rgba(255,255,255,0.4)" }}>Contact</p>
+          <p className="text-[7px] uppercase tracking-[0.25em] font-bold mb-1.5" style={{ color: "rgba(255,255,255,0.4)" }}>{applyCase("Contact", caseStyle)}</p>
           <div className="space-y-1" style={{ color: withAlpha(headerTc, 0.8) }}>
             {profile.telephone && <div className="flex items-center gap-2"><Phone className="w-3 h-3 flex-shrink-0" style={{ color: shapeCol }} />{profile.telephone}</div>}
             {profile.email && <div className="flex items-center gap-2"><Mail className="w-3 h-3 flex-shrink-0" style={{ color: shapeCol }} />{profile.email}</div>}
@@ -613,28 +637,25 @@ export const ImpactTemplate = ({ profile, experienceEntries, atoutEntries, remov
 
         <div className="w-full h-[1px]" style={{ background: "rgba(255,255,255,0.08)" }} />
 
-        {/* Compétences in sidebar with levels */}
         {competencyDomains && competencyDomains.length > 0 && (
           <div>
-            <p className="text-[7px] uppercase tracking-[0.25em] font-bold mb-1.5" style={{ color: "rgba(255,255,255,0.4)" }}>Compétences</p>
+            <p className="text-[7px] uppercase tracking-[0.25em] font-bold mb-1.5" style={{ color: "rgba(255,255,255,0.4)" }}>{applyCase("Compétences", caseStyle)}</p>
             <DomainsBlock domains={competencyDomains} colors={colors} bulletStyle={bulletStyle} bulletShape={bulletShape} competencyBulletShape={competencyBulletShape} textColor={withAlpha(compTc, 0.85)} light levelDisplay={levelDisplay} />
           </div>
         )}
 
         {competencyDomains && competencyDomains.length > 0 && <div className="w-full h-[1px]" style={{ background: "rgba(255,255,255,0.08)" }} />}
 
-        {/* Qualités */}
         {qualities && qualities.length > 0 && (
           <div>
-            <p className="text-[7px] uppercase tracking-[0.25em] font-bold mb-1.5" style={{ color: "rgba(255,255,255,0.4)" }}>Qualités</p>
+            <p className="text-[7px] uppercase tracking-[0.25em] font-bold mb-1.5" style={{ color: "rgba(255,255,255,0.4)" }}>{applyCase("Qualités", caseStyle)}</p>
             <QualitiesBlock qualities={qualities} colors={colors} bulletStyle={bulletStyle} bulletShape={qualitesBulletShape} textColor="rgba(255,255,255,0.85)" light onRemove={removeQuality} />
           </div>
         )}
 
-        {/* Divers */}
         {interests && interests.length > 0 && (
           <div>
-            <p className="text-[7px] uppercase tracking-[0.25em] font-bold mb-1.5" style={{ color: "rgba(255,255,255,0.4)" }}>Centres d'intérêt</p>
+            <p className="text-[7px] uppercase tracking-[0.25em] font-bold mb-1.5" style={{ color: "rgba(255,255,255,0.4)" }}>{applyCase("Centres d'intérêt", caseStyle)}</p>
             <InterestsBlock interests={interests} colors={colors} bulletStyle={bulletStyle} bulletShape={diversBulletShape} textColor="rgba(255,255,255,0.85)" light onRemove={removeInterest} displayMode="list" />
           </div>
         )}
@@ -645,35 +666,33 @@ export const ImpactTemplate = ({ profile, experienceEntries, atoutEntries, remov
   const main = (
     <div className="flex-1 flex flex-col bg-white relative overflow-hidden" style={{ ...fondStyle }}>
       <div className="h-[3px]" style={{ background: `linear-gradient(90deg, ${shapeCol}, ${colors.primary})` }} />
-      {/* Decorative corner accent on main area */}
       <div className="absolute top-8 right-4 w-20 h-20 opacity-[0.05]">
         <svg viewBox="0 0 80 80" fill="none"><polygon points="40,5 75,40 40,75 5,40" stroke={shapeCol} strokeWidth="2" /><polygon points="40,20 60,40 40,60 20,40" fill={shapeCol} opacity="0.3" /></svg>
       </div>
-      <div className="absolute bottom-16 right-8 w-6 h-6 rounded-full" style={{ background: `${shapeCol}10` }} />
 
       <div className="flex-1 px-6 py-5 overflow-y-auto relative z-10">
         {/* Expériences */}
         {professionalExperiences && professionalExperiences.length > 0 && (
           <>
-            <SectionHeading color={expTc || colors.primary} icon={<Briefcase className="w-3.5 h-3.5" />}>Expérience Professionnelle</SectionHeading>
+            <SectionHeading color={expTc || colors.primary} icon={<Briefcase className="w-3.5 h-3.5" />} caseStyle={caseStyle} decoration={titleDecoration} align={textAlign}>Expérience Professionnelle</SectionHeading>
             <ExperiencesBlock experiences={professionalExperiences} colors={colors} bulletStyle={bulletStyle} bulletShape={bulletShape} getCompanyLogoUrl={getCompanyLogoUrl} textColor={expTc || (isDark ? "white" : undefined)} light={isDark} onRemove={removeProfessionalExperience} />
-            <div className="my-4" />
+            <div style={{ marginTop: `calc(12px * var(--cv-gap-scale, 1))` }} />
           </>
         )}
 
         {/* Formation */}
         {formations && formations.length > 0 && (
           <>
-            <SectionHeading color={expTc || colors.primary} icon={<GraduationCap className="w-3.5 h-3.5" />}>{formationTitle || "Formation"}</SectionHeading>
+            <SectionHeading color={expTc || colors.primary} icon={<GraduationCap className="w-3.5 h-3.5" />} caseStyle={caseStyle} decoration={titleDecoration} align={textAlign}>{formationTitle || "Formation"}</SectionHeading>
             <FormationBlock formations={formations} colors={colors} bulletStyle={bulletStyle} bulletShape={formationBulletShape} textColor={expTc} onRemove={removeFormation} />
-            <div className="my-4" />
+            <div style={{ marginTop: `calc(12px * var(--cv-gap-scale, 1))` }} />
           </>
         )}
 
         {/* Atouts */}
         {atoutEntries.length > 0 && (
           <>
-            <SectionHeading color={expTc || colors.primary} icon={<Star className="w-3.5 h-3.5" />}>Atouts</SectionHeading>
+            <SectionHeading color={expTc || colors.primary} icon={<Star className="w-3.5 h-3.5" />} caseStyle={caseStyle} decoration={titleDecoration} align={textAlign}>Atouts</SectionHeading>
             <ul style={{ margin: 0, padding: 0, listStyle: "none" }}>
               {atoutEntries.map(e => (
                 <li key={e.id} className="flex items-center gap-2 group/item" style={{ fontSize: "9px", lineHeight: "1.3", paddingTop: "2px", paddingBottom: "2px" }}>
@@ -686,10 +705,9 @@ export const ImpactTemplate = ({ profile, experienceEntries, atoutEntries, remov
           </>
         )}
 
-        {/* Fallback: show competences in main if none in sidebar */}
         {(!competencyDomains || competencyDomains.length === 0) && experienceEntries.length > 0 && (
           <>
-            <SectionHeading color={expTc || colors.primary} icon={<Layers className="w-3.5 h-3.5" />}>Compétences</SectionHeading>
+            <SectionHeading color={expTc || colors.primary} icon={<Layers className="w-3.5 h-3.5" />} caseStyle={caseStyle} decoration={titleDecoration} align={textAlign}>Compétences</SectionHeading>
             <ul className="space-y-0.5">{experienceEntries.map(e => (
               <li key={e.id} className="flex items-start gap-2 text-[10px] group/item" style={{ color: expTc || undefined }}>
                 <span className="mt-0.5"><ModernBullet type={e.bullet} color={shapeCol} style={bulletStyle} shape={bulletShape} /></span>
@@ -717,7 +735,7 @@ export const ImpactTemplate = ({ profile, experienceEntries, atoutEntries, remov
 // 2. ARTISAN — Organic shapes, variable radius, warm textures
 //    - Photo removed. bgCircleColor for background circles.
 // ═══════════════════════════════════════════════════════════════════
-export const ArtisanTemplate = ({ profile, experienceEntries, atoutEntries, removeEntry, colors, sidebarPos, bulletStyle, bulletShape, gradient, gradientTarget, bgCircleColor, textColors, titleColor, fontFamily, competencyDomains, competencyBulletShape, formationBulletShape, diversBulletShape, qualitesBulletShape, professionalExperiences, removeProfessionalExperience, formations, removeFormation, formationTitle, getCompanyLogoUrl, interests, removeInterest, interestDisplayMode, sectionOrder, qualities, removeQuality }: TemplateProps) => {
+export const ArtisanTemplate = ({ profile, experienceEntries, atoutEntries, removeEntry, colors, sidebarPos, bulletStyle, bulletShape, gradient, gradientTarget, bgCircleColor, textColors, titleColor, fontFamily, competencyDomains, competencyBulletShape, formationBulletShape, diversBulletShape, qualitesBulletShape, professionalExperiences, removeProfessionalExperience, formations, removeFormation, formationTitle, getCompanyLogoUrl, interests, removeInterest, interestDisplayMode, sectionOrder, qualities, removeQuality, caseStyle, titleDecoration, textAlign }: TemplateProps) => {
   const fondStyle = useGradientBg(gradient, gradientTarget);
   const circleCol = bgCircleColor || colors.accent;
   const { isDark } = useAutoContrast(gradient, gradientTarget);
@@ -808,7 +826,7 @@ export const ArtisanTemplate = ({ profile, experienceEntries, atoutEntries, remo
 // 3. CRÉATIF — Prismatic shards, radial bursts, gradient header with
 //    angled clip-path. Wow-factor via layered gradient shapes.
 // ═══════════════════════════════════════════════════════════════════
-export const CreatifTemplate = ({ profile, experienceEntries, atoutEntries, removeEntry, colors, bulletStyle, bulletShape, gradient, gradientTarget, bgCircleColor, textColors, titleColor, fontFamily, competencyDomains, competencyBulletShape, formationBulletShape, diversBulletShape, qualitesBulletShape, professionalExperiences, removeProfessionalExperience, formations, removeFormation, formationTitle, getCompanyLogoUrl, interests, removeInterest, interestDisplayMode, sectionOrder, qualities, removeQuality, levelDisplay }: TemplateProps) => {
+export const CreatifTemplate = ({ profile, experienceEntries, atoutEntries, removeEntry, colors, bulletStyle, bulletShape, gradient, gradientTarget, bgCircleColor, textColors, titleColor, fontFamily, competencyDomains, competencyBulletShape, formationBulletShape, diversBulletShape, qualitesBulletShape, professionalExperiences, removeProfessionalExperience, formations, removeFormation, formationTitle, getCompanyLogoUrl, interests, removeInterest, interestDisplayMode, sectionOrder, qualities, removeQuality, levelDisplay, caseStyle, titleDecoration, textAlign }: TemplateProps) => {
   const fondStyle = useGradientBg(gradient, gradientTarget);
   const headerTc = sectionTextColor("header", textColors, TEXT_WHITE);
   const compTc = sectionTextColor("competences", textColors, colors.primary);
@@ -928,7 +946,7 @@ export const CreatifTemplate = ({ profile, experienceEntries, atoutEntries, remo
 // ═══════════════════════════════════════════════════════════════════
 // 4. MURAL — Grid overlays + diagonal accent shapes
 // ═══════════════════════════════════════════════════════════════════
-export const MuralTemplate = ({ profile, experienceEntries, atoutEntries, removeEntry, colors, sidebarPos, bulletStyle, bulletShape, gradient, gradientTarget, bgCircleColor, textColors, titleColor, fontFamily, competencyDomains, competencyBulletShape, formationBulletShape, diversBulletShape, qualitesBulletShape, professionalExperiences, removeProfessionalExperience, formations, removeFormation, formationTitle, getCompanyLogoUrl, interests, removeInterest, interestDisplayMode, sectionOrder, qualities, removeQuality }: TemplateProps) => {
+export const MuralTemplate = ({ profile, experienceEntries, atoutEntries, removeEntry, colors, sidebarPos, bulletStyle, bulletShape, gradient, gradientTarget, bgCircleColor, textColors, titleColor, fontFamily, competencyDomains, competencyBulletShape, formationBulletShape, diversBulletShape, qualitesBulletShape, professionalExperiences, removeProfessionalExperience, formations, removeFormation, formationTitle, getCompanyLogoUrl, interests, removeInterest, interestDisplayMode, sectionOrder, qualities, removeQuality, caseStyle, titleDecoration, textAlign }: TemplateProps) => {
   const fondStyle = useGradientBg(gradient, gradientTarget);
   const { isDark } = useAutoContrast(gradient, gradientTarget);
   const headerTc = sectionTextColor("header", textColors, TEXT_WHITE);
@@ -1029,7 +1047,7 @@ export const MuralTemplate = ({ profile, experienceEntries, atoutEntries, remove
 // 5. MAGAZINE — Diagonal gradient ribbons, mosaic accents, two-tone
 //    sidebar with radial gradient glow. Modern editorial feel.
 // ═══════════════════════════════════════════════════════════════════
-export const MagazineTemplate = ({ profile, experienceEntries, atoutEntries, removeEntry, colors, bulletStyle, bulletShape, gradient, gradientTarget, bgCircleColor, textColors, titleColor, fontFamily, competencyDomains, competencyBulletShape, formationBulletShape, diversBulletShape, qualitesBulletShape, professionalExperiences, removeProfessionalExperience, formations, removeFormation, formationTitle, getCompanyLogoUrl, interests, removeInterest, interestDisplayMode, sectionOrder, qualities, removeQuality, levelDisplay }: TemplateProps) => {
+export const MagazineTemplate = ({ profile, experienceEntries, atoutEntries, removeEntry, colors, bulletStyle, bulletShape, gradient, gradientTarget, bgCircleColor, textColors, titleColor, fontFamily, competencyDomains, competencyBulletShape, formationBulletShape, diversBulletShape, qualitesBulletShape, professionalExperiences, removeProfessionalExperience, formations, removeFormation, formationTitle, getCompanyLogoUrl, interests, removeInterest, interestDisplayMode, sectionOrder, qualities, removeQuality, levelDisplay, caseStyle, titleDecoration, textAlign }: TemplateProps) => {
   const fondStyle = useGradientBg(gradient, gradientTarget);
   const headerTc = sectionTextColor("header", textColors, TEXT_WHITE);
   const compTc = sectionTextColor("competences", textColors, "rgba(255,255,255,0.9)");
@@ -1159,7 +1177,7 @@ export const MagazineTemplate = ({ profile, experienceEntries, atoutEntries, rem
 // ═══════════════════════════════════════════════════════════════════
 // 7. MÉDICAL — Cross motifs + soft arc decorative shapes
 // ═══════════════════════════════════════════════════════════════════
-export const MedicalTemplate = ({ profile, experienceEntries, atoutEntries, removeEntry, colors, bulletStyle, bulletShape, gradient, gradientTarget, bgCircleColor, textColors, titleColor, fontFamily, competencyDomains, competencyBulletShape, formationBulletShape, diversBulletShape, qualitesBulletShape, professionalExperiences, removeProfessionalExperience, formations, removeFormation, formationTitle, getCompanyLogoUrl, interests, removeInterest, interestDisplayMode, sectionOrder, qualities, removeQuality }: TemplateProps) => {
+export const MedicalTemplate = ({ profile, experienceEntries, atoutEntries, removeEntry, colors, bulletStyle, bulletShape, gradient, gradientTarget, bgCircleColor, textColors, titleColor, fontFamily, competencyDomains, competencyBulletShape, formationBulletShape, diversBulletShape, qualitesBulletShape, professionalExperiences, removeProfessionalExperience, formations, removeFormation, formationTitle, getCompanyLogoUrl, interests, removeInterest, interestDisplayMode, sectionOrder, qualities, removeQuality, caseStyle, titleDecoration, textAlign }: TemplateProps) => {
   const fondStyle = useGradientBg(gradient, gradientTarget);
   const headerTc = sectionTextColor("header", textColors, TEXT_WHITE);
   const compTc = sectionTextColor("competences", textColors, colors.primary);
@@ -1266,7 +1284,7 @@ export const MedicalTemplate = ({ profile, experienceEntries, atoutEntries, remo
 // 8. FLUX — Aurora bands, flowing gradient ribbons, radial orbs.
 //    Organic motion feel with layered translucent gradient shapes.
 // ═══════════════════════════════════════════════════════════════════
-export const FluxTemplate = ({ profile, experienceEntries, atoutEntries, removeEntry, colors, bulletStyle, bulletShape, gradient, gradientTarget, bgCircleColor, textColors, titleColor, fontFamily, competencyDomains, competencyBulletShape, formationBulletShape, diversBulletShape, qualitesBulletShape, professionalExperiences, removeProfessionalExperience, formations, removeFormation, formationTitle, getCompanyLogoUrl, interests, removeInterest, interestDisplayMode, sectionOrder, qualities, removeQuality, levelDisplay }: TemplateProps) => {
+export const FluxTemplate = ({ profile, experienceEntries, atoutEntries, removeEntry, colors, bulletStyle, bulletShape, gradient, gradientTarget, bgCircleColor, textColors, titleColor, fontFamily, competencyDomains, competencyBulletShape, formationBulletShape, diversBulletShape, qualitesBulletShape, professionalExperiences, removeProfessionalExperience, formations, removeFormation, formationTitle, getCompanyLogoUrl, interests, removeInterest, interestDisplayMode, sectionOrder, qualities, removeQuality, levelDisplay, caseStyle, titleDecoration, textAlign }: TemplateProps) => {
   const fondStyle = useGradientBg(gradient, gradientTarget);
   const headerTc = sectionTextColor("header", textColors, TEXT_WHITE);
   const compTc = sectionTextColor("competences", textColors, colors.primary);
@@ -1433,7 +1451,7 @@ const SereniteDiamondRow = ({ color, style }: { color: string; style?: React.CSS
   </svg>
 );
 
-export const SereniteTemplate = ({ profile, experienceEntries, atoutEntries, removeEntry, colors, bulletStyle, bulletShape, gradient, gradientTarget, bgCircleColor, textColors, titleColor, fontFamily, competencyDomains, competencyBulletShape, formationBulletShape, diversBulletShape, qualitesBulletShape, professionalExperiences, removeProfessionalExperience, formations, removeFormation, formationTitle, getCompanyLogoUrl, interests, removeInterest, interestDisplayMode, sectionOrder, qualities, removeQuality, levelDisplay }: TemplateProps) => {
+export const SereniteTemplate = ({ profile, experienceEntries, atoutEntries, removeEntry, colors, bulletStyle, bulletShape, gradient, gradientTarget, bgCircleColor, textColors, titleColor, fontFamily, competencyDomains, competencyBulletShape, formationBulletShape, diversBulletShape, qualitesBulletShape, professionalExperiences, removeProfessionalExperience, formations, removeFormation, formationTitle, getCompanyLogoUrl, interests, removeInterest, interestDisplayMode, sectionOrder, qualities, removeQuality, levelDisplay, caseStyle, titleDecoration, textAlign }: TemplateProps) => {
   const fondStyle = useGradientBg(gradient, gradientTarget);
   const headerTc = sectionTextColor("header", textColors, TEXT_BLACK);
   const compTc = sectionTextColor("competences", textColors, colors.primary);

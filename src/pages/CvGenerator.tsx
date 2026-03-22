@@ -6,7 +6,7 @@ import {
   Wand2, Copy, Check, Plus, Trash2, User, Briefcase, Palette, Star, Settings2, ChevronRight, Type, AlertTriangle, ToggleLeft, ToggleRight, Gauge, Layers, Send, FolderPlus, GraduationCap, Building2, Eye, EyeOff, ArrowUp, ArrowDown, GripVertical, Sparkles, Heart
 } from "lucide-react";
 import { detectSector, sectorConfigs, layoutMeta, gradientLibrary, bulletShapes, type SectorId, type LayoutId, type SidebarPosition, type BulletStyle, type SectorPalette, type SectorGradient, type BulletShapeId } from "@/lib/cv-sectors";
-import { templateRegistry, ModernBullet, ShapeBullet, fontOptions, type TemplateProps, type TextColorSection, type FontId } from "@/components/cv-templates";
+import { templateRegistry, ModernBullet, ShapeBullet, fontOptions, type TemplateProps, type TextColorSection, type FontId, type CaseStyle, type TitleDecoration, type TextAlign } from "@/components/cv-templates";
 
 // ─── Types ─────────────────────────────────────────────────────────
 type BulletType = "action" | "technique" | "relationnel";
@@ -316,6 +316,37 @@ const CvGenerator = () => {
   const [newQualityText, setNewQualityText] = useState("");
   const [qualitiesMode, setQualitiesMode] = useState<"libre" | "ia">("libre");
 
+  // Case style & decoration
+  const [caseStyle, setCaseStyle] = useState<CaseStyle>("standard");
+  const [titleDecoration, setTitleDecoration] = useState<TitleDecoration>("none");
+  const [textAlign, setTextAlign] = useState<TextAlign>("left");
+
+  // Chronological sorting utility (most recent first)
+  const parseDate = (d: string): number => {
+    if (!d) return 0;
+    // MM/YYYY
+    const mmyyyy = d.match(/^(\d{2})\/(\d{4})$/);
+    if (mmyyyy) return parseInt(mmyyyy[2]) * 100 + parseInt(mmyyyy[1]);
+    // YYYY-MM
+    const isoDash = d.match(/^(\d{4})-(\d{2})/);
+    if (isoDash) return parseInt(isoDash[1]) * 100 + parseInt(isoDash[2]);
+    // YYYY
+    const justYear = d.match(/^(\d{4})$/);
+    if (justYear) return parseInt(justYear[1]) * 100;
+    return 0;
+  };
+
+  const sortedExperiences = useMemo(() =>
+    [...experiences].sort((a, b) => {
+      const dateA = a.aujourdhui ? 999999 : parseDate(a.dateFin || a.dateDebut);
+      const dateB = b.aujourdhui ? 999999 : parseDate(b.dateFin || b.dateDebut);
+      return dateB - dateA;
+    }), [experiences]);
+
+  const sortedFormations = useMemo(() =>
+    [...formations].sort((a, b) => parseDate(b.dateFin || b.dateDebut) - parseDate(a.dateFin || a.dateDebut)),
+    [formations]);
+
   // Section order for reordering
   type CvSection = "experiences" | "competences" | "formation" | "qualites" | "divers";
   const [sectionOrder, setSectionOrder] = useState<CvSection[]>(["experiences", "competences", "formation", "qualites", "divers"]);
@@ -503,7 +534,7 @@ const CvGenerator = () => {
   const Template = templateRegistry[activeLayout];
   const activeDomains = domains.filter(d => d.enabled).map(d => ({ ...d, items: d.items.filter(i => i.enabled).map(i => ({ ...i, level: i.level })) })).filter(d => d.items.length > 0);
   const formationTitle = formationMode === "parcours" ? "Parcours de formation" : "Formation & Diplômes";
-  const templateProps: TemplateProps = { profile, experienceEntries, atoutEntries, entries, removeEntry, colors, sidebarPos, bulletStyle, bulletShape: activeBulletShape || undefined, competencyBulletShape: competencyBulletShape || undefined, formationBulletShape: formationBulletShape || undefined, diversBulletShape: diversBulletShape || undefined, qualitesBulletShape: qualitesBulletShape || undefined, gradient: activeGradient || undefined, gradientTarget, bgCircleColor: bgCircleColor || undefined, textColors, titleColor: titleColor || undefined, fontFamily: currentFont, competencyDomains: activeDomains, professionalExperiences: experiences, removeProfessionalExperience: removeExperience, formations, removeFormation, formationTitle, getCompanyLogoUrl, interests, removeInterest, interestDisplayMode, sectionOrder: sectionOrder as any, qualities, removeQuality, levelDisplay };
+  const templateProps: TemplateProps = { profile, experienceEntries, atoutEntries, entries, removeEntry, colors, sidebarPos, bulletStyle, bulletShape: activeBulletShape || undefined, competencyBulletShape: competencyBulletShape || undefined, formationBulletShape: formationBulletShape || undefined, diversBulletShape: diversBulletShape || undefined, qualitesBulletShape: qualitesBulletShape || undefined, gradient: activeGradient || undefined, gradientTarget, bgCircleColor: bgCircleColor || undefined, textColors, titleColor: titleColor || undefined, fontFamily: currentFont, competencyDomains: activeDomains, professionalExperiences: sortedExperiences, removeProfessionalExperience: removeExperience, formations: sortedFormations, removeFormation, formationTitle, getCompanyLogoUrl, interests, removeInterest, interestDisplayMode, sectionOrder: sectionOrder as any, qualities, removeQuality, levelDisplay, caseStyle, titleDecoration, textAlign };
 
   return (
     <div className="min-h-screen bg-background">
@@ -772,6 +803,57 @@ const CvGenerator = () => {
                     </div>
                   ))}
                 </div>
+              </div>
+
+              {/* Row 7: Casse & Finitions */}
+              <div className="rounded-xl bg-card border border-border px-4 py-3 space-y-3">
+                <div className="flex items-center gap-2 mb-1">
+                  <Type className="w-4 h-4 text-muted-foreground" />
+                  <span className="text-xs font-semibold text-muted-foreground">Casse & Finitions</span>
+                </div>
+
+                {/* Case toggle */}
+                <div>
+                  <p className="text-[10px] text-muted-foreground mb-1.5 font-medium">Casse des titres</p>
+                  <div className="flex items-center gap-1 rounded-lg bg-secondary p-0.5">
+                    {(["standard", "majuscules"] as const).map(m => (
+                      <button key={m} onClick={() => setCaseStyle(m)}
+                        className={`px-3 py-1.5 rounded-md text-[10px] font-medium transition-all ${caseStyle === m ? "bg-primary text-primary-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"}`}>
+                        {m === "standard" ? "Aa Casse Standard" : "AA TOUT EN MAJUSCULES"}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Text alignment */}
+                <div>
+                  <p className="text-[10px] text-muted-foreground mb-1.5 font-medium">Alignement des rubriques</p>
+                  <div className="flex items-center gap-1 rounded-lg bg-secondary p-0.5">
+                    {(["left", "center"] as const).map(m => (
+                      <button key={m} onClick={() => setTextAlign(m)}
+                        className={`px-3 py-1.5 rounded-md text-[10px] font-medium transition-all ${textAlign === m ? "bg-primary text-primary-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"}`}>
+                        {m === "left" ? "← Gauche" : "↔ Centré"}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Title decoration */}
+                <div>
+                  <p className="text-[10px] text-muted-foreground mb-1.5 font-medium">Style des titres de rubrique</p>
+                  <div className="flex items-center gap-1 rounded-lg bg-secondary p-0.5">
+                    {(["none", "underline", "border"] as const).map(m => (
+                      <button key={m} onClick={() => setTitleDecoration(m)}
+                        className={`px-3 py-1.5 rounded-md text-[10px] font-medium transition-all ${titleDecoration === m ? "bg-primary text-primary-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"}`}>
+                        {m === "none" ? "Normal" : m === "underline" ? "Souligné" : "Encadré"}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <p className="text-[10px] text-muted-foreground bg-secondary/50 rounded-lg px-3 py-1.5">
+                  📅 Les expériences et formations sont triées automatiquement du plus récent au plus ancien.
+                </p>
               </div>
             </div>
 
