@@ -1,5 +1,5 @@
-import { Mail, Phone, MapPin, Briefcase, Layers, Star, ChevronRight, Sparkles, Trash2, Grid3X3, ArrowRightCircle } from "lucide-react";
-import type { SidebarPosition, BulletStyle } from "@/lib/cv-sectors";
+import { Mail, Phone, MapPin, Briefcase, Layers, Star, ChevronRight, Sparkles, Trash2, Grid3X3, ArrowRightCircle, Heart } from "lucide-react";
+import type { SidebarPosition, BulletStyle, BulletShapeId } from "@/lib/cv-sectors";
 
 // ─── Types ─────────────────────────────────────────────────────────
 type BulletType = "action" | "technique" | "relationnel";
