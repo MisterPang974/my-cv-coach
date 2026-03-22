@@ -1,36 +1,36 @@
-import { FileText, Target, Lightbulb, TrendingUp, Layout, PenLine } from "lucide-react";
+import { FileText, Target, Lightbulb, Palette, Type, CheckSquare } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
 const tips = [
   {
     icon: Target,
-    title: "Adaptez chaque candidature",
-    desc: "Personnalisez votre CV pour chaque offre. Reprenez les mots-clés de l'annonce dans vos expériences.",
-  },
-  {
-    icon: TrendingUp,
-    title: "Quantifiez vos résultats",
-    desc: "« Augmenté les ventes de 23% » est plus impactant que « Responsable des ventes ».",
-  },
-  {
-    icon: Layout,
-    title: "Structure claire & aérée",
-    desc: "Un recruteur passe 7 secondes sur un CV. Titres lisibles, espaces, hiérarchie visuelle.",
-  },
-  {
-    icon: PenLine,
-    title: "Verbes d'action forts",
-    desc: "Commencez chaque point par un verbe : piloté, conçu, optimisé, lancé, négocié.",
+    title: "Les 4C à respecter",
+    desc: "Créativité, Clarté, Cohérence, Commercial — les 4 piliers d'un CV qui retient l'attention des recruteurs.",
   },
   {
     icon: FileText,
-    title: "Une page, pas plus",
-    desc: "Sauf 15+ ans d'expérience. Gardez uniquement ce qui est pertinent pour le poste visé.",
+    title: "Bilan de compétences d'abord",
+    desc: "Identifiez vos savoir-faire, savoir-être et savoirs avant de rédiger. Utilisez la méthode de l'interview croisée.",
   },
   {
     icon: Lightbulb,
-    title: "Compétences techniques visibles",
-    desc: "Listez clairement vos outils et technologies. Les ATS scannent ces mots-clés en priorité.",
+    title: "Des tâches aux compétences",
+    desc: "Reformulez vos tâches quotidiennes avec des verbes d'action : piloter, concevoir, optimiser, négocier.",
+  },
+  {
+    icon: Palette,
+    title: "Couleurs et illustrations",
+    desc: "Utilisez des icônes métiers, logos et couleurs en cohérence avec votre secteur. Connaissez la symbolique des couleurs.",
+  },
+  {
+    icon: Type,
+    title: "Typographie soignée",
+    desc: "Une ou deux polices classiques maximum. Corps 12 pour les paragraphes. Envoyez toujours en PDF.",
+  },
+  {
+    icon: CheckSquare,
+    title: "Chiffres et résultats",
+    desc: "« Augmenté les ventes de 23% » vaut mieux que « Responsable des ventes ». Quantifiez chaque réalisation.",
   },
 ];
 
@@ -51,12 +51,12 @@ const Tips = () => {
     <section id="conseils" className="py-24 bg-card" ref={ref}>
       <div className="container mx-auto px-6">
         <div className="max-w-2xl mb-16">
-          <p className="text-sm font-semibold text-primary uppercase tracking-widest mb-3">Conseils d'experts</p>
+          <p className="text-sm font-semibold text-primary uppercase tracking-widest mb-3">Méthode Fred</p>
           <h2 className="text-3xl md:text-4xl tracking-tight mb-4">
-            Les 6 règles d'or d'un CV qui convertit
+            Les 6 principes du CV Créatif
           </h2>
           <p className="text-muted-foreground text-lg">
-            Appliquez ces principes pour transformer votre CV en machine à entretiens.
+            Inspirés des 10 commandements du CV et de la méthode d'évolution professionnelle.
           </p>
         </div>
 

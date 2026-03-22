@@ -1,9 +1,32 @@
 import { useState } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import { Wand2, Copy, Check, Plus, Trash2 } from "lucide-react";
+import { Wand2, Copy, Check, Plus, Trash2, BookOpen, ChevronDown, ChevronUp } from "lucide-react";
 
-// Mapping de phrases simples → compétences percutantes
+// Verbes d'action par domaine (from Annexe 4 - Evolution Pro)
+const verbesAction: Record<string, string[]> = {
+  "Administratif": ["Acheter", "Agencer", "Archiver", "Cataloguer", "Centraliser", "Classifier", "Commander", "Compiler", "Constituer", "Contrôler", "Documenter", "Effectuer", "Élaborer", "Enregistrer", "Envoyer", "Inspecter", "Inventorier", "Mettre en œuvre", "Organiser", "Présenter"],
+  "Financier": ["Administrer", "Analyser", "Anticiper", "Auditer", "Budgétiser", "Calculer", "Chiffrer", "Commercialiser", "Consolider", "Engager", "Équilibrer", "Estimer", "Évaluer", "Gérer", "Planifier", "Prévoir", "Réguler", "Vérifier"],
+  "Gestion": ["Affecter", "Améliorer", "Analyser", "Anticiper", "Auditer", "Augmenter", "Centraliser", "Concevoir", "Coordonner", "Décider", "Déléguer", "Diriger", "Élaborer", "Engager", "Établir", "Évaluer", "Générer", "Optimiser", "Piloter"],
+  "Service & Conseil": ["Accueillir", "Aider", "Arranger", "Changer", "Clarifier", "Commander", "Conseiller", "Démontrer", "Diagnostiquer", "Écouter", "Éduquer", "Évaluer", "Expliquer", "Faciliter", "Guider", "Intervenir", "Livrer", "Optimiser", "Préparer", "Présenter"],
+  "Communication": ["Activer", "Animer", "Comprendre", "Consolider", "Correspondre", "Créer", "Développer", "Écrire", "Exposer", "Exprimer", "Formuler", "Identifier", "Influencer", "Interpréter", "Lancer", "Négocier", "Persuader", "Promouvoir", "Publier", "Recruter"],
+};
+
+// 10 Commandements du CV Créatif (from MON CV CREATIF BON)
+const commandements = [
+  "Avant de rédiger ton CV, un bilan de compétences tu feras.",
+  "Avec précision ton projet professionnel (fonction, secteur, lieu) tu définiras.",
+  "La finalité du CV (décrocher des entretiens) jamais tu n'oublieras.",
+  "Les 4C (Créativité, Clarté, Cohérence, Commercial), tu respecteras.",
+  "Grâce à la créativité, ton CV jamais on n'oubliera.",
+  "Au recruteur, ton parcours cohérent semblera.",
+  "Au recruteur, ton CV toujours clair apparaîtra.",
+  "De chaque point de ton CV, un atout tu feras.",
+  "Les avis et conseils de tous, tu écouteras.",
+  "Les chiffres tu regarderas, les résultats tu chercheras.",
+];
+
+// Mapping des tâches simples → compétences percutantes (inspired by Evolution Pro method)
 const transformations: Record<string, string[]> = {
   "nettoyage": ["Application rigoureuse des normes d'hygiène et de propreté", "Maîtrise des protocoles de nettoyage et de désinfection", "Respect des standards sanitaires en environnement professionnel"],
   "ménage": ["Entretien méthodique des espaces professionnels", "Application des normes d'hygiène et de salubrité", "Gestion autonome de l'entretien de locaux multi-surfaces"],
@@ -22,21 +45,20 @@ const transformations: Record<string, string[]> = {
   "jardinage": ["Entretien paysager et aménagement d'espaces verts", "Maîtrise des techniques de taille, tonte et plantation", "Application des normes phytosanitaires et développement durable"],
   "garde d'enfants": ["Prise en charge éducative et sécuritaire d'enfants", "Animation d'activités d'éveil adaptées à chaque tranche d'âge", "Communication bienveillante avec les familles"],
   "service": ["Service en salle selon les standards de l'établissement", "Maîtrise des techniques de mise en place et de découpe", "Conseil œnologique et gastronomique personnalisé"],
+  "rangement": ["Effectuer le rangement et nettoyer le magasin", "Organisation méthodique des espaces de travail", "Mise en application des procédures d'inventaire et de stockage"],
+  "réception": ["Réceptionner et vérifier les produits", "Contrôle qualité et conformité des livraisons", "Gestion des réclamations fournisseurs"],
+  "étiquetage": ["Étiqueter et mettre en rayon les produits", "Application des règles de merchandising", "Mise à jour des prix et des informations produits"],
+  "conseil client": ["Accueillir et orienter le client", "Conseiller le client selon ses besoins", "Fidélisation par un service personnalisé"],
+  "encaissement": ["Effectuer les opérations d'encaissement", "Gestion de caisse et clôture de journée", "Traitement multimodal des paiements"],
 };
 
 const findSuggestions = (input: string): string[] => {
   const lower = input.toLowerCase().trim();
   if (!lower) return [];
-
-  // Exact match
   if (transformations[lower]) return transformations[lower];
-
-  // Partial match
   for (const [key, values] of Object.entries(transformations)) {
     if (key.includes(lower) || lower.includes(key)) return values;
   }
-
-  // Fallback: generate generic professional phrasing
   if (lower.length > 2) {
     return [
       `Maîtrise opérationnelle en ${lower}`,
@@ -44,7 +66,6 @@ const findSuggestions = (input: string): string[] => {
       `Application des bonnes pratiques professionnelles en ${lower}`,
     ];
   }
-
   return [];
 };
 
@@ -60,11 +81,12 @@ const CvGenerator = () => {
   const [entries, setEntries] = useState<CvEntry[]>([]);
   const [copied, setCopied] = useState(false);
   const [searching, setSearching] = useState(false);
+  const [showCommandements, setShowCommandements] = useState(false);
+  const [showVerbes, setShowVerbes] = useState(false);
 
   const handleTransform = () => {
     if (!input.trim()) return;
     setSearching(true);
-    // Simulate a brief processing delay
     setTimeout(() => {
       setSuggestions(findSuggestions(input));
       setSearching(false);
@@ -96,19 +118,68 @@ const CvGenerator = () => {
           <div className="container mx-auto px-6 max-w-3xl">
             <div className="animate-fade-up mb-12">
               <p className="text-sm font-semibold text-primary uppercase tracking-widest mb-3">
-                Générateur intelligent
+                Méthode Fred · Générateur intelligent
               </p>
               <h1 className="text-3xl md:text-4xl tracking-tight mb-4">
                 Transformez vos tâches en compétences
               </h1>
               <p className="text-muted-foreground text-lg max-w-xl">
                 Tapez une tâche simple et découvrez comment la formuler de manière
-                percutante pour votre CV. Basé sur la Méthode Fred.
+                percutante pour votre CV. Inspiré de la méthode d'interview croisée.
               </p>
             </div>
 
+            {/* 10 Commandements toggle */}
+            <div className="animate-fade-up-delay-1 mb-6">
+              <button
+                onClick={() => setShowCommandements(!showCommandements)}
+                className="w-full flex items-center justify-between rounded-xl bg-primary/5 border border-primary/20 p-4 text-left hover:bg-primary/10 transition-colors active:scale-[0.99]"
+              >
+                <div className="flex items-center gap-3">
+                  <BookOpen className="w-5 h-5 text-primary" />
+                  <span className="font-semibold text-sm">Les 10 Commandements du CV Créatif</span>
+                </div>
+                {showCommandements ? <ChevronUp className="w-4 h-4 text-muted-foreground" /> : <ChevronDown className="w-4 h-4 text-muted-foreground" />}
+              </button>
+              {showCommandements && (
+                <div className="mt-2 rounded-xl bg-card p-5 shadow-sm">
+                  <ol className="space-y-2">
+                    {commandements.map((c, i) => (
+                      <li key={i} className="flex gap-3 text-sm">
+                        <span className="text-primary font-bold flex-shrink-0">{i + 1}.</span>
+                        <span className="text-muted-foreground">{c}</span>
+                      </li>
+                    ))}
+                  </ol>
+                </div>
+              )}
+            </div>
+
+            {/* Verbes d'action toggle */}
+            <div className="animate-fade-up-delay-1 mb-8">
+              <button
+                onClick={() => setShowVerbes(!showVerbes)}
+                className="w-full flex items-center justify-between rounded-xl bg-secondary border border-border p-4 text-left hover:bg-secondary/80 transition-colors active:scale-[0.99]"
+              >
+                <span className="font-semibold text-sm">📋 Verbes d'action par domaine</span>
+                {showVerbes ? <ChevronUp className="w-4 h-4 text-muted-foreground" /> : <ChevronDown className="w-4 h-4 text-muted-foreground" />}
+              </button>
+              {showVerbes && (
+                <div className="mt-2 rounded-xl bg-card p-5 shadow-sm space-y-4">
+                  {Object.entries(verbesAction).map(([domain, verbes]) => (
+                    <div key={domain}>
+                      <h4 className="text-sm font-semibold text-primary mb-1">{domain}</h4>
+                      <p className="text-xs text-muted-foreground leading-relaxed">
+                        {verbes.join(" · ")}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
             {/* Input area */}
-            <div className="animate-fade-up-delay-1 bg-card rounded-xl p-6 shadow-sm mb-8">
+            <div className="animate-fade-up-delay-2 bg-card rounded-xl p-6 shadow-sm mb-8">
               <label className="text-sm font-medium mb-2 block">
                 Décrivez une tâche ou un domaine
               </label>
@@ -117,7 +188,7 @@ const CvGenerator = () => {
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
                   onKeyDown={(e) => e.key === "Enter" && handleTransform()}
-                  placeholder="Ex : nettoyage, vente, management, cuisine..."
+                  placeholder="Ex : nettoyage, vente, management, cuisine, encaissement..."
                   className="flex-1 rounded-lg border border-input bg-background px-4 py-3 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
                 />
                 <button
@@ -130,11 +201,10 @@ const CvGenerator = () => {
                 </button>
               </div>
 
-              {/* Suggestions */}
               {suggestions.length > 0 && (
                 <div className="mt-6 space-y-3">
                   <p className="text-sm text-muted-foreground">
-                    Suggestions pour « <span className="font-medium text-foreground">{input || "..."}</span> » :
+                    Suggestions pour « <span className="font-medium text-foreground">{input}</span> » :
                   </p>
                   {suggestions.map((s, i) => (
                     <button

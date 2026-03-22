@@ -2,136 +2,220 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import { ArrowRight, ArrowLeft, CheckCircle2 } from "lucide-react";
+import { ArrowRight, ArrowLeft, User, Briefcase, Heart, Compass, Star, Settings } from "lucide-react";
 
-const questions = [
+// RIASEC types based on Holland's typology (from IPPe / Evolution Pro)
+const riasecTypes = {
+  R: { label: "Réaliste", icon: Settings, color: "text-orange-600", desc: "Vous aimez les activités concrètes, le travail manuel et les résultats tangibles.", metiers: "Technicien, mécanicien, conducteur, agriculteur, chirurgien" },
+  I: { label: "Investigateur", icon: Compass, color: "text-blue-600", desc: "Vous aimez la réflexion, la recherche et la résolution de problèmes complexes.", metiers: "Chercheur, analyste, biologiste, médecin, informaticien" },
+  A: { label: "Artistique", icon: Star, color: "text-pink-600", desc: "Vous aimez créer, imaginer et vous exprimer librement.", metiers: "Designer, musicien, photographe, écrivain, architecte" },
+  S: { label: "Social", icon: Heart, color: "text-red-500", desc: "Vous aimez aider, conseiller et accompagner les autres.", metiers: "Éducateur, psychologue, enseignant, animateur, conseiller" },
+  E: { label: "Entreprenant", icon: Briefcase, color: "text-amber-600", desc: "Vous aimez diriger, convaincre et relever des défis.", metiers: "Chef d'entreprise, commercial, agent immobilier, responsable marketing" },
+  C: { label: "Conventionnel", icon: User, color: "text-teal-600", desc: "Vous aimez l'organisation, la précision et les méthodes structurées.", metiers: "Comptable, assistant administratif, statisticien, documentaliste" },
+};
+
+type RiasecKey = keyof typeof riasecTypes;
+
+interface QuestionOption {
+  label: string;
+  type: RiasecKey;
+}
+
+interface Question {
+  id: number;
+  question: string;
+  groupA: QuestionOption[];
+  groupB: QuestionOption[];
+}
+
+// Adapted from IPPe questionnaire (Annexe 9 - Evolution Pro)
+const questions: Question[] = [
   {
     id: 1,
-    question: "Savez-vous clairement quel poste ou quel secteur vous visez ?",
-    options: [
-      { label: "Oui, j'ai un objectif précis", score: 3 },
-      { label: "J'ai une idée générale", score: 2 },
-      { label: "Pas vraiment, je cherche encore", score: 1 },
-      { label: "Aucune idée", score: 0 },
+    question: "Dans quel environnement de travail préféreriez-vous exercer ?",
+    groupA: [
+      { label: "Un atelier de réparation", type: "R" },
+      { label: "Un laboratoire de recherche", type: "I" },
+      { label: "Un atelier de création artistique", type: "A" },
+      { label: "Une association humanitaire", type: "S" },
+      { label: "Un service commercial", type: "E" },
+      { label: "Une agence bancaire", type: "C" },
+    ],
+    groupB: [
+      { label: "Un chantier de construction", type: "R" },
+      { label: "Un observatoire astronomique", type: "I" },
+      { label: "Une salle de spectacle", type: "A" },
+      { label: "Un centre social", type: "S" },
+      { label: "Un marché de l'immobilier", type: "E" },
+      { label: "Une administration publique", type: "C" },
     ],
   },
   {
     id: 2,
-    question: "Votre CV a-t-il été mis à jour au cours des 6 derniers mois ?",
-    options: [
-      { label: "Oui, il est à jour", score: 3 },
-      { label: "Mis à jour il y a 6-12 mois", score: 2 },
-      { label: "Plus d'un an", score: 1 },
-      { label: "Je n'ai pas de CV", score: 0 },
+    question: "Quelle activité vous attirerait le plus ?",
+    groupA: [
+      { label: "Conduire des engins", type: "R" },
+      { label: "Réfléchir aux causes d'un problème", type: "I" },
+      { label: "Illustrer un site web", type: "A" },
+      { label: "Prendre soin des autres", type: "S" },
+      { label: "Prospecter des clients", type: "E" },
+      { label: "Gérer des comptes", type: "C" },
+    ],
+    groupB: [
+      { label: "Installer des équipements", type: "R" },
+      { label: "Mener des recherches", type: "I" },
+      { label: "Créer une œuvre", type: "A" },
+      { label: "Conseiller des personnes", type: "S" },
+      { label: "Négocier des contrats", type: "E" },
+      { label: "Assurer le suivi d'un dossier", type: "C" },
     ],
   },
   {
     id: 3,
-    question: "Utilisez-vous des verbes d'action et des chiffres dans vos expériences ?",
-    options: [
-      { label: "Oui, systématiquement", score: 3 },
-      { label: "Parfois", score: 2 },
-      { label: "Rarement", score: 1 },
-      { label: "Je ne sais pas ce que c'est", score: 0 },
+    question: "Dans une équipe, vous préféreriez être la personne qui…",
+    groupA: [
+      { label: "Vérifie le bon fonctionnement du matériel", type: "R" },
+      { label: "Identifie les problèmes", type: "I" },
+      { label: "Apporte des idées originales", type: "A" },
+      { label: "Résout les conflits", type: "S" },
+      { label: "Manage l'équipe", type: "E" },
+      { label: "Rédige le compte-rendu de réunion", type: "C" },
+    ],
+    groupB: [
+      { label: "Fabrique le produit", type: "R" },
+      { label: "Cherche des solutions nouvelles", type: "I" },
+      { label: "Crée des supports de communication illustrés", type: "A" },
+      { label: "Facilite la communication", type: "S" },
+      { label: "Fixe les objectifs et veille à leur atteinte", type: "E" },
+      { label: "S'assure du respect des délais", type: "C" },
     ],
   },
   {
     id: 4,
-    question: "Adaptez-vous votre CV à chaque offre d'emploi ?",
-    options: [
-      { label: "Oui, à chaque candidature", score: 3 },
-      { label: "Parfois, pour les offres importantes", score: 2 },
-      { label: "J'envoie toujours le même CV", score: 1 },
-      { label: "Je ne savais pas qu'il fallait", score: 0 },
+    question: "Quel type de compétences aimeriez-vous mettre en œuvre ?",
+    groupA: [
+      { label: "Installer des équipements", type: "R" },
+      { label: "Résoudre une énigme", type: "I" },
+      { label: "Utiliser les techniques de dessin", type: "A" },
+      { label: "Aider des personnes en difficulté", type: "S" },
+      { label: "Négocier avec un fournisseur", type: "E" },
+      { label: "Respecter des procédures", type: "C" },
+    ],
+    groupB: [
+      { label: "Piloter une machine-outil", type: "R" },
+      { label: "Inventer un nouveau produit", type: "I" },
+      { label: "Réaliser des contenus multimédia", type: "A" },
+      { label: "Transmettre mes connaissances", type: "S" },
+      { label: "Diriger une équipe", type: "E" },
+      { label: "Appliquer des normes de sécurité", type: "C" },
     ],
   },
   {
     id: 5,
-    question: "Avez-vous un profil LinkedIn actif et optimisé ?",
-    options: [
-      { label: "Oui, complet et actif", score: 3 },
-      { label: "J'en ai un mais peu actif", score: 2 },
-      { label: "J'ai un profil basique", score: 1 },
-      { label: "Je n'ai pas de LinkedIn", score: 0 },
+    question: "Quels loisirs préféreriez-vous ?",
+    groupA: [
+      { label: "Jardiner", type: "R" },
+      { label: "Faire partie d'un club scientifique", type: "I" },
+      { label: "Faire de la photographie", type: "A" },
+      { label: "Être bénévole dans une association", type: "S" },
+      { label: "Présider une association", type: "E" },
+      { label: "Être trésorier d'une association", type: "C" },
+    ],
+    groupB: [
+      { label: "Bricoler", type: "R" },
+      { label: "Lire des magazines scientifiques", type: "I" },
+      { label: "Créer des costumes", type: "A" },
+      { label: "Animer des ateliers avec des enfants ou personnes âgées", type: "S" },
+      { label: "Jouer au poker", type: "E" },
+      { label: "Gérer une bibliothèque de quartier", type: "C" },
     ],
   },
   {
     id: 6,
-    question: "Comment préparez-vous vos entretiens d'embauche ?",
-    options: [
-      { label: "Recherches approfondies + simulation", score: 3 },
-      { label: "Je me renseigne sur l'entreprise", score: 2 },
-      { label: "Je regarde rapidement avant", score: 1 },
-      { label: "J'improvise", score: 0 },
+    question: "Dans quelles conditions de travail aimeriez-vous exercer ?",
+    groupA: [
+      { label: "Travailler avec des machines", type: "R" },
+      { label: "Avoir un travail stimulant la réflexion", type: "I" },
+      { label: "Avoir des horaires souples", type: "A" },
+      { label: "Travailler en équipe", type: "S" },
+      { label: "Avoir un rythme de travail soutenu", type: "E" },
+      { label: "Avoir des horaires réguliers", type: "C" },
     ],
-  },
-  {
-    id: 7,
-    question: "Savez-vous identifier et formuler vos compétences transversales ?",
-    options: [
-      { label: "Oui, je sais les mettre en valeur", score: 3 },
-      { label: "J'en connais quelques-unes", score: 2 },
-      { label: "J'ai du mal à les formuler", score: 1 },
-      { label: "Je ne sais pas ce que c'est", score: 0 },
-    ],
-  },
-  {
-    id: 8,
-    question: "Avez-vous un réseau professionnel que vous activez dans votre recherche ?",
-    options: [
-      { label: "Oui, je l'utilise régulièrement", score: 3 },
-      { label: "J'ai des contacts mais les sollicite peu", score: 2 },
-      { label: "Mon réseau est très limité", score: 1 },
-      { label: "Je n'ai aucun réseau", score: 0 },
-    ],
-  },
-  {
-    id: 9,
-    question: "Êtes-vous à l'aise pour parler de vos réalisations professionnelles ?",
-    options: [
-      { label: "Oui, avec des exemples concrets", score: 3 },
-      { label: "Moyennement, ça dépend du contexte", score: 2 },
-      { label: "J'ai tendance à me sous-vendre", score: 1 },
-      { label: "C'est très difficile pour moi", score: 0 },
-    ],
-  },
-  {
-    id: 10,
-    question: "Votre lettre de motivation est-elle personnalisée pour chaque candidature ?",
-    options: [
-      { label: "Oui, toujours", score: 3 },
-      { label: "Parfois", score: 2 },
-      { label: "J'utilise un modèle générique", score: 1 },
-      { label: "Je n'en envoie pas", score: 0 },
+    groupB: [
+      { label: "Travailler en extérieur", type: "R" },
+      { label: "Devoir chercher moi-même des solutions", type: "I" },
+      { label: "Avoir à faire preuve de créativité", type: "A" },
+      { label: "Échanger avec les autres", type: "S" },
+      { label: "Pouvoir relever des défis", type: "E" },
+      { label: "Suivre des consignes précises", type: "C" },
     ],
   },
 ];
 
-const getResult = (score: number) => {
-  const maxScore = questions.length * 3;
-  const pct = Math.round((score / maxScore) * 100);
-  if (pct >= 80) return { level: "Expert", color: "text-primary", message: "Excellent ! Vous maîtrisez les codes de la recherche d'emploi. Peaufinez les détails avec notre générateur de CV.", emoji: "🏆" };
-  if (pct >= 60) return { level: "Avancé", color: "text-primary", message: "Bon niveau ! Quelques ajustements vous permettront de vous démarquer. Le générateur de CV va vous aider.", emoji: "👍" };
-  if (pct >= 40) return { level: "Intermédiaire", color: "text-accent", message: "Vous avez des bases, mais il y a un vrai potentiel d'amélioration. La Méthode Fred peut transformer votre approche.", emoji: "💪" };
-  return { level: "Débutant", color: "text-destructive", message: "Pas de panique ! Tout s'apprend. Commencez par notre générateur de CV pour créer un document percutant.", emoji: "📝" };
-};
-
 const Diagnostic = () => {
   const [current, setCurrent] = useState(0);
-  const [answers, setAnswers] = useState<Record<number, number>>({});
+  // For each question, user picks 2 preferred (+) and 2 rejected (-) from combined group
+  const [selections, setSelections] = useState<Record<number, { liked: Set<string>; disliked: Set<string> }>>({});
   const [finished, setFinished] = useState(false);
+  const [showIntro, setShowIntro] = useState(true);
   const navigate = useNavigate();
 
-  const handleAnswer = (questionId: number, score: number) => {
-    setAnswers((prev) => ({ ...prev, [questionId]: score }));
+  const q = questions[current];
+  const allOptions = [...q.groupA, ...q.groupB];
+  const sel = selections[q.id] || { liked: new Set<string>(), disliked: new Set<string>() };
+
+  const toggleOption = (label: string, action: "like" | "dislike") => {
+    setSelections((prev) => {
+      const current = prev[q.id] || { liked: new Set<string>(), disliked: new Set<string>() };
+      const liked = new Set(current.liked);
+      const disliked = new Set(current.disliked);
+
+      if (action === "like") {
+        if (liked.has(label)) {
+          liked.delete(label);
+        } else {
+          disliked.delete(label);
+          if (liked.size < 4) liked.add(label);
+        }
+      } else {
+        if (disliked.has(label)) {
+          disliked.delete(label);
+        } else {
+          liked.delete(label);
+          if (disliked.size < 4) disliked.add(label);
+        }
+      }
+
+      return { ...prev, [q.id]: { liked, disliked } };
+    });
   };
 
-  const totalScore = Object.values(answers).reduce((a, b) => a + b, 0);
-  const maxScore = questions.length * 3;
-  const pct = Math.round((totalScore / maxScore) * 100);
-  const result = getResult(totalScore);
-  const q = questions[current];
-  const canGoNext = answers[q.id] !== undefined;
+  const canGoNext = sel.liked.size >= 2 && sel.disliked.size >= 2;
+
+  const computeResults = (): { type: RiasecKey; score: number }[] => {
+    const scores: Record<RiasecKey, number> = { R: 0, I: 0, A: 0, S: 0, E: 0, C: 0 };
+
+    for (const qId of Object.keys(selections)) {
+      const s = selections[Number(qId)];
+      const question = questions.find((q) => q.id === Number(qId));
+      if (!question || !s) continue;
+
+      const allOpts = [...question.groupA, ...question.groupB];
+      for (const opt of allOpts) {
+        if (s.liked.has(opt.label)) scores[opt.type] += 1;
+        if (s.disliked.has(opt.label)) scores[opt.type] -= 1;
+      }
+    }
+
+    // Normalize: add 12 to each (like IPPe scoring)
+    const results = (Object.keys(scores) as RiasecKey[]).map((type) => ({
+      type,
+      score: scores[type] + 12,
+    }));
+
+    results.sort((a, b) => b.score - a.score);
+    return results;
+  };
 
   const handleNext = () => {
     if (current < questions.length - 1) {
@@ -140,6 +224,59 @@ const Diagnostic = () => {
       setFinished(true);
     }
   };
+
+  const results = finished ? computeResults() : [];
+  const topTypes = results.slice(0, 3);
+  const maxScore = 24;
+
+  if (showIntro) {
+    return (
+      <div className="min-h-screen">
+        <Navbar />
+        <main className="pt-16">
+          <section className="py-24">
+            <div className="container mx-auto px-6 max-w-2xl animate-fade-up">
+              <p className="text-sm font-semibold text-primary uppercase tracking-widest mb-3">Méthode Fred · Diagnostic</p>
+              <h1 className="text-3xl md:text-4xl tracking-tight mb-6">
+                Questionnaire d'Intérêts Professionnels
+              </h1>
+              <p className="text-muted-foreground text-lg mb-6 leading-relaxed">
+                Basé sur la méthode RIASEC (typologie de Holland), ce diagnostic vous aidera à identifier
+                vos intérêts professionnels dominants pour mieux orienter votre parcours.
+              </p>
+
+              <div className="bg-card rounded-xl p-6 shadow-sm mb-8">
+                <h3 className="font-semibold mb-3 font-sans">Comment ça marche ?</h3>
+                <ul className="space-y-2 text-sm text-muted-foreground">
+                  <li className="flex gap-2">
+                    <span className="text-primary font-bold">1.</span>
+                    6 questions vous seront posées avec 12 propositions chacune.
+                  </li>
+                  <li className="flex gap-2">
+                    <span className="text-primary font-bold">2.</span>
+                    Pour chaque question, choisissez les propositions que vous <strong className="text-foreground">préférez</strong> (👍) et celles que vous <strong className="text-foreground">rejetez</strong> (👎).
+                  </li>
+                  <li className="flex gap-2">
+                    <span className="text-primary font-bold">3.</span>
+                    À la fin, vous découvrirez votre profil RIASEC et des pistes métiers.
+                  </li>
+                </ul>
+              </div>
+
+              <button
+                onClick={() => setShowIntro(false)}
+                className="inline-flex items-center gap-2 rounded-lg bg-primary px-7 py-3.5 text-primary-foreground font-semibold shadow-lg shadow-primary/20 hover:shadow-xl transition-[box-shadow] active:scale-[0.97]"
+              >
+                Commencer le diagnostic
+                <ArrowRight className="w-4 h-4" />
+              </button>
+            </div>
+          </section>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen">
@@ -153,7 +290,7 @@ const Diagnostic = () => {
                 <div className="mb-8">
                   <div className="flex items-center justify-between text-sm text-muted-foreground mb-2">
                     <span>Question {current + 1} / {questions.length}</span>
-                    <span>{Math.round(((current) / questions.length) * 100)}%</span>
+                    <span>{Math.round(((current + 1) / questions.length) * 100)}%</span>
                   </div>
                   <div className="h-2 rounded-full bg-secondary overflow-hidden">
                     <div
@@ -163,25 +300,50 @@ const Diagnostic = () => {
                   </div>
                 </div>
 
-                <h2 className="text-2xl md:text-3xl tracking-tight mb-8">{q.question}</h2>
+                <h2 className="text-2xl md:text-3xl tracking-tight mb-3">{q.question}</h2>
+                <p className="text-sm text-muted-foreground mb-6">
+                  Sélectionnez au moins <strong>2 que vous préférez</strong> (👍) et <strong>2 que vous ne voulez pas</strong> (👎).
+                </p>
 
-                <div className="space-y-3 mb-10">
-                  {q.options.map((opt) => {
-                    const selected = answers[q.id] === opt.score;
+                <div className="grid gap-2 mb-8">
+                  {allOptions.map((opt) => {
+                    const isLiked = sel.liked.has(opt.label);
+                    const isDisliked = sel.disliked.has(opt.label);
                     return (
-                      <button
+                      <div
                         key={opt.label}
-                        onClick={() => handleAnswer(q.id, opt.score)}
-                        className={`w-full text-left rounded-xl p-5 transition-[background,box-shadow,transform] duration-200 active:scale-[0.98] ${
-                          selected
-                            ? "bg-primary/10 shadow-md ring-2 ring-primary/30"
-                            : "bg-card shadow-sm hover:bg-secondary"
+                        className={`flex items-center justify-between rounded-xl p-4 transition-all duration-200 ${
+                          isLiked
+                            ? "bg-primary/10 ring-2 ring-primary/30"
+                            : isDisliked
+                            ? "bg-destructive/5 ring-2 ring-destructive/20"
+                            : "bg-card shadow-sm"
                         }`}
                       >
-                        <span className={`text-sm font-medium ${selected ? "text-primary" : "text-foreground"}`}>
-                          {opt.label}
-                        </span>
-                      </button>
+                        <span className="text-sm flex-1 pr-4">{opt.label}</span>
+                        <div className="flex gap-2">
+                          <button
+                            onClick={() => toggleOption(opt.label, "like")}
+                            className={`w-9 h-9 rounded-lg flex items-center justify-center text-base transition-all active:scale-[0.9] ${
+                              isLiked
+                                ? "bg-primary text-primary-foreground shadow-sm"
+                                : "bg-secondary hover:bg-primary/10"
+                            }`}
+                          >
+                            👍
+                          </button>
+                          <button
+                            onClick={() => toggleOption(opt.label, "dislike")}
+                            className={`w-9 h-9 rounded-lg flex items-center justify-center text-base transition-all active:scale-[0.9] ${
+                              isDisliked
+                                ? "bg-destructive text-destructive-foreground shadow-sm"
+                                : "bg-secondary hover:bg-destructive/10"
+                            }`}
+                          >
+                            👎
+                          </button>
+                        </div>
+                      </div>
                     );
                   })}
                 </div>
@@ -201,44 +363,77 @@ const Diagnostic = () => {
                     disabled={!canGoNext}
                     className="inline-flex items-center gap-2 rounded-lg bg-primary px-6 py-3 text-primary-foreground font-medium shadow-sm hover:shadow-md transition-[box-shadow,opacity] disabled:opacity-40 disabled:cursor-not-allowed active:scale-[0.97]"
                   >
-                    {current < questions.length - 1 ? "Suivant" : "Voir mes résultats"}
+                    {current < questions.length - 1 ? "Suivant" : "Voir mon profil"}
                     <ArrowRight className="w-4 h-4" />
                   </button>
                 </div>
               </div>
             ) : (
               /* Results */
-              <div className="animate-fade-up text-center">
-                <div className="text-6xl mb-6">{result.emoji}</div>
-                <h2 className="text-3xl md:text-4xl tracking-tight mb-2">
-                  Niveau : <span className={result.color}>{result.level}</span>
-                </h2>
-                <p className="text-muted-foreground text-lg mb-8 max-w-lg mx-auto">
-                  {result.message}
-                </p>
-
-                {/* Score circle */}
-                <div className="mx-auto w-40 h-40 rounded-full border-8 border-secondary flex items-center justify-center mb-10 relative">
-                  <svg className="absolute inset-0 w-full h-full -rotate-90" viewBox="0 0 160 160">
-                    <circle cx="80" cy="80" r="72" fill="none" stroke="hsl(var(--primary))" strokeWidth="8" strokeLinecap="round"
-                      strokeDasharray={`${pct * 4.52} 452`}
-                      className="transition-all duration-1000 ease-out"
-                    />
-                  </svg>
-                  <span className="text-3xl font-bold font-display">{pct}%</span>
+              <div className="animate-fade-up">
+                <div className="text-center mb-10">
+                  <p className="text-sm font-semibold text-primary uppercase tracking-widest mb-3">Votre profil RIASEC</p>
+                  <h2 className="text-3xl md:text-4xl tracking-tight mb-4">
+                    {topTypes.map((t) => riasecTypes[t.type].label).join(" · ")}
+                  </h2>
+                  <p className="text-muted-foreground text-lg max-w-lg mx-auto">
+                    Voici vos 3 profils dominants selon la méthode de Holland, utilisée par les professionnels de l'orientation.
+                  </p>
                 </div>
 
-                {/* Detail */}
-                <div className="bg-card rounded-xl p-6 shadow-sm text-left mb-8">
-                  <h3 className="font-semibold mb-4 font-sans">Détail par question</h3>
-                  <div className="space-y-2">
-                    {questions.map((q) => {
-                      const s = answers[q.id] ?? 0;
+                {/* Top 3 cards */}
+                <div className="space-y-4 mb-8">
+                  {topTypes.map((t, i) => {
+                    const info = riasecTypes[t.type];
+                    const Icon = info.icon;
+                    const pct = Math.round((t.score / maxScore) * 100);
+                    return (
+                      <div key={t.type} className="bg-card rounded-xl p-6 shadow-sm">
+                        <div className="flex items-start gap-4">
+                          <div className={`w-12 h-12 rounded-xl flex items-center justify-center bg-secondary ${info.color}`}>
+                            <Icon className="w-6 h-6" />
+                          </div>
+                          <div className="flex-1">
+                            <div className="flex items-center gap-2 mb-1">
+                              <span className="font-semibold font-sans text-lg">
+                                #{i + 1} {info.label}
+                              </span>
+                              <span className="text-sm text-muted-foreground">({t.type})</span>
+                            </div>
+                            <p className="text-sm text-muted-foreground mb-3">{info.desc}</p>
+                            <div className="h-2 rounded-full bg-secondary overflow-hidden mb-2">
+                              <div
+                                className="h-full rounded-full bg-primary transition-all duration-700 ease-out"
+                                style={{ width: `${pct}%` }}
+                              />
+                            </div>
+                            <p className="text-xs text-muted-foreground">
+                              <strong>Métiers correspondants :</strong> {info.metiers}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+
+                {/* All scores */}
+                <div className="bg-card rounded-xl p-6 shadow-sm mb-8">
+                  <h3 className="font-semibold mb-4 font-sans">Tous vos scores</h3>
+                  <div className="space-y-3">
+                    {results.map((r) => {
+                      const info = riasecTypes[r.type];
+                      const pct = Math.round((r.score / maxScore) * 100);
                       return (
-                        <div key={q.id} className="flex items-center gap-3 text-sm">
-                          <CheckCircle2 className={`w-4 h-4 flex-shrink-0 ${s >= 2 ? "text-primary" : s >= 1 ? "text-accent" : "text-destructive"}`} />
-                          <span className="text-muted-foreground truncate flex-1">{q.question}</span>
-                          <span className="font-medium">{s}/3</span>
+                        <div key={r.type} className="flex items-center gap-3">
+                          <span className={`text-sm font-semibold w-28 ${info.color}`}>{info.label}</span>
+                          <div className="flex-1 h-2 rounded-full bg-secondary overflow-hidden">
+                            <div
+                              className="h-full rounded-full bg-primary transition-all duration-500"
+                              style={{ width: `${pct}%` }}
+                            />
+                          </div>
+                          <span className="text-sm font-medium w-8 text-right">{r.score}</span>
                         </div>
                       );
                     })}
@@ -247,7 +442,12 @@ const Diagnostic = () => {
 
                 <div className="flex flex-col sm:flex-row gap-3 justify-center">
                   <button
-                    onClick={() => { setCurrent(0); setAnswers({}); setFinished(false); }}
+                    onClick={() => {
+                      setCurrent(0);
+                      setSelections({});
+                      setFinished(false);
+                      setShowIntro(true);
+                    }}
                     className="rounded-lg border-2 border-border px-6 py-3 font-medium hover:bg-secondary transition-colors active:scale-[0.97]"
                   >
                     Refaire le diagnostic
