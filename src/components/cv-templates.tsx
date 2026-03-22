@@ -261,13 +261,13 @@ const ExperiencesBlock = ({ experiences, colors, bulletStyle, bulletShape, textC
 const FormationBlock = ({ formations, colors, bulletStyle, bulletShape, textColor, light, onRemove, title }: { formations?: FormationEntry[]; colors: Colors; bulletStyle: BulletStyle; bulletShape?: BulletShapeId; textColor?: string; light?: boolean; onRemove?: (id: number) => void; title?: string }) => {
   if (!formations || formations.length === 0) return null;
   return (
-    <div className="space-y-1">
+    <div style={{ display: "flex", flexDirection: "column", gap: `calc(4px * var(--cv-gap-scale, 1))` }}>
       {formations.map(f => (
-        <div key={f.id} className="group/item pb-1.5">
+        <div key={f.id} className="group/item" style={{ paddingBottom: `calc(6px * var(--cv-gap-scale, 1))` }}>
           <div className="flex items-start justify-between gap-2">
             <div>
-              <p className="text-[10px] font-black leading-tight" style={{ color: textColor || (light ? "white" : colors.primary) }}>{f.intitule}</p>
-              <p className="text-[8px]" style={{ color: textColor ? `${textColor}99` : (light ? "rgba(255,255,255,0.6)" : TEXT_MUTED) }}>
+              <p className="font-black leading-tight" style={{ color: textColor || (light ? "white" : colors.primary), fontSize: `calc(10px * var(--cv-font-scale, 1))` }}>{f.intitule}</p>
+              <p style={{ color: textColor ? `${textColor}99` : (light ? "rgba(255,255,255,0.6)" : TEXT_MUTED), fontSize: `calc(8px * var(--cv-font-scale, 1))` }}>
                 {f.etablissement}{f.ville ? ` · ${f.ville}` : ""}{f.dateDebut ? ` | ${formatDateDisplay(f.dateDebut)}` : ""}{f.dateFin ? ` — ${formatDateDisplay(f.dateFin)}` : ""}
               </p>
             </div>
