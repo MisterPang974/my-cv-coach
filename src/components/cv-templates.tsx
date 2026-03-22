@@ -783,8 +783,8 @@ export const MagazineTemplate = ({ profile, experienceEntries, atoutEntries, rem
       <div className="flex items-stretch relative overflow-hidden">
         <div className="flex-1 px-7 py-5 flex flex-col justify-center relative" style={{ background: `linear-gradient(135deg, ${colors.primary}, ${colors.swatch})`, ...useGradientRubrique(gradient, gradientTarget) }}>
           <Blob color="rgba(255,255,255,0.04)" className="absolute -bottom-10 -left-10 w-32 h-32" />
+          <p className="text-xl font-black uppercase tracking-wider leading-none relative z-10" style={{ color: titleTc }}>{profile.titre || "TITRE DU POSTE"}</p>
           <NameBlock profile={profile} light size="lg" fontFamily={fontFamily} color={headerTc} />
-          <p className="text-xs mt-0.5 relative z-10 font-medium" style={{ color: titleTc }}>{profile.titre || "Titre du poste"}</p>
         </div>
         <div className="w-[40%] px-5 py-4 flex flex-col justify-center relative" style={{ background: `linear-gradient(135deg, ${colors.accent}, ${colors.accent}dd)`, boxShadow: `inset 4px 0 12px rgba(0,0,0,0.1)` }}>
           {/* Full coordinates in right zone */}
