@@ -358,7 +358,6 @@ const NameBlock = ({
     </div>
   );
 };
-};
 
 /** Resolve text color for a section */
 const sectionTextColor = (section: TextColorSection, textColors?: Record<TextColorSection, "noir" | "blanc">, fallback?: string): string => {
