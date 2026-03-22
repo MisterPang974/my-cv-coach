@@ -440,7 +440,7 @@ const OrderedSections = ({ sectionOrder, renderExperiences, renderCompetences, r
 // 1. IMPACT — Glassmorphism sidebar, gradient accents, floating depth
 //    - Photo removed. Competences moved to sidebar to fill right void.
 // ═══════════════════════════════════════════════════════════════════
-export const ImpactTemplate = ({ profile, experienceEntries, atoutEntries, removeEntry, colors, sidebarPos, bulletStyle, bulletShape, gradient, gradientTarget, textColors, titleColor, fontFamily, competencyDomains, competencyBulletShape, professionalExperiences, removeProfessionalExperience, formations, removeFormation, formationTitle, getCompanyLogoUrl, interests, removeInterest, interestDisplayMode, sectionOrder }: TemplateProps) => {
+export const ImpactTemplate = ({ profile, experienceEntries, atoutEntries, removeEntry, colors, sidebarPos, bulletStyle, bulletShape, gradient, gradientTarget, textColors, titleColor, fontFamily, competencyDomains, competencyBulletShape, formationBulletShape, diversBulletShape, qualitesBulletShape, professionalExperiences, removeProfessionalExperience, formations, removeFormation, formationTitle, getCompanyLogoUrl, interests, removeInterest, interestDisplayMode, sectionOrder, qualities, removeQuality }: TemplateProps) => {
   const fondStyle = useGradientBg(gradient, gradientTarget);
   const rubriqueStyle = useGradientRubrique(gradient, gradientTarget, `linear-gradient(170deg, ${colors.primary}, ${colors.swatch})`);
   const { isDark } = useAutoContrast(gradient, gradientTarget);
