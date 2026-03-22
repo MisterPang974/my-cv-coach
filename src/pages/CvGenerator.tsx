@@ -147,7 +147,7 @@ const CvGenerator = () => {
   const [entries, setEntries] = useState<CvEntry[]>([]);
   const [copied, setCopied] = useState(false);
   const [searching, setSearching] = useState(false);
-  const [profile, setProfile] = useState<CvProfile>({ nom: "", titre: "", email: "", telephone: "", ville: "" });
+  const [profile, setProfile] = useState<CvProfile>({ nom: "", prenom: "", titre: "", email: "", telephone: "", adresse: "", codePostal: "", ville: "" });
   const [step, setStep] = useState<"titre" | "details">("titre");
 
   // Sector-aware state
