@@ -286,32 +286,69 @@ const CvGenerator = () => {
             </div>
 
             {/* Palette + customization row */}
-            <div className="animate-fade-up-delay-2 flex flex-wrap gap-4 mb-8">
-              <div className="flex items-center gap-2 rounded-xl bg-card border border-border px-4 py-2">
-                <Palette className="w-4 h-4 text-muted-foreground" />
-                {sectorCfg.palettes.map(p => (
-                  <button key={p.id} onClick={() => setActivePalette(p)} title={p.label}
-                    className={`w-7 h-7 rounded-full transition-all active:scale-[0.95] ${activePalette.id === p.id ? "ring-2 ring-offset-2 ring-ring scale-110" : "hover:scale-105"}`}
-                    style={{ background: p.swatch }} />
-                ))}
+            <div className="animate-fade-up-delay-2 space-y-3 mb-8">
+              {/* Row 1: Colors + Sidebar + Legacy bullets */}
+              <div className="flex flex-wrap gap-4">
+                <div className="flex items-center gap-2 rounded-xl bg-card border border-border px-4 py-2">
+                  <Palette className="w-4 h-4 text-muted-foreground" />
+                  {sectorCfg.palettes.map(p => (
+                    <button key={p.id} onClick={() => { setActivePalette(p); setActiveGradient(null); }} title={p.label}
+                      className={`w-7 h-7 rounded-full transition-all active:scale-[0.95] ${activePalette.id === p.id && !activeGradient ? "ring-2 ring-offset-2 ring-ring scale-110" : "hover:scale-105"}`}
+                      style={{ background: p.swatch }} />
+                  ))}
+                </div>
+                <div className="flex items-center gap-1.5 rounded-xl bg-card border border-border px-3 py-2">
+                  <Settings2 className="w-4 h-4 text-muted-foreground" />
+                  {(["left", "right", "top"] as SidebarPosition[]).map(pos => (
+                    <button key={pos} onClick={() => setSidebarPos(pos)}
+                      className={`px-3 py-1 rounded-lg text-xs font-medium transition-all ${sidebarPos === pos ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-secondary"}`}>
+                      {pos === "left" ? "← Gauche" : pos === "right" ? "Droite →" : "↑ Haut"}
+                    </button>
+                  ))}
+                </div>
               </div>
-              <div className="flex items-center gap-1.5 rounded-xl bg-card border border-border px-3 py-2">
-                <Settings2 className="w-4 h-4 text-muted-foreground" />
-                {(["left", "right", "top"] as SidebarPosition[]).map(pos => (
-                  <button key={pos} onClick={() => setSidebarPos(pos)}
-                    className={`px-3 py-1 rounded-lg text-xs font-medium transition-all ${sidebarPos === pos ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-secondary"}`}>
-                    {pos === "left" ? "← Gauche" : pos === "right" ? "Droite →" : "↑ Haut"}
-                  </button>
-                ))}
+
+              {/* Row 2: Gradient library */}
+              <div className="rounded-xl bg-card border border-border px-4 py-3">
+                <div className="flex items-center gap-3 mb-2">
+                  <span className="text-xs font-semibold text-muted-foreground">🎨 Dégradés</span>
+                  <div className="flex items-center gap-1 rounded-lg bg-secondary p-0.5">
+                    {(["fond", "rubriques"] as const).map(t => (
+                      <button key={t} onClick={() => setGradientTarget(t)}
+                        className={`px-2.5 py-1 rounded-md text-[10px] font-medium transition-all ${gradientTarget === t ? "bg-primary text-primary-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"}`}>
+                        {t === "fond" ? "Fond" : "Rubriques"}
+                      </button>
+                    ))}
+                  </div>
+                  {activeGradient && (
+                    <button onClick={() => setActiveGradient(null)} className="text-[10px] text-muted-foreground hover:text-destructive transition-colors ml-auto">✕ Retirer</button>
+                  )}
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {gradientLibrary.map(g => (
+                    <button key={g.id} onClick={() => setActiveGradient(g)} title={g.label}
+                      className={`w-8 h-8 rounded-lg transition-all active:scale-[0.95] ${activeGradient?.id === g.id ? "ring-2 ring-offset-2 ring-ring scale-110" : "hover:scale-105"}`}
+                      style={{ background: `linear-gradient(${g.angle || 135}deg, ${g.from}, ${g.to})`, boxShadow: "0 2px 6px rgba(0,0,0,0.12)" }} />
+                  ))}
+                </div>
               </div>
-              <div className="flex items-center gap-2 rounded-xl bg-card border border-border px-3 py-2">
-                <span className="text-xs text-muted-foreground font-medium">Puces :</span>
-                {(["mixte", "fleches", "carres", "cercles"] as BulletStyle[]).map(bs => (
-                  <button key={bs} onClick={() => setBulletStyle(bs)}
-                    className={`px-3 py-1 rounded-lg text-xs font-medium transition-all flex items-center gap-1.5 ${bulletStyle === bs ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-secondary"}`}>
-                    {bs === "mixte" ? "Mixte" : <><ModernBullet type={bs === "fleches" ? "action" : bs === "carres" ? "technique" : "relationnel"} color={bulletStyle === bs ? "white" : "currentColor"} /> {bs.charAt(0).toUpperCase() + bs.slice(1)}</>}
-                  </button>
-                ))}
+
+              {/* Row 3: 15 bullet shapes */}
+              <div className="rounded-xl bg-card border border-border px-4 py-3">
+                <div className="flex items-center gap-3 mb-2">
+                  <span className="text-xs font-semibold text-muted-foreground">✦ Puces stylisées</span>
+                  {activeBulletShape && (
+                    <button onClick={() => setActiveBulletShape(null)} className="text-[10px] text-muted-foreground hover:text-destructive transition-colors ml-auto">✕ Auto (Méthode Fred)</button>
+                  )}
+                </div>
+                <div className="flex flex-wrap gap-1.5">
+                  {bulletShapes.map(bs => (
+                    <button key={bs.id} onClick={() => setActiveBulletShape(bs.id)} title={bs.label}
+                      className={`w-9 h-9 rounded-lg flex items-center justify-center transition-all active:scale-[0.95] ${activeBulletShape === bs.id ? "bg-primary text-primary-foreground ring-2 ring-offset-1 ring-ring" : "bg-secondary text-muted-foreground hover:bg-accent/20"}`}>
+                      <ShapeBullet shape={bs.id} color={activeBulletShape === bs.id ? "white" : "currentColor"} />
+                    </button>
+                  ))}
+                </div>
               </div>
             </div>
 
