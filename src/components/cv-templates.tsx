@@ -480,14 +480,21 @@ const MuralGridAccent = ({ color, className, style }: { color: string; className
   </svg>
 );
 
-// ─── Magazine decorative shapes: Horizontal bars + dot pattern ─────
-const MagazineBars = ({ color, className, style }: { color: string; className?: string; style?: React.CSSProperties }) => (
-  <svg className={className} style={style} viewBox="0 0 40 300" fill="none" xmlns="http://www.w3.org/2000/svg">
-    {[30, 80, 130, 180, 230, 270].map((y, i) => (
-      <rect key={i} x="8" y={y} width={24 - i * 2} height="3" rx="1.5" fill={color} opacity={0.1 - i * 0.01} />
-    ))}
-    {[50, 110, 160, 210, 250].map((y, i) => (
-      <circle key={`d${i}`} cx="20" cy={y} r="2" fill={color} opacity={0.06} />
+// ─── Magazine decorative: Diagonal ribbon + mosaic pattern ─────────
+const MagazineRibbon = ({ color, className, style }: { color: string; className?: string; style?: React.CSSProperties }) => (
+  <svg className={className} style={style} viewBox="0 0 400 80" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+    <path d="M0 80L400 0V30L0 80Z" fill={color} opacity="0.08" />
+    <path d="M0 80L400 20V45L0 80Z" fill={color} opacity="0.05" />
+  </svg>
+);
+
+const MagazineMosaic = ({ color, className, style }: { color: string; className?: string; style?: React.CSSProperties }) => (
+  <svg className={className} style={style} viewBox="0 0 120 300" fill="none" xmlns="http://www.w3.org/2000/svg">
+    {[20, 80, 140, 200, 260].map((y, i) => (
+      <React.Fragment key={i}>
+        <rect x={10 + (i % 3) * 8} y={y} width={28 - i * 3} height={28 - i * 3} rx={i % 2 === 0 ? 6 : 14} fill={color} opacity={0.07 - i * 0.008} />
+        <circle cx={80 + (i % 2) * 20} cy={y + 15} r={4 + i} stroke={color} strokeWidth="1" opacity={0.06} fill="none" />
+      </React.Fragment>
     ))}
   </svg>
 );
@@ -502,12 +509,59 @@ const MedicalCrosses = ({ color, className, style }: { color: string; className?
   </svg>
 );
 
-// ─── Flux decorative shapes: Flowing curves + speed lines ──────────
-const FluxCurves = ({ color, className, style }: { color: string; className?: string; style?: React.CSSProperties }) => (
-  <svg className={className} style={style} viewBox="0 0 200 100" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
-    <path d="M0 50C50 20 100 80 150 40C175 20 200 35 200 50" stroke={color} strokeWidth="2" opacity="0.08" strokeLinecap="round" />
-    <path d="M0 65C60 35 120 90 170 55C185 45 200 55 200 60" stroke={color} strokeWidth="1.5" opacity="0.06" strokeLinecap="round" />
-    <path d="M0 80C40 60 80 95 140 70C170 60 200 75 200 78" stroke={color} strokeWidth="1" opacity="0.04" strokeLinecap="round" />
+// ─── Créatif decorative: Prism shards + radial burst ───────────────
+const CreatifPrism = ({ color, className, style }: { color: string; className?: string; style?: React.CSSProperties }) => (
+  <svg className={className} style={style} viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <polygon points="100,10 170,60 150,140 50,140 30,60" fill={color} opacity="0.04" />
+    <polygon points="100,30 150,65 140,120 60,120 50,65" stroke={color} strokeWidth="1" opacity="0.08" fill="none" />
+    <line x1="100" y1="10" x2="100" y2="140" stroke={color} strokeWidth="0.5" opacity="0.06" />
+    <line x1="30" y1="60" x2="170" y2="60" stroke={color} strokeWidth="0.5" opacity="0.06" />
+    <circle cx="100" cy="85" r="20" stroke={color} strokeWidth="1" opacity="0.05" fill="none" strokeDasharray="3 3" />
+  </svg>
+);
+
+const CreatifBurst = ({ color, className, style }: { color: string; className?: string; style?: React.CSSProperties }) => (
+  <svg className={className} style={style} viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+    {Array.from({ length: 12 }).map((_, i) => {
+      const angle = (i * 30 * Math.PI) / 180;
+      const x1 = 60 + Math.cos(angle) * 15;
+      const y1 = 60 + Math.sin(angle) * 15;
+      const x2 = 60 + Math.cos(angle) * (35 + (i % 3) * 10);
+      const y2 = 60 + Math.sin(angle) * (35 + (i % 3) * 10);
+      return <line key={i} x1={x1} y1={y1} x2={x2} y2={y2} stroke={color} strokeWidth={1 + (i % 2) * 0.5} opacity={0.08 - (i % 4) * 0.01} strokeLinecap="round" />;
+    })}
+    <circle cx="60" cy="60" r="8" fill={color} opacity="0.06" />
+  </svg>
+);
+
+// ─── Flux decorative: Flowing ribbons + aurora bands ───────────────
+const FluxAurora = ({ color, className, style }: { color: string; className?: string; style?: React.CSSProperties }) => (
+  <svg className={className} style={style} viewBox="0 0 400 200" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+    <defs>
+      <linearGradient id="flux-aurora-1" x1="0" y1="0" x2="1" y2="0">
+        <stop offset="0%" stopColor={color} stopOpacity="0" />
+        <stop offset="30%" stopColor={color} stopOpacity="0.12" />
+        <stop offset="70%" stopColor={color} stopOpacity="0.06" />
+        <stop offset="100%" stopColor={color} stopOpacity="0" />
+      </linearGradient>
+    </defs>
+    <path d="M0 100C80 40 160 120 240 70C320 20 360 90 400 60V80C360 100 320 50 240 90C160 140 80 60 0 120Z" fill="url(#flux-aurora-1)" />
+    <path d="M0 130C100 80 200 150 300 100C350 75 380 110 400 95V110C380 120 350 90 300 115C200 165 100 95 0 145Z" fill={color} opacity="0.05" />
+    <path d="M0 155C60 135 140 170 220 140C300 110 360 145 400 130V140C360 150 300 120 220 150C140 180 60 145 0 165Z" fill={color} opacity="0.03" />
+  </svg>
+);
+
+const FluxOrb = ({ color, className, style }: { color: string; className?: string; style?: React.CSSProperties }) => (
+  <svg className={className} style={style} viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <radialGradient id="flux-orb">
+        <stop offset="0%" stopColor={color} stopOpacity="0.15" />
+        <stop offset="60%" stopColor={color} stopOpacity="0.05" />
+        <stop offset="100%" stopColor={color} stopOpacity="0" />
+      </radialGradient>
+    </defs>
+    <circle cx="50" cy="50" r="45" fill="url(#flux-orb)" />
+    <circle cx="50" cy="50" r="25" stroke={color} strokeWidth="0.5" opacity="0.1" fill="none" />
   </svg>
 );
 
