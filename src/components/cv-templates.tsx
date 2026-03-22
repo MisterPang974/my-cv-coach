@@ -1,4 +1,4 @@
-import { Mail, Phone, MapPin, Briefcase, Layers, Star, ChevronRight, Sparkles, Trash2, Grid3X3, ArrowRightCircle, Heart } from "lucide-react";
+import { Mail, Phone, MapPin, Briefcase, Layers, Star, ChevronRight, Sparkles, Trash2, Grid3X3, ArrowRightCircle, Heart, Calendar } from "lucide-react";
 import type { SidebarPosition, BulletStyle, BulletShapeId } from "@/lib/cv-sectors";
 
 // ─── Types ─────────────────────────────────────────────────────────
@@ -6,6 +6,17 @@ type BulletType = "action" | "technique" | "relationnel";
 interface CvEntry { id: number; input: string; selected: string; bullet: BulletType; }
 interface CvProfile { nom: string; prenom: string; titre: string; email: string; telephone: string; adresse: string; codePostal: string; ville: string; }
 interface Colors { primary: string; accent: string; swatch: string; }
+
+export interface ProfessionalExperience {
+  id: number;
+  dateDebut: string;
+  dateFin: string;
+  aujourdhui: boolean;
+  poste: string;
+  entreprise: string;
+  ville: string;
+  missions: string[];
+}
 
 export type TextColorSection = "header" | "experiences" | "competences";
 export type FontId = "dm-sans" | "montserrat" | "open-sans" | "playfair" | "roboto" | "lato";
@@ -43,6 +54,8 @@ export interface TemplateProps {
   titleColor?: string;
   fontFamily?: string;
   competencyDomains?: CompetencyDomainData[];
+  professionalExperiences?: ProfessionalExperience[];
+  removeProfessionalExperience?: (id: number) => void;
 }
 
 // ─── Bullet renderers ──────────────────────────────────────────────
