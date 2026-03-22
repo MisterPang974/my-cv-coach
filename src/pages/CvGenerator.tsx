@@ -302,6 +302,19 @@ const CvGenerator = () => {
   const [newInterestText, setNewInterestText] = useState("");
   const [interestDisplayMode, setInterestDisplayMode] = useState<"badges" | "list">("badges");
 
+  // Section order for reordering
+  type CvSection = "experiences" | "competences" | "formation" | "divers";
+  const [sectionOrder, setSectionOrder] = useState<CvSection[]>(["experiences", "competences", "formation", "divers"]);
+  const moveSectionUp = (idx: number) => {
+    if (idx <= 0) return;
+    setSectionOrder(prev => { const next = [...prev]; [next[idx - 1], next[idx]] = [next[idx], next[idx - 1]]; return next; });
+  };
+  const moveSectionDown = (idx: number) => {
+    if (idx >= sectionOrder.length - 1) return;
+    setSectionOrder(prev => { const next = [...prev]; [next[idx], next[idx + 1]] = [next[idx + 1], next[idx]]; return next; });
+  };
+  const SECTION_LABELS: Record<CvSection, string> = { experiences: "Expériences", competences: "Compétences", formation: "Formation", divers: "Divers & Intérêts" };
+
   // White palette option (always available)
   const whitePalette: SectorPalette = { id: "blanc", label: "Blanc pur", primary: "#2d2d2d", accent: "#555555", swatch: "#ffffff", bg: "#ffffff" };
 
