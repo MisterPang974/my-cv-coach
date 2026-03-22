@@ -66,6 +66,10 @@ export interface TemplateProps {
   competencyDomains?: CompetencyDomainData[];
   professionalExperiences?: ProfessionalExperience[];
   removeProfessionalExperience?: (id: number) => void;
+  formations?: FormationEntry[];
+  removeFormation?: (id: number) => void;
+  formationTitle?: string;
+  getCompanyLogoUrl?: (company: string) => string | null;
 }
 
 // ─── Bullet renderers ──────────────────────────────────────────────
