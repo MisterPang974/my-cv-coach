@@ -178,10 +178,13 @@ const Blob = ({ color, className, style }: { color: string; className?: string; 
 // 1. IMPACT — Glassmorphism sidebar, gradient accents, floating depth
 //    - Photo removed. Competences moved to sidebar to fill right void.
 // ═══════════════════════════════════════════════════════════════════
-export const ImpactTemplate = ({ profile, experienceEntries, atoutEntries, removeEntry, colors, sidebarPos, bulletStyle, bulletShape, gradient, gradientTarget }: TemplateProps) => {
+export const ImpactTemplate = ({ profile, experienceEntries, atoutEntries, removeEntry, colors, sidebarPos, bulletStyle, bulletShape, gradient, gradientTarget, textColors, titleColor, fontFamily }: TemplateProps) => {
   const fondStyle = useGradientBg(gradient, gradientTarget);
   const rubriqueStyle = useGradientRubrique(gradient, gradientTarget, `linear-gradient(170deg, ${colors.primary}, ${colors.swatch})`);
   const { isDark, textColor } = useAutoContrast(gradient, gradientTarget);
+  const headerTc = sectionTextColor("header", textColors);
+  const compTc = sectionTextColor("competences", textColors);
+  const expTc = sectionTextColor("experiences", textColors);
 
   const sidebar = (
     <div className="w-[38%] flex flex-col relative overflow-hidden" style={{ background: `linear-gradient(170deg, ${colors.primary}, ${colors.swatch})`, ...rubriqueStyle }}>
@@ -189,9 +192,9 @@ export const ImpactTemplate = ({ profile, experienceEntries, atoutEntries, remov
       <Blob color="rgba(255,255,255,0.03)" className="absolute -top-16 -right-12 w-40 h-40" />
 
       <div className="relative px-5 pt-6 pb-3 z-10">
-        <NameBlock profile={profile} light size="md" />
+        <NameBlock profile={profile} light size="md" fontFamily={fontFamily} />
         <p className="text-center text-[10px] mt-1 font-medium px-3 py-0.5 rounded-full mx-auto w-fit"
-          style={{ background: `${colors.accent}30`, color: colors.accent, backdropFilter: "blur(8px)" }}>
+          style={{ background: `${colors.accent}30`, color: titleColor || colors.accent, backdropFilter: "blur(8px)" }}>
           {profile.titre || "Titre du poste"}
         </p>
       </div>
@@ -199,14 +202,13 @@ export const ImpactTemplate = ({ profile, experienceEntries, atoutEntries, remov
       <div className="relative px-4 space-y-3 flex-1 z-10">
         <div className="p-3" style={{ borderRadius: "16px 4px 16px 4px", background: "rgba(255,255,255,0.06)", backdropFilter: "blur(12px)", border: "1px solid rgba(255,255,255,0.08)", boxShadow: "0 4px 16px rgba(0,0,0,0.1)" }}>
           <p className="text-[8px] text-white/35 uppercase tracking-[0.2em] font-bold mb-2">Contact</p>
-          <ContactLine profile={profile} light colors={colors} />
+          <ContactLine profile={profile} light colors={colors} fontFamily={fontFamily} />
         </div>
-        {/* Compétences moved here to fill sidebar */}
         <div className="p-3" style={{ borderRadius: "4px 16px 4px 16px", background: "rgba(255,255,255,0.06)", backdropFilter: "blur(12px)", border: "1px solid rgba(255,255,255,0.08)", boxShadow: "0 4px 16px rgba(0,0,0,0.1)" }}>
-          <p className="text-[8px] text-white/35 uppercase tracking-[0.2em] font-bold mb-2">Compétences</p>
+          <p className="text-[8px] text-white/35 uppercase tracking-[0.2em] font-bold mb-2" style={compTc ? { color: compTc } : undefined}>Compétences</p>
           {experienceEntries.length > 0 ? (
             <ul className="space-y-1.5">{experienceEntries.map(e => (
-              <li key={e.id} className="flex items-start gap-2 text-white/80 text-[10px] group/item">
+              <li key={e.id} className="flex items-start gap-2 text-white/80 text-[10px] group/item" style={compTc ? { color: compTc } : undefined}>
                 <span className="mt-0.5"><ModernBullet type={e.bullet} color={colors.accent} style={bulletStyle} shape={bulletShape} /></span>
                 <span className="flex-1">{e.selected}</span><DeleteBtn onClick={() => removeEntry(e.id)} light />
               </li>
@@ -224,7 +226,7 @@ export const ImpactTemplate = ({ profile, experienceEntries, atoutEntries, remov
       <div className="absolute top-0 right-0 w-40 h-40 opacity-[0.04] rounded-full" style={{ background: `radial-gradient(circle, ${colors.accent}, transparent)` }} />
 
       <div className="flex-1 px-7 py-6 overflow-y-auto relative z-10">
-        <h3 className="text-[10px] font-black uppercase tracking-[0.25em] mb-5 pb-2.5 flex items-center gap-2" style={{ color: isDark ? "white" : colors.primary, borderBottom: `2px solid transparent`, borderImage: `linear-gradient(90deg, ${colors.accent}, ${colors.primary}) 1` }}>
+        <h3 className="text-[10px] font-black uppercase tracking-[0.25em] mb-5 pb-2.5 flex items-center gap-2" style={{ color: expTc || (isDark ? "white" : colors.primary), borderBottom: `2px solid transparent`, borderImage: `linear-gradient(90deg, ${colors.accent}, ${colors.primary}) 1` }}>
           <Star className="w-3.5 h-3.5" /> Atouts
         </h3>
         {atoutEntries.length > 0 ? (
@@ -232,7 +234,7 @@ export const ImpactTemplate = ({ profile, experienceEntries, atoutEntries, remov
             <li key={e.id} className="flex items-start gap-2.5 group/item rounded-xl px-4 py-3 transition-all hover:translate-x-0.5"
               style={{ background: isDark ? "rgba(255,255,255,0.08)" : `${colors.primary}04`, boxShadow: `0 1px 4px ${colors.primary}08`, border: `1px solid ${isDark ? "rgba(255,255,255,0.1)" : `${colors.primary}08`}` }}>
               <ChevronRight className="w-3 h-3 mt-0.5 flex-shrink-0" style={{ color: colors.accent }} />
-              <span className="flex-1" style={{ color: isDark ? "rgba(255,255,255,0.85)" : undefined }}>{e.selected}</span><DeleteBtn onClick={() => removeEntry(e.id)} light={isDark} />
+              <span className="flex-1" style={{ color: expTc || (isDark ? "rgba(255,255,255,0.85)" : undefined) }}>{e.selected}</span><DeleteBtn onClick={() => removeEntry(e.id)} light={isDark} />
             </li>
           ))}</ul>
         ) : <EmptyState color={colors.primary} label="Ajoutez des atouts…" dark={isDark} />}
@@ -241,7 +243,7 @@ export const ImpactTemplate = ({ profile, experienceEntries, atoutEntries, remov
   );
 
   return (
-    <div className="h-full flex text-[11px] leading-[1.8]" style={{ fontFamily: "'DM Sans', system-ui, sans-serif", flexDirection: sidebarPos === "right" ? "row-reverse" : "row" }}>
+    <div className="h-full flex text-[11px] leading-[1.8]" style={{ fontFamily: fontFamily || "'DM Sans', system-ui, sans-serif", flexDirection: sidebarPos === "right" ? "row-reverse" : "row" }}>
       {sidebarPos === "top" ? <div className="h-full flex flex-col">{sidebar}{main}</div> : <>{sidebar}{main}</>}
     </div>
   );
