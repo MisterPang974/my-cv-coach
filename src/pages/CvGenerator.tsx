@@ -316,6 +316,37 @@ const CvGenerator = () => {
   const [newQualityText, setNewQualityText] = useState("");
   const [qualitiesMode, setQualitiesMode] = useState<"libre" | "ia">("libre");
 
+  // Case style & decoration
+  const [caseStyle, setCaseStyle] = useState<CaseStyle>("standard");
+  const [titleDecoration, setTitleDecoration] = useState<TitleDecoration>("none");
+  const [textAlign, setTextAlign] = useState<TextAlign>("left");
+
+  // Chronological sorting utility (most recent first)
+  const parseDate = (d: string): number => {
+    if (!d) return 0;
+    // MM/YYYY
+    const mmyyyy = d.match(/^(\d{2})\/(\d{4})$/);
+    if (mmyyyy) return parseInt(mmyyyy[2]) * 100 + parseInt(mmyyyy[1]);
+    // YYYY-MM
+    const isoDash = d.match(/^(\d{4})-(\d{2})/);
+    if (isoDash) return parseInt(isoDash[1]) * 100 + parseInt(isoDash[2]);
+    // YYYY
+    const justYear = d.match(/^(\d{4})$/);
+    if (justYear) return parseInt(justYear[1]) * 100;
+    return 0;
+  };
+
+  const sortedExperiences = useMemo(() =>
+    [...experiences].sort((a, b) => {
+      const dateA = a.aujourdhui ? 999999 : parseDate(a.dateFin || a.dateDebut);
+      const dateB = b.aujourdhui ? 999999 : parseDate(b.dateFin || b.dateDebut);
+      return dateB - dateA;
+    }), [experiences]);
+
+  const sortedFormations = useMemo(() =>
+    [...formations].sort((a, b) => parseDate(b.dateFin || b.dateDebut) - parseDate(a.dateFin || a.dateDebut)),
+    [formations]);
+
   // Section order for reordering
   type CvSection = "experiences" | "competences" | "formation" | "qualites" | "divers";
   const [sectionOrder, setSectionOrder] = useState<CvSection[]>(["experiences", "competences", "formation", "qualites", "divers"]);
