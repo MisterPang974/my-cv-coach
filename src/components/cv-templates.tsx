@@ -337,17 +337,27 @@ const NameBlock = ({
   size = "md",
   fontFamily,
   color,
+  titleColor,
 }: {
   profile: CvProfile;
   light?: boolean;
   size?: "sm" | "md" | "lg";
   fontFamily?: string;
   color?: string;
+  titleColor?: string;
 }) => {
   const fullName = [profile.prenom, profile.nom].filter(Boolean).join(" ") || "Votre Nom";
-  const sizeClasses = size === "lg" ? "text-xl" : size === "md" ? "text-base" : "text-sm";
   const resolvedColor = color || (light ? TEXT_WHITE : undefined);
-  return <span className={`font-black leading-tight ${sizeClasses}`} style={{ ...(fontFamily ? { fontFamily } : {}), ...(resolvedColor ? { color: resolvedColor } : {}) }}>{fullName}</span>;
+  // Typography charter: TITRE large uppercase, NOM medium below
+  const titleSizeClass = size === "lg" ? "text-2xl" : size === "md" ? "text-xl" : "text-lg";
+  const nameSizeClass = size === "lg" ? "text-sm" : size === "md" ? "text-xs" : "text-[10px]";
+  return (
+    <div style={{ fontFamily: fontFamily || undefined }}>
+      <p className={`font-black uppercase tracking-wider leading-none ${titleSizeClass}`} style={{ color: titleColor || resolvedColor || undefined }}>{profile.titre || "TITRE DU POSTE"}</p>
+      <p className={`font-semibold leading-tight mt-1 ${nameSizeClass}`} style={{ color: resolvedColor || undefined }}>{fullName}</p>
+    </div>
+  );
+};
 };
 
 /** Resolve text color for a section */
