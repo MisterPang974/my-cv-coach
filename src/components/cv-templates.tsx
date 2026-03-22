@@ -143,10 +143,10 @@ const ContactLine = ({
   textColor?: string;
   iconColor?: string;
 }) => {
-  const iconColor = light ? "currentColor" : colors.accent;
+  const defaultIconColor = light ? "currentColor" : colors.accent;
   const fullAddress = [profile.adresse, profile.codePostal, profile.ville].filter(Boolean).join(", ");
   const resolvedTextColor = textColor || (light ? withAlpha(TEXT_WHITE, 0.72) : TEXT_MUTED);
-  const resolvedIconColor = iconColor || (light ? withAlpha(TEXT_WHITE, 0.56) : colors.accent);
+  const resolvedIconColor = iconColor || (light ? withAlpha(TEXT_WHITE, 0.56) : defaultIconColor);
   return (
     <div className="flex flex-wrap gap-x-4 gap-y-1 text-[10px]" style={{ ...(fontFamily ? { fontFamily } : {}), color: resolvedTextColor }}>
       {profile.telephone && <span className="flex items-center gap-1.5"><Phone className="w-3 h-3" style={{ color: resolvedIconColor }} />{profile.telephone}</span>}
