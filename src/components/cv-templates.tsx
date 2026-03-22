@@ -696,11 +696,8 @@ export const MuralTemplate = ({ profile, experienceEntries, atoutEntries, remove
       <div className="px-7 py-5 relative overflow-hidden" style={{ background: `linear-gradient(135deg, ${colors.primary}, ${colors.swatch})`, boxShadow: `0 6px 24px ${colors.primary}30`, ...useGradientRubrique(gradient, gradientTarget) }}>
         <svg className="absolute inset-0 w-full h-full opacity-[0.04]"><pattern id="grid" width="20" height="20" patternUnits="userSpaceOnUse"><rect width="20" height="20" fill="none" stroke="white" strokeWidth="0.5"/></pattern><rect width="100%" height="100%" fill="url(#grid)"/></svg>
         <div className="relative">
+          <p className="text-2xl font-black uppercase tracking-wider leading-none" style={{ color: titleTc }}>{profile.titre || "TITRE DU POSTE"}</p>
           <NameBlock profile={profile} light size="lg" color={headerTc} />
-          <div className="flex items-center gap-3 mt-2">
-            <span className="w-10 h-1.5" style={{ background: `linear-gradient(90deg, ${colors.accent}, transparent)`, borderRadius: "4px" }} />
-            <p className="text-xs font-bold uppercase tracking-wider" style={{ color: titleTc }}>{profile.titre || "Titre du poste"}</p>
-          </div>
           <div className="mt-3"><ContactLine profile={profile} light colors={colors} fontFamily={fontFamily} textColor={withAlpha(headerTc, 0.72)} iconColor={titleTc} /></div>
         </div>
       </div>
