@@ -417,7 +417,7 @@ export const ImpactTemplate = ({ profile, experienceEntries, atoutEntries, remov
           {profile.titre || "TITRE DU POSTE"}
         </p>
         <NameBlock profile={profile} light size="md" fontFamily={fontFamily} color={headerTc} />
-        
+      </div>
 
       <div className="relative px-4 space-y-3 flex-1 z-10">
         <div className="p-3" style={{ borderRadius: "16px 4px 16px 4px", background: "rgba(255,255,255,0.06)", backdropFilter: "blur(12px)", border: "1px solid rgba(255,255,255,0.08)", boxShadow: "0 4px 16px rgba(0,0,0,0.1)" }}>
