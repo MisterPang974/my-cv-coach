@@ -110,7 +110,7 @@ export const sectorConfigs: Record<SectorId, SectorConfig> = {
     id: "tertiaire",
     label: "Tertiaire / Vente",
     emoji: "💼",
-    layouts: ["magazine", "impact", "creatif", "mural", "dashboard"],
+    layouts: ["magazine", "impact", "creatif", "mural", "flux"],
     palettes: [
       { id: "corporate", label: "Corporate", primary: "hsl(213, 65%, 28%)", accent: "hsl(24, 85%, 52%)", swatch: "hsl(213, 65%, 35%)" },
       { id: "prestige", label: "Prestige", primary: "hsl(220, 20%, 18%)", accent: "hsl(45, 80%, 55%)", swatch: "hsl(220, 20%, 25%)" },
