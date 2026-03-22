@@ -117,8 +117,9 @@ const EmptyState = ({ color, label, dark }: { color: string; label?: string; dar
 );
 
 /** Render competency domains */
-const DomainsBlock = ({ domains, colors, bulletStyle, bulletShape, textColor, light }: { domains?: CompetencyDomainData[]; colors: Colors; bulletStyle: BulletStyle; bulletShape?: BulletShapeId; textColor?: string; light?: boolean }) => {
+const DomainsBlock = ({ domains, colors, bulletStyle, bulletShape, competencyBulletShape, textColor, light }: { domains?: CompetencyDomainData[]; colors: Colors; bulletStyle: BulletStyle; bulletShape?: BulletShapeId; competencyBulletShape?: BulletShapeId; textColor?: string; light?: boolean }) => {
   if (!domains || domains.length === 0) return null;
+  const effectiveShape = competencyBulletShape || bulletShape;
   return (
     <div className="space-y-3">
       {domains.map(d => (
@@ -127,7 +128,7 @@ const DomainsBlock = ({ domains, colors, bulletStyle, bulletShape, textColor, li
           <ul className="space-y-1">
             {d.items.map(item => (
               <li key={item.id} className="flex items-start gap-2 text-[10px]" style={{ color: textColor || (light ? "rgba(255,255,255,0.8)" : undefined) }}>
-                <span className="mt-0.5"><ModernBullet type="technique" color={colors.accent} style={bulletStyle} shape={bulletShape} /></span>
+                <span className="mt-0.5"><ModernBullet type="technique" color={colors.accent} style={bulletStyle} shape={effectiveShape} /></span>
                 <span className="flex-1">{item.text}</span>
               </li>
             ))}
