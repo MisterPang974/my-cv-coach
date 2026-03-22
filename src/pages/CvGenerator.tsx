@@ -904,7 +904,7 @@ const CvGenerator = () => {
                       <div className="grid sm:grid-cols-2 gap-2">
                         <div className="flex gap-2 items-center">
                           <input value={editingExp.dateDebut} onChange={e => setEditingExp(p => ({ ...p, dateDebut: e.target.value }))}
-                            placeholder="Date début (ex: Jan 2022)" className="flex-1 rounded-lg border border-input bg-background px-3 py-2 text-xs placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring" />
+                            placeholder="MM/AAAA (ex: 01/2022)" className="flex-1 rounded-lg border border-input bg-background px-3 py-2 text-xs placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring" />
                           <span className="text-muted-foreground text-xs">—</span>
                           {editingExp.aujourdhui ? (
                             <span className="flex-1 rounded-lg border border-primary/30 bg-primary/5 px-3 py-2 text-xs text-primary font-medium text-center">Aujourd'hui</span>
