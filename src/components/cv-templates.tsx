@@ -882,8 +882,8 @@ export const MedicalTemplate = ({ profile, experienceEntries, atoutEntries, remo
       <div className="relative mx-5 mt-4 px-6 py-5 overflow-hidden" style={{ borderRadius: "24px", background: `linear-gradient(135deg, ${colors.primary}, ${colors.accent})`, boxShadow: `0 8px 32px ${colors.primary}20, 0 4px 12px ${colors.accent}15`, ...useGradientRubrique(gradient, gradientTarget) }}>
         <Blob color="rgba(255,255,255,0.05)" className="absolute -bottom-12 -right-8 w-40 h-40" />
         <div className="relative z-10">
+          <p className="text-xl font-black uppercase tracking-wider leading-none" style={{ color: titleTc }}>{profile.titre || "TITRE DU POSTE"}</p>
           <NameBlock profile={profile} light size="md" fontFamily={fontFamily} color={headerTc} />
-          <p className="text-xs font-medium" style={{ color: titleTc }}>{profile.titre || "Titre du poste"}</p>
           <div className="mt-2"><ContactLine profile={profile} light colors={colors} fontFamily={fontFamily} textColor={withAlpha(headerTc, 0.72)} iconColor={titleTc} /></div>
         </div>
       </div>
