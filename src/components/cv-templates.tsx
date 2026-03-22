@@ -393,10 +393,9 @@ const NameBlock = ({
   color?: string;
 }) => {
   const fullName = [profile.prenom, profile.nom].filter(Boolean).join(" ") || "Votre Nom";
-  // Typography charter: name is BELOW the title, so uses a smaller size
-  const sizeClasses = size === "lg" ? "text-sm" : size === "md" ? "text-xs" : "text-[10px]";
+  const sizeClasses = size === "lg" ? "text-lg" : size === "md" ? "text-sm" : "text-[10px]";
   const resolvedColor = color || (light ? TEXT_WHITE : undefined);
-  return <span className={`font-semibold leading-tight ${sizeClasses}`} style={{ ...(fontFamily ? { fontFamily } : {}), ...(resolvedColor ? { color: resolvedColor } : {}) }}>{fullName}</span>;
+  return <span className={`font-bold leading-tight ${sizeClasses}`} style={{ ...(fontFamily ? { fontFamily } : {}), ...(resolvedColor ? { color: resolvedColor } : {}) }}>{fullName}</span>;
 };
 
 /** Resolve text color for a section */
