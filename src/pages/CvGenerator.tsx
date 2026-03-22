@@ -786,12 +786,22 @@ const CvGenerator = () => {
                     {experiences.map(exp => (
                       <div key={exp.id} className="rounded-xl border border-border bg-background p-3.5 space-y-1.5">
                         <div className="flex items-start justify-between">
-                          <div>
-                            <p className="text-sm font-bold text-foreground">{exp.poste}</p>
-                            <p className="text-xs text-muted-foreground">{exp.entreprise}{exp.ville ? `, ${exp.ville}` : ""}</p>
-                            <p className="text-[10px] text-muted-foreground">{exp.dateDebut}{exp.aujourdhui ? " — Aujourd'hui" : exp.dateFin ? ` — ${exp.dateFin}` : ""}</p>
+                          <div className="flex items-start gap-2.5">
+                            {exp.showLogo && exp.entreprise && (
+                              <img src={getCompanyLogoUrl(exp.entreprise)!} alt="" className="w-6 h-6 rounded mt-0.5 object-contain" onError={e => { (e.target as HTMLImageElement).style.display = 'none'; }} />
+                            )}
+                            <div>
+                              <p className="text-sm font-bold text-foreground">{exp.poste}</p>
+                              <p className="text-xs text-muted-foreground">{exp.entreprise}{exp.ville ? `, ${exp.ville}` : ""}</p>
+                              <p className="text-[10px] text-muted-foreground">{exp.dateDebut}{exp.aujourdhui ? " — Aujourd'hui" : exp.dateFin ? ` — ${exp.dateFin}` : ""}</p>
+                            </div>
                           </div>
-                          <button onClick={() => removeExperience(exp.id)} className="text-muted-foreground hover:text-destructive transition-colors"><Trash2 className="w-4 h-4" /></button>
+                          <div className="flex items-center gap-1.5">
+                            <button onClick={() => toggleExpLogo(exp.id)} className="text-muted-foreground hover:text-primary transition-colors" title={exp.showLogo ? "Masquer le logo" : "Afficher le logo"}>
+                              {exp.showLogo ? <Eye className="w-3.5 h-3.5" /> : <EyeOff className="w-3.5 h-3.5" />}
+                            </button>
+                            <button onClick={() => removeExperience(exp.id)} className="text-muted-foreground hover:text-destructive transition-colors"><Trash2 className="w-4 h-4" /></button>
+                          </div>
                         </div>
                         {exp.missions.length > 0 && (
                           <ul className="space-y-0.5">
