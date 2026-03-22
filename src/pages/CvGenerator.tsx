@@ -67,57 +67,57 @@ const QUALITIES_BY_SECTOR: Record<string, string[]> = {
 };
 
 // ─── Competencies Domain System ────────────────────────────────────
-interface CompetencyItem { id: string; text: string; enabled: boolean; }
+interface CompetencyItem { id: string; text: string; enabled: boolean; level?: number; }
 interface CompetencyDomain { id: string; label: string; enabled: boolean; items: CompetencyItem[]; custom?: boolean; }
 
 const DEFAULT_DOMAINS: CompetencyDomain[] = [
   {
     id: "administratif", label: "Administratif", enabled: true, items: [
-      { id: "a1", text: "Gestion documentaire et archivage", enabled: true },
-      { id: "a2", text: "Rédaction de courriers et comptes-rendus", enabled: true },
-      { id: "a3", text: "Maîtrise des outils bureautiques (Pack Office)", enabled: true },
-      { id: "a4", text: "Organisation et planification d'agendas", enabled: false },
+      { id: "a1", text: "Gestion documentaire et archivage", enabled: true, level: 4 },
+      { id: "a2", text: "Rédaction de courriers et comptes-rendus", enabled: true, level: 3 },
+      { id: "a3", text: "Maîtrise des outils bureautiques (Pack Office)", enabled: true, level: 4 },
+      { id: "a4", text: "Organisation et planification d'agendas", enabled: false, level: 3 },
     ],
   },
   {
     id: "technique", label: "Technique", enabled: true, items: [
-      { id: "t1", text: "Application des procédures et normes en vigueur", enabled: true },
-      { id: "t2", text: "Utilisation d'outils et équipements spécialisés", enabled: true },
-      { id: "t3", text: "Lecture de plans et documentation technique", enabled: false },
-      { id: "t4", text: "Maintenance préventive et curative", enabled: false },
+      { id: "t1", text: "Application des procédures et normes en vigueur", enabled: true, level: 4 },
+      { id: "t2", text: "Utilisation d'outils et équipements spécialisés", enabled: true, level: 3 },
+      { id: "t3", text: "Lecture de plans et documentation technique", enabled: false, level: 2 },
+      { id: "t4", text: "Maintenance préventive et curative", enabled: false, level: 2 },
     ],
   },
   {
     id: "relationnel", label: "Relationnel", enabled: true, items: [
-      { id: "r1", text: "Communication professionnelle et écoute active", enabled: true },
-      { id: "r2", text: "Travail en équipe pluridisciplinaire", enabled: true },
-      { id: "r3", text: "Gestion des conflits et médiation", enabled: false },
-      { id: "r4", text: "Accueil et orientation du public", enabled: false },
+      { id: "r1", text: "Communication professionnelle et écoute active", enabled: true, level: 4 },
+      { id: "r2", text: "Travail en équipe pluridisciplinaire", enabled: true, level: 4 },
+      { id: "r3", text: "Gestion des conflits et médiation", enabled: false, level: 3 },
+      { id: "r4", text: "Accueil et orientation du public", enabled: false, level: 3 },
     ],
   },
   {
     id: "manutention", label: "Manutention / Logistique", enabled: false, items: [
-      { id: "m1", text: "Chargement / déchargement de marchandises", enabled: true },
-      { id: "m2", text: "Conduite d'engins de manutention (CACES)", enabled: true },
-      { id: "m3", text: "Gestion des stocks et inventaires", enabled: false },
-      { id: "m4", text: "Préparation de commandes", enabled: false },
+      { id: "m1", text: "Chargement / déchargement de marchandises", enabled: true, level: 3 },
+      { id: "m2", text: "Conduite d'engins de manutention (CACES)", enabled: true, level: 3 },
+      { id: "m3", text: "Gestion des stocks et inventaires", enabled: false, level: 2 },
+      { id: "m4", text: "Préparation de commandes", enabled: false, level: 3 },
     ],
   },
   {
     id: "securite", label: "Sécurité / Normes", enabled: false, items: [
-      { id: "s1", text: "Respect des consignes de sécurité et EPI", enabled: true },
-      { id: "s2", text: "Application des normes HACCP / hygiène", enabled: true },
-      { id: "s3", text: "Gestes de premiers secours (SST)", enabled: false },
-      { id: "s4", text: "Veille réglementaire", enabled: false },
+      { id: "s1", text: "Respect des consignes de sécurité et EPI", enabled: true, level: 4 },
+      { id: "s2", text: "Application des normes HACCP / hygiène", enabled: true, level: 3 },
+      { id: "s3", text: "Gestes de premiers secours (SST)", enabled: false, level: 2 },
+      { id: "s4", text: "Veille réglementaire", enabled: false, level: 2 },
     ],
   },
   {
     id: "informatique", label: "Informatique & Digital", enabled: false, items: [
-      { id: "i1", text: "Bureautique : Pack Office (Word, Excel, PowerPoint)", enabled: true },
-      { id: "i2", text: "Google Workspace (Docs, Sheets, Drive)", enabled: true },
-      { id: "i3", text: "Outils collaboratifs : Teams, Zoom, Slack", enabled: true },
-      { id: "i4", text: "Logiciels métiers : ERP, CRM, outils de gestion", enabled: false },
-      { id: "i5", text: "Veille numérique et culture digitale", enabled: false },
+      { id: "i1", text: "Bureautique : Pack Office (Word, Excel, PowerPoint)", enabled: true, level: 4 },
+      { id: "i2", text: "Google Workspace (Docs, Sheets, Drive)", enabled: true, level: 3 },
+      { id: "i3", text: "Outils collaboratifs : Teams, Zoom, Slack", enabled: true, level: 3 },
+      { id: "i4", text: "Logiciels métiers : ERP, CRM, outils de gestion", enabled: false, level: 2 },
+      { id: "i5", text: "Veille numérique et culture digitale", enabled: false, level: 2 },
     ],
   },
 ];
@@ -285,6 +285,7 @@ const CvGenerator = () => {
   const [diversBulletShape, setDiversBulletShape] = useState<BulletShapeId | null>(null);
   const [qualitesBulletShape, setQualitesBulletShape] = useState<BulletShapeId | null>(null);
   const [bgCircleColor, setBgCircleColor] = useState<string>("");
+  const [levelDisplay, setLevelDisplay] = useState<"dots" | "bars" | "none">("none");
   const [textColors, setTextColors] = useState<Record<TextColorSection, "noir" | "blanc">>({ header: "noir", experiences: "noir", competences: "noir" });
   const [titleColor, setTitleColor] = useState<string>("");
   const [selectedFont, setSelectedFont] = useState<FontId>("dm-sans");
@@ -499,9 +500,9 @@ const CvGenerator = () => {
 
   const currentFont = fontOptions.find(f => f.id === selectedFont)?.family;
   const Template = templateRegistry[activeLayout];
-  const activeDomains = domains.filter(d => d.enabled).map(d => ({ ...d, items: d.items.filter(i => i.enabled) })).filter(d => d.items.length > 0);
+  const activeDomains = domains.filter(d => d.enabled).map(d => ({ ...d, items: d.items.filter(i => i.enabled).map(i => ({ ...i, level: i.level })) })).filter(d => d.items.length > 0);
   const formationTitle = formationMode === "parcours" ? "Parcours de formation" : "Formation & Diplômes";
-  const templateProps: TemplateProps = { profile, experienceEntries, atoutEntries, entries, removeEntry, colors, sidebarPos, bulletStyle, bulletShape: activeBulletShape || undefined, competencyBulletShape: competencyBulletShape || undefined, formationBulletShape: formationBulletShape || undefined, diversBulletShape: diversBulletShape || undefined, qualitesBulletShape: qualitesBulletShape || undefined, gradient: activeGradient || undefined, gradientTarget, bgCircleColor: bgCircleColor || undefined, textColors, titleColor: titleColor || undefined, fontFamily: currentFont, competencyDomains: activeDomains, professionalExperiences: experiences, removeProfessionalExperience: removeExperience, formations, removeFormation, formationTitle, getCompanyLogoUrl, interests, removeInterest, interestDisplayMode, sectionOrder: sectionOrder as any, qualities, removeQuality };
+  const templateProps: TemplateProps = { profile, experienceEntries, atoutEntries, entries, removeEntry, colors, sidebarPos, bulletStyle, bulletShape: activeBulletShape || undefined, competencyBulletShape: competencyBulletShape || undefined, formationBulletShape: formationBulletShape || undefined, diversBulletShape: diversBulletShape || undefined, qualitesBulletShape: qualitesBulletShape || undefined, gradient: activeGradient || undefined, gradientTarget, bgCircleColor: bgCircleColor || undefined, textColors, titleColor: titleColor || undefined, fontFamily: currentFont, competencyDomains: activeDomains, professionalExperiences: experiences, removeProfessionalExperience: removeExperience, formations, removeFormation, formationTitle, getCompanyLogoUrl, interests, removeInterest, interestDisplayMode, sectionOrder: sectionOrder as any, qualities, removeQuality, levelDisplay };
 
   return (
     <div className="min-h-screen bg-background">
@@ -1043,7 +1044,7 @@ const CvGenerator = () => {
 
                     if (sec === "competences") return (
                       <div key="competences" className="rounded-2xl bg-card p-5 shadow-sm border border-border/50 space-y-4">
-                        <div className="flex items-center justify-between">
+                        <div className="flex items-center justify-between flex-wrap gap-2">
                           <h3 className="font-semibold text-sm flex items-center gap-2"><Layers className="w-4 h-4 text-primary" /> COMPÉTENCES PAR DOMAINE</h3>
                           <div className="flex items-center gap-2">
                             <Gauge className="w-3.5 h-3.5 text-muted-foreground" />
@@ -1051,6 +1052,19 @@ const CvGenerator = () => {
                               <div className="h-full rounded-full transition-all duration-300" style={{ width: `${usagePercent}%`, background: isOverloaded ? "hsl(0, 70%, 55%)" : usagePercent > 75 ? "hsl(35, 90%, 55%)" : "hsl(150, 50%, 45%)" }} />
                             </div>
                             <span className={`text-[10px] font-medium ${isOverloaded ? "text-red-500" : "text-muted-foreground"}`}>{activeCompetencyCount}/{maxCompetencies}</span>
+                          </div>
+                        </div>
+
+                        {/* Level display mode */}
+                        <div className="rounded-xl bg-secondary/40 border border-border px-4 py-3">
+                          <p className="text-xs font-semibold text-muted-foreground mb-2">📊 Indicateurs de niveau</p>
+                          <div className="flex items-center gap-1 rounded-lg bg-secondary p-0.5">
+                            {(["none", "dots", "bars"] as const).map(m => (
+                              <button key={m} onClick={() => setLevelDisplay(m)}
+                                className={`px-3 py-1.5 rounded-md text-[10px] font-medium transition-all ${levelDisplay === m ? "bg-primary text-primary-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"}`}>
+                                {m === "none" ? "Masqué" : m === "dots" ? "●●●○○ Points" : "▬▬▬ Barres"}
+                              </button>
+                            ))}
                           </div>
                         </div>
 
@@ -1102,16 +1116,28 @@ const CvGenerator = () => {
                               {domain.enabled && (
                                 <div className="px-4 pb-3 space-y-1.5">
                                   {domain.items.map(item => (
-                                    <label key={item.id} className="flex items-start gap-2 cursor-pointer group">
+                                    <div key={item.id} className="flex items-center gap-2 group">
                                       <input type="checkbox" checked={item.enabled} onChange={() => {
                                         if (!item.enabled && isOverloaded) return;
                                         toggleCompetencyItem(domain.id, item.id);
-                                      }} className="mt-0.5 rounded border-primary text-primary focus:ring-primary" disabled={!item.enabled && isOverloaded} />
+                                      }} className="rounded border-primary text-primary focus:ring-primary flex-shrink-0" disabled={!item.enabled && isOverloaded} />
                                       <span className={`text-[11px] leading-relaxed flex-1 ${item.enabled ? "text-foreground" : "text-muted-foreground line-through"}`}>{item.text}</span>
+                                      {/* Level selector dots */}
+                                      {levelDisplay !== "none" && item.enabled && (
+                                        <div className="flex gap-0.5 flex-shrink-0">
+                                          {[1, 2, 3, 4, 5].map(l => (
+                                            <button key={l} onClick={() => {
+                                              setDomains(prev => prev.map(d => d.id === domain.id ? { ...d, items: d.items.map(i => i.id === item.id ? { ...i, level: l } : i) } : d));
+                                            }}
+                                              className={`w-3.5 h-3.5 rounded-full transition-all ${(item.level || 0) >= l ? "bg-accent" : "bg-secondary border border-border"}`}
+                                              title={`Niveau ${l}/5`} />
+                                          ))}
+                                        </div>
+                                      )}
                                       {domain.custom && (
                                         <button onClick={() => removeCompetencyItem(domain.id, item.id)} className="opacity-0 group-hover:opacity-100 text-muted-foreground hover:text-red-400 transition-all"><Trash2 className="w-3 h-3" /></button>
                                       )}
-                                    </label>
+                                    </div>
                                   ))}
                                   {/* Add custom competency to domain */}
                                   <div className="flex gap-2 mt-2">
