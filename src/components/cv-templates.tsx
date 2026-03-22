@@ -52,7 +52,7 @@ const TEXT_BLACK = "hsl(var(--foreground))";
 const TEXT_WHITE = "hsl(var(--primary-foreground))";
 const TEXT_MUTED = "hsl(var(--muted-foreground))";
 
-export interface CompetencyDomainData { id: string; label: string; items: { id: string; text: string; enabled: boolean }[]; }
+export interface CompetencyDomainData { id: string; label: string; items: { id: string; text: string; enabled: boolean; level?: number }[]; }
 
 export type CvSectionId = "experiences" | "competences" | "formation" | "qualites" | "divers";
 
