@@ -932,6 +932,7 @@ const CvGenerator = () => {
                     )}
                   </div>
 
+                  <div className="rounded-2xl bg-card p-5 shadow-sm border border-border/50 space-y-4">
                     <div className="flex items-center justify-between">
                       <h3 className="font-semibold text-sm flex items-center gap-2"><Layers className="w-4 h-4 text-primary" /> Compétences par domaine</h3>
                       <div className="flex items-center gap-2">
