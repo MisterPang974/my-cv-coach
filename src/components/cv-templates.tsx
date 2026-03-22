@@ -404,6 +404,14 @@ export const ImpactTemplate = ({ profile, experienceEntries, atoutEntries, remov
             <div className="my-3" />
           </>
         )}
+        {formations && formations.length > 0 && (
+          <>
+            <h3 className="text-[10px] font-black uppercase tracking-[0.25em] mb-3 pb-2 flex items-center gap-2" style={{ color: expTc || colors.primary }}>
+              <GraduationCap className="w-3.5 h-3.5" /> {formationTitle || "Formation"}</h3>
+            <FormationBlock formations={formations} colors={colors} bulletStyle={bulletStyle} bulletShape={bulletShape} textColor={expTc} onRemove={removeFormation} />
+            <div className="my-3" />
+          </>
+        )}
         <h3 className="text-[10px] font-black uppercase tracking-[0.25em] mb-5 pb-2.5 flex items-center gap-2" style={{ color: expTc || (isDark ? "white" : colors.primary), borderBottom: `2px solid transparent`, borderImage: `linear-gradient(90deg, ${colors.accent}, ${colors.primary}) 1` }}>
           <Star className="w-3.5 h-3.5" /> Atouts
         </h3>
@@ -465,6 +473,14 @@ export const ArtisanTemplate = ({ profile, experienceEntries, atoutEntries, remo
               <div className="my-3" />
             </>
           )}
+        {formations && formations.length > 0 && (
+          <>
+            <h3 className="text-[10px] font-black uppercase tracking-[0.25em] mb-3 pb-2 flex items-center gap-2" style={{ color: expTc || colors.primary }}>
+              <GraduationCap className="w-3.5 h-3.5" /> {formationTitle || "Formation"}</h3>
+            <FormationBlock formations={formations} colors={colors} bulletStyle={bulletStyle} bulletShape={bulletShape} textColor={expTc} onRemove={removeFormation} />
+            <div className="my-3" />
+          </>
+        )}
           <h3 className="text-[11px] font-bold uppercase tracking-[0.12em] mb-4 pb-2 flex items-center gap-2" style={{ color: compTc || (isDark ? TEXT_WHITE : colors.primary), fontFamily: "'DM Sans', sans-serif" }}>
             <span className="w-6 h-1 rounded-full" style={{ background: `linear-gradient(90deg, ${colors.accent}, ${colors.primary})` }} /> Compétences
           </h3>
@@ -555,6 +571,14 @@ export const CreatifTemplate = ({ profile, experienceEntries, atoutEntries, remo
               <div className="my-3" />
             </>
           )}
+        {formations && formations.length > 0 && (
+          <>
+            <h3 className="text-[10px] font-black uppercase tracking-[0.25em] mb-3 pb-2 flex items-center gap-2" style={{ color: expTc || colors.primary }}>
+              <GraduationCap className="w-3.5 h-3.5" /> {formationTitle || "Formation"}</h3>
+            <FormationBlock formations={formations} colors={colors} bulletStyle={bulletStyle} bulletShape={bulletShape} textColor={expTc} onRemove={removeFormation} />
+            <div className="my-3" />
+          </>
+        )}
           <h3 className="text-[10px] font-black uppercase tracking-[0.25em] mb-3 flex items-center gap-2" style={{ color: compTc || colors.primary, ...useGradientRubrique(gradient, gradientTarget) }}>
             <span className="w-6 h-0.5 rounded-full" style={{ background: `linear-gradient(90deg, ${colors.accent}, transparent)` }} /> Compétences
           </h3>
@@ -631,6 +655,14 @@ export const MuralTemplate = ({ profile, experienceEntries, atoutEntries, remove
               <div className="my-3" />
             </>
           )}
+        {formations && formations.length > 0 && (
+          <>
+            <h3 className="text-[10px] font-black uppercase tracking-[0.25em] mb-3 pb-2 flex items-center gap-2" style={{ color: expTc || colors.primary }}>
+              <GraduationCap className="w-3.5 h-3.5" /> {formationTitle || "Formation"}</h3>
+            <FormationBlock formations={formations} colors={colors} bulletStyle={bulletStyle} bulletShape={bulletShape} textColor={expTc} onRemove={removeFormation} />
+            <div className="my-3" />
+          </>
+        )}
           <div className="flex items-center gap-2 mb-3">
             <Grid3X3 className="w-4 h-4" style={{ color: colors.primary }} />
             <h3 className="text-[10px] font-black uppercase tracking-[0.25em]" style={{ color: compTc || colors.primary }}>Compétences</h3>
@@ -717,6 +749,14 @@ export const MagazineTemplate = ({ profile, experienceEntries, atoutEntries, rem
               <div className="my-3" />
             </>
           )}
+        {formations && formations.length > 0 && (
+          <>
+            <h3 className="text-[10px] font-black uppercase tracking-[0.25em] mb-3 pb-2 flex items-center gap-2" style={{ color: expTc || colors.primary }}>
+              <GraduationCap className="w-3.5 h-3.5" /> {formationTitle || "Formation"}</h3>
+            <FormationBlock formations={formations} colors={colors} bulletStyle={bulletStyle} bulletShape={bulletShape} textColor={expTc} onRemove={removeFormation} />
+            <div className="my-3" />
+          </>
+        )}
           <div className="mb-4 pb-2" style={{ borderBottom: "2px solid transparent", borderImage: `linear-gradient(90deg, ${colors.accent}, ${colors.primary}, transparent) 1` }}>
             <h3 className="text-[10px] font-black uppercase tracking-[0.25em]" style={{ color: compTc || colors.primary }}>Compétences professionnelles</h3>
           </div>
@@ -853,6 +893,14 @@ export const FluxTemplate = ({ profile, experienceEntries, atoutEntries, removeE
               <Briefcase className="w-4 h-4" style={{ color: colors.accent }} /> Expérience Professionnelle
             </h3>
             <div className="ml-10"><ExperiencesBlock experiences={professionalExperiences} colors={colors} bulletStyle={bulletStyle} bulletShape={bulletShape} getCompanyLogoUrl={getCompanyLogoUrl} textColor={expTc} onRemove={removeProfessionalExperience} /></div>
+            <div className="my-3" />
+          </>
+        )}
+        {formations && formations.length > 0 && (
+          <>
+            <h3 className="text-[10px] font-black uppercase tracking-[0.25em] mb-3 pb-2 flex items-center gap-2" style={{ color: expTc || colors.primary }}>
+              <GraduationCap className="w-3.5 h-3.5" /> {formationTitle || "Formation"}</h3>
+            <FormationBlock formations={formations} colors={colors} bulletStyle={bulletStyle} bulletShape={bulletShape} textColor={expTc} onRemove={removeFormation} />
             <div className="my-3" />
           </>
         )}
