@@ -798,6 +798,16 @@ export const FluxTemplate = ({ profile, experienceEntries, atoutEntries, removeE
       <div className="flex-1 px-6 py-5 overflow-y-auto relative">
         <div className="absolute left-[42px] top-5 bottom-5 w-[2px]" style={{ background: `linear-gradient(180deg, ${colors.accent}, ${colors.primary}, ${colors.accent}30, transparent)`, borderRadius: "2px" }} />
 
+        {professionalExperiences && professionalExperiences.length > 0 && (
+          <>
+            <h3 className="text-[10px] font-black uppercase tracking-[0.25em] mb-3 ml-10 flex items-center gap-2" style={{ color: expTc || colors.primary }}>
+              <Briefcase className="w-4 h-4" style={{ color: colors.accent }} /> Expérience Professionnelle
+            </h3>
+            <div className="ml-10"><ExperiencesBlock experiences={professionalExperiences} colors={colors} bulletStyle={bulletStyle} bulletShape={bulletShape} textColor={expTc} onRemove={removeProfessionalExperience} /></div>
+            <div className="my-3" />
+          </>
+        )}
+
         <h3 className="text-[10px] font-black uppercase tracking-[0.25em] mb-4 ml-10 flex items-center gap-2" style={{ color: compTc || colors.primary }}>
           <ArrowRightCircle className="w-4 h-4" style={{ color: colors.accent, filter: `drop-shadow(0 0 4px ${colors.accent}40)` }} /> Parcours & compétences
         </h3>
