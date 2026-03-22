@@ -637,7 +637,9 @@ export const MedicalTemplate = ({ profile, experienceEntries, atoutEntries, remo
             <span className="w-6 h-6 rounded-full flex items-center justify-center" style={{ background: `linear-gradient(135deg, ${colors.accent}20, ${colors.primary}15)` }}><Layers className="w-3 h-3" style={{ color: colors.accent }} /></span>
             Compétences
           </h3>
-          {experienceEntries.length > 0 ? (
+          {competencyDomains && competencyDomains.length > 0 ? (
+            <DomainsBlock domains={competencyDomains} colors={colors} bulletStyle={bulletStyle} bulletShape={bulletShape} textColor={expTc} />
+          ) : experienceEntries.length > 0 ? (
             <ul className="space-y-2">{experienceEntries.map(e => (
               <li key={e.id} className="flex items-start gap-2.5 group/item px-3 py-1.5 rounded-2xl transition-all hover:bg-white/80" style={{ boxShadow: "0 1px 3px rgba(0,0,0,0.03)" }}>
                 <span className="mt-0.5"><ModernBullet type={e.bullet} color={e.bullet === "technique" ? colors.primary : colors.accent} style={bulletStyle} shape={bulletShape} /></span>
