@@ -36,6 +36,32 @@ export interface FormationEntry {
   ville: string;
 }
 
+// ─── Divers & Centres d'intérêt ───────────────────────────────────
+export interface InterestEntry {
+  id: number;
+  text: string;
+  icon: string; // lucide icon key or emoji
+  category: "loisir" | "benevolat" | "permis" | "langue" | "autre";
+}
+
+const INTEREST_ICONS: Record<string, string> = {
+  "Sport": "⚽", "Musique": "🎵", "Lecture": "📚", "Voyage": "✈️", "Cuisine": "🍳",
+  "Photo": "📷", "Cinéma": "🎬", "Art": "🎨", "Jardinage": "🌱", "Jeux vidéo": "🎮",
+  "Yoga": "🧘", "Randonnée": "🥾", "Bénévolat": "🤝", "Permis B": "🚗", "Permis C": "🚛",
+  "Anglais": "🇬🇧", "Espagnol": "🇪🇸", "Allemand": "🇩🇪", "Arabe": "🇸🇦", "Italien": "🇮🇹",
+};
+
+const INTEREST_SUGGESTIONS: { text: string; icon: string; category: InterestEntry["category"] }[] = [
+  { text: "Sport collectif", icon: "⚽", category: "loisir" },
+  { text: "Musique", icon: "🎵", category: "loisir" },
+  { text: "Lecture", icon: "📚", category: "loisir" },
+  { text: "Voyages", icon: "✈️", category: "loisir" },
+  { text: "Cuisine", icon: "🍳", category: "loisir" },
+  { text: "Bénévolat associatif", icon: "🤝", category: "benevolat" },
+  { text: "Permis B", icon: "🚗", category: "permis" },
+  { text: "Anglais courant", icon: "🇬🇧", category: "langue" },
+];
+
 // ─── Competencies Domain System ────────────────────────────────────
 interface CompetencyItem { id: string; text: string; enabled: boolean; }
 interface CompetencyDomain { id: string; label: string; enabled: boolean; items: CompetencyItem[]; custom?: boolean; }
