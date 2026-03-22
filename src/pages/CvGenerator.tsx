@@ -58,6 +58,15 @@ const DEFAULT_DOMAINS: CompetencyDomain[] = [
       { id: "s4", text: "Veille réglementaire", enabled: false },
     ],
   },
+  {
+    id: "informatique", label: "Informatique & Digital", enabled: false, items: [
+      { id: "i1", text: "Bureautique : Pack Office (Word, Excel, PowerPoint)", enabled: true },
+      { id: "i2", text: "Google Workspace (Docs, Sheets, Drive)", enabled: true },
+      { id: "i3", text: "Outils collaboratifs : Teams, Zoom, Slack", enabled: true },
+      { id: "i4", text: "Logiciels métiers : ERP, CRM, outils de gestion", enabled: false },
+      { id: "i5", text: "Veille numérique et culture digitale", enabled: false },
+    ],
+  },
 ];
 
 // Layout capacity (max active competency items for clean A4 rendering)
