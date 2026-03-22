@@ -67,7 +67,7 @@ const QUALITIES_BY_SECTOR: Record<string, string[]> = {
 };
 
 // ─── Competencies Domain System ────────────────────────────────────
-interface CompetencyItem { id: string; text: string; enabled: boolean; }
+interface CompetencyItem { id: string; text: string; enabled: boolean; level?: number; }
 interface CompetencyDomain { id: string; label: string; enabled: boolean; items: CompetencyItem[]; custom?: boolean; }
 
 const DEFAULT_DOMAINS: CompetencyDomain[] = [
