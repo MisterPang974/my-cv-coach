@@ -16,6 +16,9 @@ export interface TemplateProps {
   colors: Colors;
   sidebarPos: SidebarPosition;
   bulletStyle: BulletStyle;
+  bulletShape?: BulletShapeId;
+  gradient?: { id: string; label: string; from: string; to: string; angle?: number };
+  gradientTarget?: "fond" | "rubriques";
 }
 
 // ─── Bullet renderers ──────────────────────────────────────────────
