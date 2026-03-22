@@ -190,13 +190,35 @@ const CvGenerator = () => {
   const experienceEntries = entries.filter(e => e.input !== "Atout");
   const atoutEntries = entries.filter(e => e.input === "Atout");
 
+  const parseHslLightness = (hsl: string): number => {
+    const match = hsl.match(/hsl\(\s*[\d.]+\s*,\s*[\d.]+%\s*,\s*([\d.]+)%\s*\)/i);
+    return match ? Number(match[1]) : 100;
+  };
+
+  const isGradientDark = (from: string, to: string) => ((parseHslLightness(from) + parseHslLightness(to)) / 2) < 58;
+
+  const getSectionBackgroundTone = (section: TextColorSection): "dark" | "light" => {
+    if (section === "header") {
+      if (activeGradient && gradientTarget === "rubriques") return isGradientDark(activeGradient.from, activeGradient.to) ? "dark" : "light";
+      return "dark";
+    }
+
+    if (activeGradient && gradientTarget === "fond") {
+      return isGradientDark(activeGradient.from, activeGradient.to) ? "dark" : "light";
+    }
+
+    return "light";
+  };
+
   // Contrast warning logic
   const getContrastWarning = (section: TextColorSection): string | null => {
-    const textC = textColors[section];
-    const hasDarkBg = activeGradient && gradientTarget === "fond";
-    // Simple check: white text on white/light background or black text on dark background
-    if (textC === "blanc" && !hasDarkBg && activePalette.id === "blanc") return "Attention, le texte risque d'être illisible à cause du manque de contraste !";
-    if (textC === "blanc" && !hasDarkBg && !activeGradient) return "Attention, le texte risque d'être illisible à cause du manque de contraste !";
+    const wantsWhiteText = textColors[section] === "blanc";
+    const backgroundTone = getSectionBackgroundTone(section);
+
+    if ((wantsWhiteText && backgroundTone === "light") || (!wantsWhiteText && backgroundTone === "dark")) {
+      return "Attention, le texte risque d'être illisible à cause du manque de contraste !";
+    }
+
     return null;
   };
 
