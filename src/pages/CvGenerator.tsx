@@ -1,8 +1,8 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useMemo } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import {
-  Wand2, Copy, Check, Plus, Trash2, User, Briefcase, Palette, Star, Settings2, ChevronRight, Type, AlertTriangle
+  Wand2, Copy, Check, Plus, Trash2, User, Briefcase, Palette, Star, Settings2, ChevronRight, Type, AlertTriangle, ToggleLeft, ToggleRight, Gauge
 } from "lucide-react";
 import { detectSector, sectorConfigs, layoutMeta, gradientLibrary, bulletShapes, type SectorId, type LayoutId, type SidebarPosition, type BulletStyle, type SectorPalette, type SectorGradient, type BulletShapeId } from "@/lib/cv-sectors";
 import { templateRegistry, ModernBullet, ShapeBullet, fontOptions, type TemplateProps, type TextColorSection, type FontId } from "@/components/cv-templates";
@@ -12,6 +12,65 @@ type BulletType = "action" | "technique" | "relationnel";
 interface Transformation { text: string; bullet: BulletType; }
 interface CvEntry { id: number; input: string; selected: string; bullet: BulletType; }
 interface CvProfile { nom: string; prenom: string; titre: string; email: string; telephone: string; adresse: string; codePostal: string; ville: string; }
+
+// ─── Competencies Domain System ────────────────────────────────────
+interface CompetencyItem { id: string; text: string; enabled: boolean; }
+interface CompetencyDomain { id: string; label: string; enabled: boolean; items: CompetencyItem[]; custom?: boolean; }
+
+const DEFAULT_DOMAINS: CompetencyDomain[] = [
+  {
+    id: "administratif", label: "Administratif", enabled: true, items: [
+      { id: "a1", text: "Gestion documentaire et archivage", enabled: true },
+      { id: "a2", text: "Rédaction de courriers et comptes-rendus", enabled: true },
+      { id: "a3", text: "Maîtrise des outils bureautiques (Pack Office)", enabled: true },
+      { id: "a4", text: "Organisation et planification d'agendas", enabled: false },
+    ],
+  },
+  {
+    id: "technique", label: "Technique", enabled: true, items: [
+      { id: "t1", text: "Application des procédures et normes en vigueur", enabled: true },
+      { id: "t2", text: "Utilisation d'outils et équipements spécialisés", enabled: true },
+      { id: "t3", text: "Lecture de plans et documentation technique", enabled: false },
+      { id: "t4", text: "Maintenance préventive et curative", enabled: false },
+    ],
+  },
+  {
+    id: "relationnel", label: "Relationnel", enabled: true, items: [
+      { id: "r1", text: "Communication professionnelle et écoute active", enabled: true },
+      { id: "r2", text: "Travail en équipe pluridisciplinaire", enabled: true },
+      { id: "r3", text: "Gestion des conflits et médiation", enabled: false },
+      { id: "r4", text: "Accueil et orientation du public", enabled: false },
+    ],
+  },
+  {
+    id: "manutention", label: "Manutention / Logistique", enabled: false, items: [
+      { id: "m1", text: "Chargement / déchargement de marchandises", enabled: true },
+      { id: "m2", text: "Conduite d'engins de manutention (CACES)", enabled: true },
+      { id: "m3", text: "Gestion des stocks et inventaires", enabled: false },
+      { id: "m4", text: "Préparation de commandes", enabled: false },
+    ],
+  },
+  {
+    id: "securite", label: "Sécurité / Normes", enabled: false, items: [
+      { id: "s1", text: "Respect des consignes de sécurité et EPI", enabled: true },
+      { id: "s2", text: "Application des normes HACCP / hygiène", enabled: true },
+      { id: "s3", text: "Gestes de premiers secours (SST)", enabled: false },
+      { id: "s4", text: "Veille réglementaire", enabled: false },
+    ],
+  },
+];
+
+// Layout capacity (max active competency items for clean A4 rendering)
+const LAYOUT_MAX_COMPETENCIES: Record<string, number> = {
+  impact: 10,
+  artisan: 12,
+  creatif: 10,
+  mural: 14,
+  magazine: 12,
+  medical: 12,
+  flux: 10,
+  serenite: 11,
+};
 
 // ─── Transformations (Méthode Fred) ────────────────────────────────
 const transformations: Record<string, Transformation[]> = {
