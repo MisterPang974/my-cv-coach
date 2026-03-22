@@ -202,7 +202,7 @@ const ExperiencesBlock = ({ experiences, colors, bulletStyle, bulletShape, textC
                 <div>
                   <p className="text-[10px] font-black leading-tight" style={{ color: textColor || (light ? "white" : colors.primary) }}>{exp.poste}</p>
                   <p className="text-[8px]" style={{ color: textColor ? `${textColor}99` : (light ? "rgba(255,255,255,0.6)" : TEXT_MUTED) }}>
-                    {exp.entreprise}{exp.ville ? ` · ${exp.ville}` : ""}{exp.dateDebut ? ` | ${exp.dateDebut}` : ""}{exp.aujourdhui ? " — Aujourd'hui" : exp.dateFin ? ` — ${exp.dateFin}` : ""}
+                    {exp.entreprise}{exp.ville ? ` · ${exp.ville}` : ""}{exp.dateDebut ? ` | ${formatDateDisplay(exp.dateDebut)}` : ""}{exp.aujourdhui ? " — Aujourd'hui" : exp.dateFin ? ` — ${formatDateDisplay(exp.dateFin)}` : ""}
                   </p>
                 </div>
               </div>
