@@ -233,9 +233,10 @@ export const ImpactTemplate = ({ profile, experienceEntries, atoutEntries, remov
 export const ArtisanTemplate = ({ profile, experienceEntries, atoutEntries, removeEntry, colors, sidebarPos, bulletStyle, bulletShape, gradient, gradientTarget, bgCircleColor }: TemplateProps) => {
   const fondStyle = useGradientBg(gradient, gradientTarget);
   const circleCol = bgCircleColor || colors.accent;
+  const { isDark } = useAutoContrast(gradient, gradientTarget);
 
   return (
-    <div className="h-full flex flex-col text-[11px] leading-[1.6] relative overflow-hidden" style={{ fontFamily: "'DM Serif Display', Georgia, serif", background: `linear-gradient(180deg, hsl(40, 30%, 97%), hsl(35, 25%, 94%))`, ...fondStyle }}>
+    <div className="h-full flex flex-col text-[11px] leading-[1.8] relative overflow-hidden" style={{ fontFamily: "'DM Serif Display', Georgia, serif", background: `linear-gradient(180deg, hsl(40, 30%, 97%), hsl(35, 25%, 94%))`, ...fondStyle }}>
       <Blob color={`${circleCol}08`} className="absolute -top-20 -right-20 w-56 h-56" />
       <Blob color={`${colors.primary}06`} className="absolute bottom-10 -left-16 w-44 h-44" />
 
