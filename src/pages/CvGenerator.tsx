@@ -987,9 +987,9 @@ const CvGenerator = () => {
                       <p className="text-xs font-semibold text-primary">+ {formationMode === "parcours" ? "Nouvelle formation" : "Nouveau diplôme"}</p>
                       <div className="grid sm:grid-cols-2 gap-2">
                         <input value={editingFormation.dateDebut} onChange={e => setEditingFormation(p => ({ ...p, dateDebut: e.target.value }))}
-                          placeholder="Date début (ex: 2018)" className="rounded-lg border border-input bg-background px-3 py-2 text-xs placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring" />
+                          placeholder="MM/AAAA (ex: 09/2018)" className="rounded-lg border border-input bg-background px-3 py-2 text-xs placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring" />
                         <input value={editingFormation.dateFin} onChange={e => setEditingFormation(p => ({ ...p, dateFin: e.target.value }))}
-                          placeholder="Date fin (ex: 2020)" className="rounded-lg border border-input bg-background px-3 py-2 text-xs placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring" />
+                          placeholder="MM/AAAA (ex: 06/2020)" className="rounded-lg border border-input bg-background px-3 py-2 text-xs placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring" />
                       </div>
                       <input value={editingFormation.intitule} onChange={e => setEditingFormation(p => ({ ...p, intitule: e.target.value }))}
                         placeholder={formationMode === "parcours" ? "Intitulé de la formation / VAE *" : "Intitulé du diplôme *"}
