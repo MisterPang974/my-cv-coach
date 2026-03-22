@@ -237,8 +237,8 @@ export const ArtisanTemplate = ({ profile, experienceEntries, atoutEntries, remo
 
   return (
     <div className="h-full flex flex-col text-[11px] leading-[1.8] relative overflow-hidden" style={{ fontFamily: "'DM Serif Display', Georgia, serif", background: `linear-gradient(180deg, hsl(40, 30%, 97%), hsl(35, 25%, 94%))`, ...fondStyle }}>
-      <Blob color={`${circleCol}20`} className="absolute -top-20 -right-20 w-56 h-56" />
-      <Blob color={`${circleCol}18`} className="absolute bottom-10 -left-16 w-44 h-44" />
+      <Blob color={circleCol} className="absolute -top-20 -right-20 w-56 h-56" style={{ opacity: 0.15 }} />
+      <Blob color={circleCol} className="absolute bottom-10 -left-16 w-44 h-44" style={{ opacity: 0.12 }} />
 
       <div className="relative mx-4 mt-4 px-6 py-5 overflow-hidden" style={{ borderRadius: "28px 8px 28px 8px", background: `linear-gradient(135deg, ${colors.primary}, ${colors.swatch})`, boxShadow: `0 8px 32px ${colors.primary}25, 0 2px 8px ${colors.primary}15`, ...useGradientRubrique(gradient, gradientTarget) }}>
         <div className="absolute inset-0 opacity-[0.05]" style={{ backgroundImage: "url(\"data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='30' cy='30' r='1.5' fill='%23fff'/%3E%3C/svg%3E\")" }} />
