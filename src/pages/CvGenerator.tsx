@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect, useMemo } from "react";
 import Navbar from "@/components/Navbar";
+import { A4AutoFitWrapper } from "@/components/A4AutoFitWrapper";
 import Footer from "@/components/Footer";
 import {
   Wand2, Copy, Check, Plus, Trash2, User, Briefcase, Palette, Star, Settings2, ChevronRight, Type, AlertTriangle, ToggleLeft, ToggleRight, Gauge, Layers, Send, FolderPlus, GraduationCap, Building2, Eye, EyeOff, ArrowUp, ArrowDown, GripVertical, Sparkles, Heart
@@ -1351,7 +1352,9 @@ const CvGenerator = () => {
                       maxHeight: "82vh",
                       boxShadow: `0 4px 24px -4px rgba(0,0,0,0.12), 0 0 0 1px rgba(0,0,0,0.04), 0 20px 40px -12px ${colors.primary}15`,
                     }}>
-                    {Template && <Template {...templateProps} />}
+                    <A4AutoFitWrapper className="w-full h-full">
+                      {Template && <Template {...templateProps} />}
+                    </A4AutoFitWrapper>
                   </div>
                 </div>
               </div>
@@ -1368,7 +1371,9 @@ const CvGenerator = () => {
                     maxHeight: "50vh",
                     boxShadow: `0 4px 24px -4px rgba(0,0,0,0.12), 0 0 0 1px rgba(0,0,0,0.04), 0 20px 40px -12px ${colors.primary}15`,
                   }}>
-                  {Template && <Template {...templateProps} />}
+                  <A4AutoFitWrapper className="w-full h-full">
+                    {Template && <Template {...templateProps} />}
+                  </A4AutoFitWrapper>
                 </div>
               </div>
             )}

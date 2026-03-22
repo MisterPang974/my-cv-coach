@@ -180,9 +180,9 @@ const LevelBar = ({ level = 0, max = 5, color }: { level: number; max?: number; 
 
 // ─── Section heading with separator line ───────────────────────────
 const SectionHeading = ({ children, color, icon }: { children: React.ReactNode; color: string; icon?: React.ReactNode }) => (
-  <div className="mb-2.5 pb-1.5 flex items-center gap-2" style={{ borderBottom: `1.5px solid ${color}20` }}>
+  <div className="flex items-center gap-2" style={{ borderBottom: `1.5px solid ${color}20`, marginBottom: `calc(10px * var(--cv-gap-scale, 1))`, paddingBottom: `calc(6px * var(--cv-gap-scale, 1))` }}>
     {icon && <span style={{ color }}>{icon}</span>}
-    <h3 className="text-[10px] font-black uppercase tracking-[0.2em]" style={{ color }}>{children}</h3>
+    <h3 className="font-black uppercase tracking-[0.2em]" style={{ color, fontSize: `calc(10px * var(--cv-title-scale, 1))` }}>{children}</h3>
   </div>
 );
 
@@ -191,13 +191,13 @@ const DomainsBlock = ({ domains, colors, bulletStyle, bulletShape, competencyBul
   if (!domains || domains.length === 0) return null;
   const effectiveShape = competencyBulletShape || bulletShape;
   return (
-    <div className="space-y-1.5">
+    <div style={{ display: "flex", flexDirection: "column", gap: `calc(6px * var(--cv-gap-scale, 1))` }}>
       {domains.map(d => (
         <div key={d.id}>
-          <p className="text-[8px] font-bold uppercase tracking-widest mb-0.5" style={{ color: textColor || colors.accent }}>{d.label}</p>
+          <p className="font-bold uppercase tracking-widest" style={{ color: textColor || colors.accent, fontSize: `calc(8px * var(--cv-font-scale, 1))`, marginBottom: `calc(2px * var(--cv-gap-scale, 1))` }}>{d.label}</p>
           <ul style={{ margin: 0, padding: 0, listStyle: "none" }}>
             {d.items.map(item => (
-              <li key={item.id} className="flex items-center gap-1.5" style={{ color: textColor || (light ? "rgba(255,255,255,0.85)" : undefined), fontSize: "9px", lineHeight: "1.3", paddingTop: "1px", paddingBottom: "1px" }}>
+              <li key={item.id} className="flex items-center gap-1.5" style={{ color: textColor || (light ? "rgba(255,255,255,0.85)" : undefined), fontSize: `calc(9px * var(--cv-font-scale, 1))`, lineHeight: "var(--cv-line-height, 1.3)", paddingTop: `calc(1px * var(--cv-gap-scale, 1))`, paddingBottom: `calc(1px * var(--cv-gap-scale, 1))` }}>
                 <span className="flex-shrink-0 w-[12px] h-[12px] flex items-center justify-center"><ModernBullet type="technique" color={colors.accent} style={bulletStyle} shape={effectiveShape} /></span>
                 <span className="flex-1">{item.text}</span>
                 {levelDisplay === "dots" && item.level != null && <LevelDots level={item.level} color={light ? "rgba(255,255,255,0.6)" : colors.accent} />}
@@ -214,12 +214,12 @@ const DomainsBlock = ({ domains, colors, bulletStyle, bulletShape, competencyBul
 const ExperiencesBlock = ({ experiences, colors, bulletStyle, bulletShape, textColor, light, onRemove, useTimeline = true, getCompanyLogoUrl }: { experiences?: ProfessionalExperience[]; colors: Colors; bulletStyle: BulletStyle; bulletShape?: BulletShapeId; textColor?: string; light?: boolean; onRemove?: (id: number) => void; useTimeline?: boolean; getCompanyLogoUrl?: (company: string) => string | null }) => {
   if (!experiences || experiences.length === 0) return null;
   return (
-    <div className={useTimeline ? "relative pl-3" : "space-y-2"}>
+    <div className={useTimeline ? "relative pl-3" : ""} style={!useTimeline ? { display: "flex", flexDirection: "column", gap: `calc(8px * var(--cv-gap-scale, 1))` } : undefined}>
       {useTimeline && <div className="absolute left-0 top-1 bottom-1 w-[2px] rounded-full" style={{ background: `linear-gradient(180deg, ${colors.accent}, ${colors.primary}40, transparent)` }} />}
       {experiences.map((exp, idx) => {
         const logoUrl = exp.showLogo && getCompanyLogoUrl ? getCompanyLogoUrl(exp.entreprise) : null;
         return (
-          <div key={exp.id} className={`${useTimeline ? "relative pl-3 pb-2" : "pb-2"} group/item`}>
+          <div key={exp.id} className={`${useTimeline ? "relative pl-3" : ""} group/item`} style={{ paddingBottom: `calc(8px * var(--cv-gap-scale, 1))` }}>
             {useTimeline && (
               <div className="absolute -left-3 top-[3px] w-[8px] h-[8px] rounded-full border-2 z-10" style={{ borderColor: colors.accent, background: light ? colors.primary : "white" }} />
             )}
@@ -232,8 +232,8 @@ const ExperiencesBlock = ({ experiences, colors, bulletStyle, bulletShape, textC
                   <Building2 className="w-3.5 h-3.5 mt-[1px] flex-shrink-0 opacity-20" style={{ color: textColor || (light ? "white" : colors.primary) }} />
                 )}
                 <div>
-                  <p className="text-[10px] font-black leading-tight" style={{ color: textColor || (light ? "white" : colors.primary) }}>{exp.poste}</p>
-                  <p className="text-[8px]" style={{ color: textColor ? `${textColor}99` : (light ? "rgba(255,255,255,0.6)" : TEXT_MUTED) }}>
+                  <p className="font-black leading-tight" style={{ color: textColor || (light ? "white" : colors.primary), fontSize: `calc(10px * var(--cv-font-scale, 1))` }}>{exp.poste}</p>
+                  <p style={{ color: textColor ? `${textColor}99` : (light ? "rgba(255,255,255,0.6)" : TEXT_MUTED), fontSize: `calc(8px * var(--cv-font-scale, 1))` }}>
                     {exp.entreprise}{exp.ville ? ` · ${exp.ville}` : ""}{exp.dateDebut ? ` | ${formatDateDisplay(exp.dateDebut)}` : ""}{exp.aujourdhui ? " — Aujourd'hui" : exp.dateFin ? ` — ${formatDateDisplay(exp.dateFin)}` : ""}
                   </p>
                 </div>
@@ -243,7 +243,7 @@ const ExperiencesBlock = ({ experiences, colors, bulletStyle, bulletShape, textC
             {exp.missions.length > 0 && (
               <ul style={{ margin: 0, padding: 0, listStyle: "none" }}>
                 {exp.missions.map((m, mi) => (
-                  <li key={mi} className="flex items-center gap-1.5" style={{ color: textColor || (light ? "rgba(255,255,255,0.85)" : undefined), fontSize: "9px", lineHeight: "1.3", paddingTop: "1px", paddingBottom: "1px" }}>
+                  <li key={mi} className="flex items-center gap-1.5" style={{ color: textColor || (light ? "rgba(255,255,255,0.85)" : undefined), fontSize: `calc(9px * var(--cv-font-scale, 1))`, lineHeight: "var(--cv-line-height, 1.3)", paddingTop: `calc(1px * var(--cv-gap-scale, 1))`, paddingBottom: `calc(1px * var(--cv-gap-scale, 1))` }}>
                     <span className="flex-shrink-0 w-[12px] h-[12px] flex items-center justify-center"><ModernBullet type="action" color={colors.accent} style={bulletStyle} shape={bulletShape} /></span>
                     <span className="flex-1">{m}</span>
                   </li>
@@ -261,13 +261,13 @@ const ExperiencesBlock = ({ experiences, colors, bulletStyle, bulletShape, textC
 const FormationBlock = ({ formations, colors, bulletStyle, bulletShape, textColor, light, onRemove, title }: { formations?: FormationEntry[]; colors: Colors; bulletStyle: BulletStyle; bulletShape?: BulletShapeId; textColor?: string; light?: boolean; onRemove?: (id: number) => void; title?: string }) => {
   if (!formations || formations.length === 0) return null;
   return (
-    <div className="space-y-1">
+    <div style={{ display: "flex", flexDirection: "column", gap: `calc(4px * var(--cv-gap-scale, 1))` }}>
       {formations.map(f => (
-        <div key={f.id} className="group/item pb-1.5">
+        <div key={f.id} className="group/item" style={{ paddingBottom: `calc(6px * var(--cv-gap-scale, 1))` }}>
           <div className="flex items-start justify-between gap-2">
             <div>
-              <p className="text-[10px] font-black leading-tight" style={{ color: textColor || (light ? "white" : colors.primary) }}>{f.intitule}</p>
-              <p className="text-[8px]" style={{ color: textColor ? `${textColor}99` : (light ? "rgba(255,255,255,0.6)" : TEXT_MUTED) }}>
+              <p className="font-black leading-tight" style={{ color: textColor || (light ? "white" : colors.primary), fontSize: `calc(10px * var(--cv-font-scale, 1))` }}>{f.intitule}</p>
+              <p style={{ color: textColor ? `${textColor}99` : (light ? "rgba(255,255,255,0.6)" : TEXT_MUTED), fontSize: `calc(8px * var(--cv-font-scale, 1))` }}>
                 {f.etablissement}{f.ville ? ` · ${f.ville}` : ""}{f.dateDebut ? ` | ${formatDateDisplay(f.dateDebut)}` : ""}{f.dateFin ? ` — ${formatDateDisplay(f.dateFin)}` : ""}
               </p>
             </div>
@@ -283,10 +283,10 @@ const InterestsBlock = ({ interests, colors, bulletStyle, bulletShape, textColor
   if (!interests || interests.length === 0) return null;
   if (displayMode === "badges") {
     return (
-      <div className="flex flex-wrap gap-1">
+      <div className="flex flex-wrap" style={{ gap: `calc(4px * var(--cv-gap-scale, 1))` }}>
         {interests.map(i => (
-          <span key={i.id} className="inline-flex items-center gap-1 px-2 py-0.5 text-[8px] font-medium group/item"
-            style={{ borderRadius: "8px", background: light ? "rgba(255,255,255,0.12)" : `${colors.accent}08`, border: `1px solid ${light ? "rgba(255,255,255,0.15)" : `${colors.accent}18`}`, color: textColor || (light ? "rgba(255,255,255,0.85)" : undefined) }}>
+          <span key={i.id} className="inline-flex items-center gap-1 px-2 py-0.5 font-medium group/item"
+            style={{ borderRadius: "8px", background: light ? "rgba(255,255,255,0.12)" : `${colors.accent}08`, border: `1px solid ${light ? "rgba(255,255,255,0.15)" : `${colors.accent}18`}`, color: textColor || (light ? "rgba(255,255,255,0.85)" : undefined), fontSize: `calc(8px * var(--cv-font-scale, 1))` }}>
             <span className="flex-shrink-0 w-[10px] h-[10px] flex items-center justify-center"><ModernBullet type="action" color={colors.accent} style={bulletStyle} shape={bulletShape} /></span>
             {i.text}
             {onRemove && <button onClick={() => onRemove(i.id)} className={`opacity-0 group-hover/item:opacity-100 ml-0.5 ${light ? "text-white/30 hover:text-red-300" : "text-gray-300 hover:text-red-400"}`}><Trash2 className="w-2 h-2" /></button>}
@@ -298,7 +298,7 @@ const InterestsBlock = ({ interests, colors, bulletStyle, bulletShape, textColor
   return (
     <ul style={{ margin: 0, padding: 0, listStyle: "none" }}>
       {interests.map(i => (
-        <li key={i.id} className="flex items-center gap-1.5 group/item" style={{ color: textColor || (light ? "rgba(255,255,255,0.85)" : undefined), fontSize: "9px", lineHeight: "1.3", paddingTop: "1px", paddingBottom: "1px" }}>
+        <li key={i.id} className="flex items-center gap-1.5 group/item" style={{ color: textColor || (light ? "rgba(255,255,255,0.85)" : undefined), fontSize: `calc(9px * var(--cv-font-scale, 1))`, lineHeight: "var(--cv-line-height, 1.3)", paddingTop: `calc(1px * var(--cv-gap-scale, 1))`, paddingBottom: `calc(1px * var(--cv-gap-scale, 1))` }}>
           <span className="flex-shrink-0 w-[12px] h-[12px] flex items-center justify-center"><ModernBullet type="action" color={colors.accent} style={bulletStyle} shape={bulletShape} /></span>
           <span className="flex-1">{i.text}</span>
           {onRemove && <button onClick={() => onRemove(i.id)} className={`opacity-0 group-hover/item:opacity-100 ${light ? "text-white/30 hover:text-red-300" : "text-gray-300 hover:text-red-400"}`}><Trash2 className="w-2 h-2" /></button>}
@@ -314,7 +314,7 @@ const QualitiesBlock = ({ qualities, colors, bulletStyle, bulletShape, textColor
   return (
     <ul style={{ margin: 0, padding: 0, listStyle: "none" }}>
       {qualities.map((q, idx) => (
-        <li key={idx} className="flex items-center gap-1.5 group/item" style={{ color: textColor || (light ? "rgba(255,255,255,0.85)" : undefined), fontSize: "9px", lineHeight: "1.3", paddingTop: "1px", paddingBottom: "1px" }}>
+        <li key={idx} className="flex items-center gap-1.5 group/item" style={{ color: textColor || (light ? "rgba(255,255,255,0.85)" : undefined), fontSize: `calc(9px * var(--cv-font-scale, 1))`, lineHeight: "var(--cv-line-height, 1.3)", paddingTop: `calc(1px * var(--cv-gap-scale, 1))`, paddingBottom: `calc(1px * var(--cv-gap-scale, 1))` }}>
           <span className="flex-shrink-0 w-[12px] h-[12px] flex items-center justify-center"><ModernBullet type="relationnel" color={colors.accent} style={bulletStyle} shape={bulletShape} /></span>
           <span className="flex-1">{q}</span>
           {onRemove && <button onClick={() => onRemove(idx)} className={`opacity-0 group-hover/item:opacity-100 ${light ? "text-white/30 hover:text-red-300" : "text-gray-300 hover:text-red-400"}`}><Trash2 className="w-2 h-2" /></button>}
@@ -371,7 +371,7 @@ const ContactLine = ({
   const resolvedTextColor = textColor || (light ? withAlpha(TEXT_WHITE, 0.72) : TEXT_MUTED);
   const resolvedIconColor = iconColor || (light ? withAlpha(TEXT_WHITE, 0.56) : defaultIconColor);
   return (
-    <div className="flex flex-wrap gap-x-4 gap-y-1 text-[10px]" style={{ ...(fontFamily ? { fontFamily } : {}), color: resolvedTextColor }}>
+    <div className="flex flex-wrap gap-x-4 gap-y-1" style={{ ...(fontFamily ? { fontFamily } : {}), color: resolvedTextColor, fontSize: `calc(10px * var(--cv-font-scale, 1))` }}>
       {profile.telephone && <span className="flex items-center gap-1.5"><Phone className="w-3 h-3" style={{ color: resolvedIconColor }} />{profile.telephone}</span>}
       {profile.email && <span className="flex items-center gap-1.5"><Mail className="w-3 h-3" style={{ color: resolvedIconColor }} />{profile.email}</span>}
       {fullAddress && <span className="flex items-center gap-1.5"><MapPin className="w-3 h-3" style={{ color: resolvedIconColor }} />{fullAddress}</span>}
