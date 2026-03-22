@@ -2,7 +2,7 @@ import { useState, useRef, useEffect, useMemo } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import {
-  Wand2, Copy, Check, Plus, Trash2, User, Briefcase, Palette, Star, Settings2, ChevronRight, Type, AlertTriangle, ToggleLeft, ToggleRight, Gauge, Layers, Send, FolderPlus, GraduationCap, Building2, Eye, EyeOff, ArrowUp, ArrowDown, GripVertical
+  Wand2, Copy, Check, Plus, Trash2, User, Briefcase, Palette, Star, Settings2, ChevronRight, Type, AlertTriangle, ToggleLeft, ToggleRight, Gauge, Layers, Send, FolderPlus, GraduationCap, Building2, Eye, EyeOff, ArrowUp, ArrowDown, GripVertical, Sparkles, Heart
 } from "lucide-react";
 import { detectSector, sectorConfigs, layoutMeta, gradientLibrary, bulletShapes, type SectorId, type LayoutId, type SidebarPosition, type BulletStyle, type SectorPalette, type SectorGradient, type BulletShapeId } from "@/lib/cv-sectors";
 import { templateRegistry, ModernBullet, ShapeBullet, fontOptions, type TemplateProps, type TextColorSection, type FontId } from "@/components/cv-templates";
@@ -44,23 +44,27 @@ export interface InterestEntry {
   category: "loisir" | "benevolat" | "permis" | "langue" | "autre";
 }
 
-const INTEREST_ICONS: Record<string, string> = {
-  "Sport": "⚽", "Musique": "🎵", "Lecture": "📚", "Voyage": "✈️", "Cuisine": "🍳",
-  "Photo": "📷", "Cinéma": "🎬", "Art": "🎨", "Jardinage": "🌱", "Jeux vidéo": "🎮",
-  "Yoga": "🧘", "Randonnée": "🥾", "Bénévolat": "🤝", "Permis B": "🚗", "Permis C": "🚛",
-  "Anglais": "🇬🇧", "Espagnol": "🇪🇸", "Allemand": "🇩🇪", "Arabe": "🇸🇦", "Italien": "🇮🇹",
-};
-
-const INTEREST_SUGGESTIONS: { text: string; icon: string; category: InterestEntry["category"] }[] = [
-  { text: "Sport collectif", icon: "⚽", category: "loisir" },
-  { text: "Musique", icon: "🎵", category: "loisir" },
-  { text: "Lecture", icon: "📚", category: "loisir" },
-  { text: "Voyages", icon: "✈️", category: "loisir" },
-  { text: "Cuisine", icon: "🍳", category: "loisir" },
-  { text: "Bénévolat associatif", icon: "🤝", category: "benevolat" },
-  { text: "Permis B", icon: "🚗", category: "permis" },
-  { text: "Anglais courant", icon: "🇬🇧", category: "langue" },
+const INTEREST_SUGGESTIONS: { text: string; category: InterestEntry["category"] }[] = [
+  { text: "Sport collectif", category: "loisir" },
+  { text: "Musique", category: "loisir" },
+  { text: "Lecture", category: "loisir" },
+  { text: "Voyages", category: "loisir" },
+  { text: "Cuisine", category: "loisir" },
+  { text: "Bénévolat associatif", category: "benevolat" },
+  { text: "Permis B", category: "permis" },
+  { text: "Anglais courant", category: "langue" },
 ];
+
+// ─── Qualities AI suggestions by sector ───────────────────────────
+const QUALITIES_BY_SECTOR: Record<string, string[]> = {
+  manuel: ["Rigueur et précision", "Résistance physique", "Sens de la sécurité", "Autonomie sur le terrain", "Esprit d'équipe"],
+  tertiaire: ["Sens du contact", "Organisation", "Réactivité", "Esprit d'analyse", "Aisance rédactionnelle"],
+  soin: ["Empathie et bienveillance", "Patience", "Sens de l'écoute", "Discrétion professionnelle", "Résistance au stress"],
+  tech: ["Esprit logique", "Curiosité technique", "Rigueur méthodologique", "Adaptabilité", "Veille technologique"],
+  creatif: ["Créativité", "Sens esthétique", "Ouverture d'esprit", "Sensibilité artistique", "Capacité d'innovation"],
+  logistique: ["Sens de l'organisation", "Réactivité", "Rigueur", "Gestion du stress", "Ponctualité"],
+  default: ["Ponctualité et assiduité", "Autonomie et prise d'initiative", "Travail en équipe", "Adaptabilité", "Sens de l'organisation"],
+};
 
 // ─── Competencies Domain System ────────────────────────────────────
 interface CompetencyItem { id: string; text: string; enabled: boolean; }
@@ -277,6 +281,9 @@ const CvGenerator = () => {
   const [gradientTarget, setGradientTarget] = useState<"fond" | "rubriques">("fond");
   const [activeBulletShape, setActiveBulletShape] = useState<BulletShapeId | null>(null);
   const [competencyBulletShape, setCompetencyBulletShape] = useState<BulletShapeId | null>(null);
+  const [formationBulletShape, setFormationBulletShape] = useState<BulletShapeId | null>(null);
+  const [diversBulletShape, setDiversBulletShape] = useState<BulletShapeId | null>(null);
+  const [qualitesBulletShape, setQualitesBulletShape] = useState<BulletShapeId | null>(null);
   const [bgCircleColor, setBgCircleColor] = useState<string>("");
   const [textColors, setTextColors] = useState<Record<TextColorSection, "noir" | "blanc">>({ header: "noir", experiences: "noir", competences: "noir" });
   const [titleColor, setTitleColor] = useState<string>("");
@@ -302,9 +309,14 @@ const CvGenerator = () => {
   const [newInterestText, setNewInterestText] = useState("");
   const [interestDisplayMode, setInterestDisplayMode] = useState<"badges" | "list">("badges");
 
+  // Qualities state
+  const [qualities, setQualities] = useState<string[]>([]);
+  const [newQualityText, setNewQualityText] = useState("");
+  const [qualitiesMode, setQualitiesMode] = useState<"libre" | "ia">("libre");
+
   // Section order for reordering
-  type CvSection = "experiences" | "competences" | "formation" | "divers";
-  const [sectionOrder, setSectionOrder] = useState<CvSection[]>(["experiences", "competences", "formation", "divers"]);
+  type CvSection = "experiences" | "competences" | "formation" | "qualites" | "divers";
+  const [sectionOrder, setSectionOrder] = useState<CvSection[]>(["experiences", "competences", "formation", "qualites", "divers"]);
   const moveSectionUp = (idx: number) => {
     if (idx <= 0) return;
     setSectionOrder(prev => { const next = [...prev]; [next[idx - 1], next[idx]] = [next[idx], next[idx - 1]]; return next; });
@@ -313,7 +325,7 @@ const CvGenerator = () => {
     if (idx >= sectionOrder.length - 1) return;
     setSectionOrder(prev => { const next = [...prev]; [next[idx], next[idx + 1]] = [next[idx + 1], next[idx]]; return next; });
   };
-  const SECTION_LABELS: Record<CvSection, string> = { experiences: "Expériences", competences: "Compétences", formation: "Formation", divers: "Divers & Intérêts" };
+  const SECTION_LABELS: Record<CvSection, string> = { experiences: "Expériences", competences: "Compétences", formation: "Formation", qualites: "Qualités", divers: "Divers & Intérêts" };
 
   // White palette option (always available)
   const whitePalette: SectorPalette = { id: "blanc", label: "Blanc pur", primary: "#2d2d2d", accent: "#555555", swatch: "#ffffff", bg: "#ffffff" };
@@ -378,17 +390,25 @@ const CvGenerator = () => {
   const removeFormation = (id: number) => setFormations(prev => prev.filter(f => f.id !== id));
 
   // Interests CRUD
-  const addInterest = (text: string, icon: string, category: InterestEntry["category"]) => {
+  const addInterest = (text: string, category: InterestEntry["category"]) => {
     if (!text.trim()) return;
-    setInterests(prev => [...prev, { id: Date.now(), text: text.trim(), icon, category }]);
+    setInterests(prev => [...prev, { id: Date.now(), text: text.trim(), icon: "", category }]);
   };
   const addCustomInterest = () => {
     if (!newInterestText.trim()) return;
-    const icon = INTEREST_ICONS[newInterestText.trim()] || "✦";
-    addInterest(newInterestText.trim(), icon, "autre");
+    addInterest(newInterestText.trim(), "autre");
     setNewInterestText("");
   };
   const removeInterest = (id: number) => setInterests(prev => prev.filter(i => i.id !== id));
+
+  // Qualities CRUD
+  const addQuality = (text: string) => { if (text.trim() && !qualities.includes(text.trim())) setQualities(prev => [...prev, text.trim()]); };
+  const removeQuality = (idx: number) => setQualities(prev => prev.filter((_, i) => i !== idx));
+  const generateAIQualities = () => {
+    const sectorQualities = QUALITIES_BY_SECTOR[detectedSector] || QUALITIES_BY_SECTOR.default;
+    setQualities(sectorQualities);
+    setQualitiesMode("ia");
+  };
 
   // Company logo URL helper (Google S2 Favicon service - free, no API key)
   const getCompanyLogoUrl = (company: string): string | null => {
@@ -481,7 +501,7 @@ const CvGenerator = () => {
   const Template = templateRegistry[activeLayout];
   const activeDomains = domains.filter(d => d.enabled).map(d => ({ ...d, items: d.items.filter(i => i.enabled) })).filter(d => d.items.length > 0);
   const formationTitle = formationMode === "parcours" ? "Parcours de formation" : "Formation & Diplômes";
-  const templateProps: TemplateProps = { profile, experienceEntries, atoutEntries, entries, removeEntry, colors, sidebarPos, bulletStyle, bulletShape: activeBulletShape || undefined, competencyBulletShape: competencyBulletShape || undefined, gradient: activeGradient || undefined, gradientTarget, bgCircleColor: bgCircleColor || undefined, textColors, titleColor: titleColor || undefined, fontFamily: currentFont, competencyDomains: activeDomains, professionalExperiences: experiences, removeProfessionalExperience: removeExperience, formations, removeFormation, formationTitle, getCompanyLogoUrl, interests, removeInterest, interestDisplayMode, sectionOrder };
+  const templateProps: TemplateProps = { profile, experienceEntries, atoutEntries, entries, removeEntry, colors, sidebarPos, bulletStyle, bulletShape: activeBulletShape || undefined, competencyBulletShape: competencyBulletShape || undefined, formationBulletShape: formationBulletShape || undefined, diversBulletShape: diversBulletShape || undefined, qualitesBulletShape: qualitesBulletShape || undefined, gradient: activeGradient || undefined, gradientTarget, bgCircleColor: bgCircleColor || undefined, textColors, titleColor: titleColor || undefined, fontFamily: currentFont, competencyDomains: activeDomains, professionalExperiences: experiences, removeProfessionalExperience: removeExperience, formations, removeFormation, formationTitle, getCompanyLogoUrl, interests, removeInterest, interestDisplayMode, sectionOrder: sectionOrder as any, qualities, removeQuality };
 
   return (
     <div className="min-h-screen bg-background">
@@ -956,6 +976,24 @@ const CvGenerator = () => {
                           </div>
                         </div>
 
+                        {/* Puces Formation */}
+                        <div className="rounded-xl bg-secondary/40 border border-border px-4 py-3">
+                          <div className="flex items-center gap-3 mb-2">
+                            <span className="text-xs font-semibold text-muted-foreground">✦ Puces Formation</span>
+                            {formationBulletShape && (
+                              <button onClick={() => setFormationBulletShape(null)} className="text-[10px] text-muted-foreground hover:text-destructive transition-colors ml-auto">✕ Auto</button>
+                            )}
+                          </div>
+                          <div className="flex flex-wrap gap-1.5">
+                            {bulletShapes.map(bs => (
+                              <button key={bs.id} onClick={() => setFormationBulletShape(bs.id)} title={bs.label}
+                                className={`w-9 h-9 rounded-lg flex items-center justify-center transition-all active:scale-[0.95] ${formationBulletShape === bs.id ? "bg-primary text-primary-foreground ring-2 ring-offset-1 ring-ring" : "bg-secondary text-muted-foreground hover:bg-accent/20"}`}>
+                                <ShapeBullet shape={bs.id} color={formationBulletShape === bs.id ? "white" : "currentColor"} />
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+
                         {/* Existing formations */}
                         {formations.map(f => (
                           <div key={f.id} className="rounded-xl border border-border bg-background p-3.5 space-y-0.5">
@@ -1101,6 +1139,68 @@ const CvGenerator = () => {
                       </div>
                     );
 
+                    if (sec === "qualites") return (
+                      <div key="qualites" className="rounded-2xl bg-card p-5 shadow-sm border border-border/50 space-y-4">
+                        <div className="flex items-center justify-between">
+                          <h3 className="font-semibold text-sm flex items-center gap-2"><Heart className="w-4 h-4 text-primary" /> QUALITÉS</h3>
+                          <div className="flex items-center gap-1 rounded-lg bg-secondary p-0.5">
+                            {(["libre", "ia"] as const).map(m => (
+                              <button key={m} onClick={() => m === "ia" ? generateAIQualities() : setQualitiesMode(m)}
+                                className={`px-2.5 py-1 rounded-md text-[10px] font-medium transition-all ${qualitiesMode === m ? "bg-primary text-primary-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"}`}>
+                                {m === "libre" ? "Saisie libre" : "✨ Générer par IA"}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+
+                        {/* Puces Qualités */}
+                        <div className="rounded-xl bg-secondary/40 border border-border px-4 py-3">
+                          <div className="flex items-center gap-3 mb-2">
+                            <span className="text-xs font-semibold text-muted-foreground">✦ Puces Qualités</span>
+                            {qualitesBulletShape && (
+                              <button onClick={() => setQualitesBulletShape(null)} className="text-[10px] text-muted-foreground hover:text-destructive transition-colors ml-auto">✕ Auto</button>
+                            )}
+                          </div>
+                          <div className="flex flex-wrap gap-1.5">
+                            {bulletShapes.map(bs => (
+                              <button key={bs.id} onClick={() => setQualitesBulletShape(bs.id)} title={bs.label}
+                                className={`w-9 h-9 rounded-lg flex items-center justify-center transition-all active:scale-[0.95] ${qualitesBulletShape === bs.id ? "bg-primary text-primary-foreground ring-2 ring-offset-1 ring-ring" : "bg-secondary text-muted-foreground hover:bg-accent/20"}`}>
+                                <ShapeBullet shape={bs.id} color={qualitesBulletShape === bs.id ? "white" : "currentColor"} />
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+
+                        {qualitiesMode === "ia" && qualities.length > 0 && (
+                          <p className="text-[10px] text-muted-foreground bg-secondary/50 rounded-lg px-3 py-1.5">
+                            ✨ Qualités suggérées pour le secteur <span className="font-bold text-foreground">{sectorCfg.label}</span>. Modifiez ou ajoutez les vôtres.
+                          </p>
+                        )}
+
+                        {qualities.length > 0 && (
+                          <div className="space-y-1">
+                            {qualities.map((q, idx) => (
+                              <div key={idx} className="flex items-center gap-2 text-xs text-foreground bg-background rounded-lg px-3 py-1.5 border border-border">
+                                <span className="flex-shrink-0"><ShapeBullet shape={qualitesBulletShape || "cercle"} color={colors.accent} /></span>
+                                <span className="flex-1">{q}</span>
+                                <button onClick={() => removeQuality(idx)} className="text-muted-foreground hover:text-destructive"><Trash2 className="w-3 h-3" /></button>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+
+                        <div className="flex gap-2">
+                          <input value={newQualityText} onChange={e => setNewQualityText(e.target.value)} onKeyDown={e => { if (e.key === "Enter") { addQuality(newQualityText); setNewQualityText(""); } }}
+                            placeholder="Ajouter une qualité…"
+                            className="flex-1 rounded-xl border border-input bg-background px-4 py-2.5 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring" />
+                          <button onClick={() => { addQuality(newQualityText); setNewQualityText(""); }} disabled={!newQualityText.trim()}
+                            className="rounded-xl bg-primary px-4 py-2.5 text-primary-foreground text-sm font-medium shadow-sm hover:shadow-md transition-all disabled:opacity-40 active:scale-[0.97]">
+                            <Plus className="w-4 h-4" />
+                          </button>
+                        </div>
+                      </div>
+                    );
+
                     if (sec === "divers") return (
                       <div key="divers" className="rounded-2xl bg-card p-5 shadow-sm border border-border/50 space-y-4">
                         <div className="flex items-center justify-between">
@@ -1115,29 +1215,45 @@ const CvGenerator = () => {
                           </div>
                         </div>
 
+                        {/* Puces Divers */}
+                        <div className="rounded-xl bg-secondary/40 border border-border px-4 py-3">
+                          <div className="flex items-center gap-3 mb-2">
+                            <span className="text-xs font-semibold text-muted-foreground">✦ Puces Divers</span>
+                            {diversBulletShape && (
+                              <button onClick={() => setDiversBulletShape(null)} className="text-[10px] text-muted-foreground hover:text-destructive transition-colors ml-auto">✕ Auto</button>
+                            )}
+                          </div>
+                          <div className="flex flex-wrap gap-1.5">
+                            {bulletShapes.map(bs => (
+                              <button key={bs.id} onClick={() => setDiversBulletShape(bs.id)} title={bs.label}
+                                className={`w-9 h-9 rounded-lg flex items-center justify-center transition-all active:scale-[0.95] ${diversBulletShape === bs.id ? "bg-primary text-primary-foreground ring-2 ring-offset-1 ring-ring" : "bg-secondary text-muted-foreground hover:bg-accent/20"}`}>
+                                <ShapeBullet shape={bs.id} color={diversBulletShape === bs.id ? "white" : "currentColor"} />
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+
                         {/* Quick suggestions */}
                         <div className="flex flex-wrap gap-1.5">
                           {INTEREST_SUGGESTIONS.filter(s => !interests.some(i => i.text === s.text)).map(s => (
-                            <button key={s.text} onClick={() => addInterest(s.text, s.icon, s.category)}
+                            <button key={s.text} onClick={() => addInterest(s.text, s.category)}
                               className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] border border-border bg-background hover:bg-secondary hover:shadow-sm transition-all active:scale-[0.97]">
-                              <span>{s.icon}</span> {s.text}
+                              {s.text}
                             </button>
                           ))}
                         </div>
 
-                        {/* Current interests */}
                         {interests.length > 0 && (
                           <div className="flex flex-wrap gap-1.5">
                             {interests.map(i => (
                               <span key={i.id} className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-medium bg-primary/5 border border-primary/15 text-foreground">
-                                <span>{i.icon}</span> {i.text}
+                                {i.text}
                                 <button onClick={() => removeInterest(i.id)} className="text-muted-foreground hover:text-destructive transition-colors ml-0.5"><Trash2 className="w-3 h-3" /></button>
                               </span>
                             ))}
                           </div>
                         )}
 
-                        {/* Custom interest */}
                         <div className="flex gap-2">
                           <input value={newInterestText} onChange={e => setNewInterestText(e.target.value)} onKeyDown={e => e.key === "Enter" && addCustomInterest()}
                             placeholder="Ajouter un centre d'intérêt personnalisé…"
