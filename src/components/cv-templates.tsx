@@ -282,6 +282,17 @@ const DeleteBtn = ({ onClick, light }: { onClick: () => void; light?: boolean })
   </button>
 );
 
+/** Format date string to MM/YYYY if it looks like a date */
+const formatDateDisplay = (d: string): string => {
+  if (!d) return "";
+  // Already MM/YYYY or YYYY
+  if (/^\d{2}\/\d{4}$/.test(d)) return d;
+  // ISO date or YYYY-MM
+  const isoMatch = d.match(/^(\d{4})-(\d{2})/);
+  if (isoMatch) return `${isoMatch[2]}/${isoMatch[1]}`;
+  return d;
+};
+
 const withAlpha = (color: string, alpha: number) => {
   if (color.startsWith("hsl(")) return color.replace("hsl(", "hsla(").replace(")", `, ${alpha})`);
   if (color === "white") return `hsla(0, 0%, 100%, ${alpha})`;
