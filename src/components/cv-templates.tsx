@@ -969,6 +969,15 @@ export const MedicalTemplate = ({ profile, experienceEntries, atoutEntries, remo
               ) : <EmptyState color={colors.accent} />}
             </div>
           )}
+          renderQualites={() => qualities && qualities.length > 0 ? (
+            <div className="p-4" style={{ borderRadius: "20px", background: "rgba(255,255,255,0.7)", backdropFilter: "blur(12px)", boxShadow: `0 4px 20px rgba(0,0,0,0.04), 0 0 0 1px ${colors.accent}10` }}>
+              <h3 className="text-[10px] font-bold uppercase tracking-[0.15em] mb-3 flex items-center gap-2" style={{ color: compTc || colors.accent }}>
+                <span className="w-6 h-6 rounded-full flex items-center justify-center" style={{ background: `linear-gradient(135deg, ${colors.primary}15, ${colors.accent}10)` }}><Heart className="w-3 h-3" style={{ color: colors.primary }} /></span>
+                QUALITÉS
+              </h3>
+              <QualitiesBlock qualities={qualities} colors={colors} bulletStyle={bulletStyle} bulletShape={qualitesBulletShape} textColor={expTc} onRemove={removeQuality} />
+            </div>
+          ) : null}
           renderDivers={() => (
             <>
               <div className="p-4" style={{ borderRadius: "20px", background: "rgba(255,255,255,0.7)", backdropFilter: "blur(12px)", boxShadow: `0 4px 20px rgba(0,0,0,0.04), 0 0 0 1px ${colors.primary}08` }}>
