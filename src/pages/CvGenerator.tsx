@@ -295,7 +295,7 @@ const CvGenerator = () => {
               <div className="flex flex-wrap gap-4">
                 <div className="flex items-center gap-2 rounded-xl bg-card border border-border px-4 py-2">
                   <Palette className="w-4 h-4 text-muted-foreground" />
-                  {[...sectorCfg.palettes, whitePalette].map(p => (
+                  {[whitePalette, ...sectorCfg.palettes].map(p => (
                     <button key={p.id} onClick={() => { setActivePalette(p); setActiveGradient(null); }} title={p.label}
                       className={`w-7 h-7 rounded-full transition-all active:scale-[0.95] ${activePalette.id === p.id && !activeGradient ? "ring-2 ring-offset-2 ring-ring scale-110" : "hover:scale-105"}`}
                       style={{ background: p.swatch, border: p.id === "blanc" ? "2px solid hsl(0,0%,85%)" : "none" }} />
