@@ -198,29 +198,29 @@ export const ImpactTemplate = ({ profile, experienceEntries, atoutEntries, remov
   );
 
   const main = (
-    <div className="flex-1 flex flex-col bg-white relative overflow-hidden" style={fondStyle}>
+    <div className="flex-1 flex flex-col relative overflow-hidden" style={{ background: isDark ? undefined : "white", ...fondStyle }}>
       <div className="h-1.5" style={{ background: `linear-gradient(90deg, ${colors.accent}, ${colors.primary}, ${colors.accent})` }} />
       <div className="absolute top-0 right-0 w-40 h-40 opacity-[0.04] rounded-full" style={{ background: `radial-gradient(circle, ${colors.accent}, transparent)` }} />
 
-      <div className="flex-1 px-6 py-5 overflow-y-auto relative z-10">
-        <h3 className="text-[10px] font-black uppercase tracking-[0.25em] mb-4 pb-2 flex items-center gap-2" style={{ color: colors.primary, borderBottom: `2px solid transparent`, borderImage: `linear-gradient(90deg, ${colors.accent}, ${colors.primary}) 1` }}>
+      <div className="flex-1 px-7 py-6 overflow-y-auto relative z-10">
+        <h3 className="text-[10px] font-black uppercase tracking-[0.25em] mb-5 pb-2.5 flex items-center gap-2" style={{ color: isDark ? "white" : colors.primary, borderBottom: `2px solid transparent`, borderImage: `linear-gradient(90deg, ${colors.accent}, ${colors.primary}) 1` }}>
           <Star className="w-3.5 h-3.5" /> Atouts
         </h3>
         {atoutEntries.length > 0 ? (
-          <ul className="space-y-2">{atoutEntries.map(e => (
-            <li key={e.id} className="flex items-start gap-2.5 group/item rounded-xl px-3 py-2 transition-all hover:translate-x-0.5"
-              style={{ background: `${colors.primary}04`, boxShadow: `0 1px 4px ${colors.primary}08`, border: `1px solid ${colors.primary}08` }}>
+          <ul className="space-y-3">{atoutEntries.map(e => (
+            <li key={e.id} className="flex items-start gap-2.5 group/item rounded-xl px-4 py-3 transition-all hover:translate-x-0.5"
+              style={{ background: isDark ? "rgba(255,255,255,0.08)" : `${colors.primary}04`, boxShadow: `0 1px 4px ${colors.primary}08`, border: `1px solid ${isDark ? "rgba(255,255,255,0.1)" : `${colors.primary}08`}` }}>
               <ChevronRight className="w-3 h-3 mt-0.5 flex-shrink-0" style={{ color: colors.accent }} />
-              <span className="flex-1 text-gray-700">{e.selected}</span><DeleteBtn onClick={() => removeEntry(e.id)} />
+              <span className="flex-1" style={{ color: isDark ? "rgba(255,255,255,0.85)" : undefined }}>{e.selected}</span><DeleteBtn onClick={() => removeEntry(e.id)} light={isDark} />
             </li>
           ))}</ul>
-        ) : <EmptyState color={colors.primary} label="Ajoutez des atouts…" />}
+        ) : <EmptyState color={colors.primary} label="Ajoutez des atouts…" dark={isDark} />}
       </div>
     </div>
   );
 
   return (
-    <div className="h-full flex text-[11px] leading-[1.6]" style={{ fontFamily: "'DM Sans', system-ui, sans-serif", flexDirection: sidebarPos === "right" ? "row-reverse" : "row" }}>
+    <div className="h-full flex text-[11px] leading-[1.8]" style={{ fontFamily: "'DM Sans', system-ui, sans-serif", flexDirection: sidebarPos === "right" ? "row-reverse" : "row" }}>
       {sidebarPos === "top" ? <div className="h-full flex flex-col">{sidebar}{main}</div> : <>{sidebar}{main}</>}
     </div>
   );
