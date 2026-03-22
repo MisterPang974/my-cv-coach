@@ -615,6 +615,10 @@ export const ArtisanTemplate = ({ profile, experienceEntries, atoutEntries, remo
       {interests && interests.length > 0 && (
         <div className="px-5 py-2">
           <p className="text-[8px] font-bold uppercase tracking-widest mb-1" style={{ color: compTc || colors.accent }}>Divers</p>
+          <InterestsBlock interests={interests} colors={colors} bulletStyle={bulletStyle} bulletShape={diversBulletShape || bulletShape} textColor={expTc} onRemove={removeInterest} displayMode={interestDisplayMode} />
+        </div>
+      )}
+      <div className="px-6 py-2 text-[8px] text-gray-400 flex justify-between" style={{ fontFamily: "'DM Sans', sans-serif" }}><span>My CV Coach · Méthode Fred</span><span>L'Artisan</span></div>
     </div>
   );
 };
