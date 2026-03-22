@@ -11,7 +11,7 @@ const Hero = () => {
 
       <div className="container mx-auto px-6 py-24">
         <div className="max-w-3xl">
-          <div className="animate-fade-up inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-4 py-1.5 text-sm font-medium text-primary mb-8">
+          <div className="animate-fade-up inline-flex items-center gap-2 rounded-full border border-accent/30 bg-accent/10 px-4 py-1.5 text-sm font-medium text-accent mb-8">
             <Sparkles className="w-3.5 h-3.5" />
             La Méthode Fred · 14 ans d'expertise
           </div>
@@ -37,7 +37,7 @@ const Hero = () => {
             </Link>
             <Link
               to="/cv-generator"
-              className="inline-flex items-center justify-center gap-2 rounded-lg border-2 border-border bg-background px-7 py-3.5 font-semibold hover:bg-secondary transition-colors duration-200 active:scale-[0.97]"
+              className="inline-flex items-center justify-center gap-2 rounded-lg bg-accent px-7 py-3.5 text-accent-foreground font-semibold shadow-lg shadow-accent/20 hover:shadow-xl transition-[box-shadow,transform] duration-200 active:scale-[0.97]"
             >
               Générateur de CV
             </Link>
