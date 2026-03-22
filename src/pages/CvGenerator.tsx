@@ -285,6 +285,7 @@ const CvGenerator = () => {
   const [diversBulletShape, setDiversBulletShape] = useState<BulletShapeId | null>(null);
   const [qualitesBulletShape, setQualitesBulletShape] = useState<BulletShapeId | null>(null);
   const [bgCircleColor, setBgCircleColor] = useState<string>("");
+  const [levelDisplay, setLevelDisplay] = useState<"dots" | "bars" | "none">("none");
   const [textColors, setTextColors] = useState<Record<TextColorSection, "noir" | "blanc">>({ header: "noir", experiences: "noir", competences: "noir" });
   const [titleColor, setTitleColor] = useState<string>("");
   const [selectedFont, setSelectedFont] = useState<FontId>("dm-sans");
