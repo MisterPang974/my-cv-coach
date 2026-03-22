@@ -281,6 +281,9 @@ const CvGenerator = () => {
   const [gradientTarget, setGradientTarget] = useState<"fond" | "rubriques">("fond");
   const [activeBulletShape, setActiveBulletShape] = useState<BulletShapeId | null>(null);
   const [competencyBulletShape, setCompetencyBulletShape] = useState<BulletShapeId | null>(null);
+  const [formationBulletShape, setFormationBulletShape] = useState<BulletShapeId | null>(null);
+  const [diversBulletShape, setDiversBulletShape] = useState<BulletShapeId | null>(null);
+  const [qualitesBulletShape, setQualitesBulletShape] = useState<BulletShapeId | null>(null);
   const [bgCircleColor, setBgCircleColor] = useState<string>("");
   const [textColors, setTextColors] = useState<Record<TextColorSection, "noir" | "blanc">>({ header: "noir", experiences: "noir", competences: "noir" });
   const [titleColor, setTitleColor] = useState<string>("");
@@ -306,9 +309,14 @@ const CvGenerator = () => {
   const [newInterestText, setNewInterestText] = useState("");
   const [interestDisplayMode, setInterestDisplayMode] = useState<"badges" | "list">("badges");
 
+  // Qualities state
+  const [qualities, setQualities] = useState<string[]>([]);
+  const [newQualityText, setNewQualityText] = useState("");
+  const [qualitiesMode, setQualitiesMode] = useState<"libre" | "ia">("libre");
+
   // Section order for reordering
-  type CvSection = "experiences" | "competences" | "formation" | "divers";
-  const [sectionOrder, setSectionOrder] = useState<CvSection[]>(["experiences", "competences", "formation", "divers"]);
+  type CvSection = "experiences" | "competences" | "formation" | "qualites" | "divers";
+  const [sectionOrder, setSectionOrder] = useState<CvSection[]>(["experiences", "competences", "formation", "qualites", "divers"]);
   const moveSectionUp = (idx: number) => {
     if (idx <= 0) return;
     setSectionOrder(prev => { const next = [...prev]; [next[idx - 1], next[idx]] = [next[idx], next[idx - 1]]; return next; });
