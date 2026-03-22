@@ -371,7 +371,7 @@ const ContactLine = ({
   const resolvedTextColor = textColor || (light ? withAlpha(TEXT_WHITE, 0.72) : TEXT_MUTED);
   const resolvedIconColor = iconColor || (light ? withAlpha(TEXT_WHITE, 0.56) : defaultIconColor);
   return (
-    <div className="flex flex-wrap gap-x-4 gap-y-1 text-[10px]" style={{ ...(fontFamily ? { fontFamily } : {}), color: resolvedTextColor }}>
+    <div className="flex flex-wrap gap-x-4 gap-y-1" style={{ ...(fontFamily ? { fontFamily } : {}), color: resolvedTextColor, fontSize: `calc(10px * var(--cv-font-scale, 1))` }}>
       {profile.telephone && <span className="flex items-center gap-1.5"><Phone className="w-3 h-3" style={{ color: resolvedIconColor }} />{profile.telephone}</span>}
       {profile.email && <span className="flex items-center gap-1.5"><Mail className="w-3 h-3" style={{ color: resolvedIconColor }} />{profile.email}</span>}
       {fullAddress && <span className="flex items-center gap-1.5"><MapPin className="w-3 h-3" style={{ color: resolvedIconColor }} />{fullAddress}</span>}
