@@ -461,11 +461,62 @@ const OrderedSections = ({ sectionOrder, renderExperiences, renderCompetences, r
   return <>{order.map(s => <React.Fragment key={s}>{renderers[s]()}</React.Fragment>)}</>;
 };
 
+// ─── Impact decorative shapes: Chevron stripes + corner accent ─────
+const ImpactStripes = ({ color, className, style }: { color: string; className?: string; style?: React.CSSProperties }) => (
+  <svg className={className} style={style} viewBox="0 0 60 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+    {[20, 60, 100, 140, 180].map((y, i) => (
+      <path key={i} d={`M0 ${y}L30 ${y - 15}L60 ${y}`} stroke={color} strokeWidth="1.5" opacity={0.12 - i * 0.015} />
+    ))}
+  </svg>
+);
+
+// ─── Mural decorative shapes: Grid overlay + diagonal accents ──────
+const MuralGridAccent = ({ color, className, style }: { color: string; className?: string; style?: React.CSSProperties }) => (
+  <svg className={className} style={style} viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <rect x="10" y="10" width="40" height="40" rx="3" stroke={color} strokeWidth="1" opacity="0.08" />
+    <rect x="60" y="60" width="50" height="50" rx="3" stroke={color} strokeWidth="1" opacity="0.06" />
+    <line x1="0" y1="120" x2="120" y2="0" stroke={color} strokeWidth="1" opacity="0.05" />
+    <circle cx="90" cy="30" r="12" stroke={color} strokeWidth="1" opacity="0.07" />
+  </svg>
+);
+
+// ─── Magazine decorative shapes: Horizontal bars + dot pattern ─────
+const MagazineBars = ({ color, className, style }: { color: string; className?: string; style?: React.CSSProperties }) => (
+  <svg className={className} style={style} viewBox="0 0 40 300" fill="none" xmlns="http://www.w3.org/2000/svg">
+    {[30, 80, 130, 180, 230, 270].map((y, i) => (
+      <rect key={i} x="8" y={y} width={24 - i * 2} height="3" rx="1.5" fill={color} opacity={0.1 - i * 0.01} />
+    ))}
+    {[50, 110, 160, 210, 250].map((y, i) => (
+      <circle key={`d${i}`} cx="20" cy={y} r="2" fill={color} opacity={0.06} />
+    ))}
+  </svg>
+);
+
+// ─── Médical decorative shapes: Cross motif + soft arcs ────────────
+const MedicalCrosses = ({ color, className, style }: { color: string; className?: string; style?: React.CSSProperties }) => (
+  <svg className={className} style={style} viewBox="0 0 160 160" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M70 40h20v20h20v20h-20v20h-20v-20h-20v-20h20z" fill={color} opacity="0.06" />
+    <circle cx="130" cy="130" r="20" stroke={color} strokeWidth="1.5" opacity="0.08" strokeDasharray="4 3" />
+    <path d="M10 140C40 120 60 130 90 110" stroke={color} strokeWidth="1.5" opacity="0.06" strokeLinecap="round" />
+    <path d="M20 150C50 135 80 145 110 125" stroke={color} strokeWidth="1" opacity="0.04" strokeLinecap="round" />
+  </svg>
+);
+
+// ─── Flux decorative shapes: Flowing curves + speed lines ──────────
+const FluxCurves = ({ color, className, style }: { color: string; className?: string; style?: React.CSSProperties }) => (
+  <svg className={className} style={style} viewBox="0 0 200 100" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+    <path d="M0 50C50 20 100 80 150 40C175 20 200 35 200 50" stroke={color} strokeWidth="2" opacity="0.08" strokeLinecap="round" />
+    <path d="M0 65C60 35 120 90 170 55C185 45 200 55 200 60" stroke={color} strokeWidth="1.5" opacity="0.06" strokeLinecap="round" />
+    <path d="M0 80C40 60 80 95 140 70C170 60 200 75 200 78" stroke={color} strokeWidth="1" opacity="0.04" strokeLinecap="round" />
+  </svg>
+);
+
 // ═══════════════════════════════════════════════════════════════════
 // 1. IMPACT — Contrasted sidebar (inspired by Marine Dupont)
 //    Professional sidebar with contact, competences, qualités, divers.
+//    Decorative: chevron stripes on sidebar + corner geometric accent.
 // ═══════════════════════════════════════════════════════════════════
-export const ImpactTemplate = ({ profile, experienceEntries, atoutEntries, removeEntry, colors, sidebarPos, bulletStyle, bulletShape, gradient, gradientTarget, textColors, titleColor, fontFamily, competencyDomains, competencyBulletShape, formationBulletShape, diversBulletShape, qualitesBulletShape, professionalExperiences, removeProfessionalExperience, formations, removeFormation, formationTitle, getCompanyLogoUrl, interests, removeInterest, interestDisplayMode, sectionOrder, qualities, removeQuality, levelDisplay }: TemplateProps) => {
+export const ImpactTemplate = ({ profile, experienceEntries, atoutEntries, removeEntry, colors, sidebarPos, bulletStyle, bulletShape, gradient, gradientTarget, bgCircleColor, textColors, titleColor, fontFamily, competencyDomains, competencyBulletShape, formationBulletShape, diversBulletShape, qualitesBulletShape, professionalExperiences, removeProfessionalExperience, formations, removeFormation, formationTitle, getCompanyLogoUrl, interests, removeInterest, interestDisplayMode, sectionOrder, qualities, removeQuality, levelDisplay }: TemplateProps) => {
   const fondStyle = useGradientBg(gradient, gradientTarget);
   const rubriqueStyle = useGradientRubrique(gradient, gradientTarget, colors.primary);
   const { isDark } = useAutoContrast(gradient, gradientTarget);
@@ -473,11 +524,18 @@ export const ImpactTemplate = ({ profile, experienceEntries, atoutEntries, remov
   const compTc = sectionTextColor("competences", textColors, TEXT_WHITE);
   const expTc = sectionTextColor("experiences", textColors, TEXT_BLACK);
   const titleTc = resolveTitleTextColor(titleColor, headerTc, "white");
+  const shapeCol = bgCircleColor || colors.accent;
 
   const sidebar = (
-    <div className="w-[36%] flex flex-col overflow-hidden" style={{ background: rubriqueStyle.background || colors.primary, color: "white" }}>
+    <div className="w-[36%] flex flex-col overflow-hidden relative" style={{ background: rubriqueStyle.background || colors.primary, color: "white" }}>
+      {/* Decorative chevron stripes */}
+      <ImpactStripes color={shapeCol} className="absolute top-0 right-0 w-12 h-full" style={{ opacity: 0.8 }} />
+      <div className="absolute bottom-8 left-3 w-10 h-10" style={{ opacity: 0.1 }}>
+        <svg viewBox="0 0 40 40" fill="none"><rect x="5" y="5" width="30" height="30" rx="2" transform="rotate(45 20 20)" stroke={shapeCol} strokeWidth="2" /></svg>
+      </div>
+
       {/* Name & Title — strong presence */}
-      <div className="px-5 pt-6 pb-4">
+      <div className="px-5 pt-6 pb-4 relative z-10">
         <h2 className="text-[20px] font-black uppercase leading-[1.08] tracking-tight" style={{ color: titleTc, fontFamily }}>
           {[profile.prenom, profile.nom].filter(Boolean).join("\n").split("\n").map((n, i) => <span key={i} className="block">{n || (i === 0 ? "PRÉNOM" : "NOM")}</span>)}
         </h2>
@@ -486,16 +544,16 @@ export const ImpactTemplate = ({ profile, experienceEntries, atoutEntries, remov
         </p>
       </div>
 
-      <div className="w-[85%] mx-auto h-[1px]" style={{ background: "rgba(255,255,255,0.12)" }} />
+      <div className="w-[85%] mx-auto h-[1px] relative z-10" style={{ background: "rgba(255,255,255,0.12)" }} />
 
-      <div className="px-5 py-3 space-y-3 flex-1 overflow-y-auto text-[9px]">
+      <div className="px-5 py-3 space-y-3 flex-1 overflow-y-auto text-[9px] relative z-10">
         {/* Contact */}
         <div>
           <p className="text-[7px] uppercase tracking-[0.25em] font-bold mb-1.5" style={{ color: "rgba(255,255,255,0.4)" }}>Contact</p>
           <div className="space-y-1" style={{ color: withAlpha(headerTc, 0.8) }}>
-            {profile.telephone && <div className="flex items-center gap-2"><Phone className="w-3 h-3 flex-shrink-0" style={{ color: colors.accent }} />{profile.telephone}</div>}
-            {profile.email && <div className="flex items-center gap-2"><Mail className="w-3 h-3 flex-shrink-0" style={{ color: colors.accent }} />{profile.email}</div>}
-            {(profile.adresse || profile.ville) && <div className="flex items-center gap-2"><MapPin className="w-3 h-3 flex-shrink-0" style={{ color: colors.accent }} />{[profile.adresse, profile.codePostal, profile.ville].filter(Boolean).join(", ")}</div>}
+            {profile.telephone && <div className="flex items-center gap-2"><Phone className="w-3 h-3 flex-shrink-0" style={{ color: shapeCol }} />{profile.telephone}</div>}
+            {profile.email && <div className="flex items-center gap-2"><Mail className="w-3 h-3 flex-shrink-0" style={{ color: shapeCol }} />{profile.email}</div>}
+            {(profile.adresse || profile.ville) && <div className="flex items-center gap-2"><MapPin className="w-3 h-3 flex-shrink-0" style={{ color: shapeCol }} />{[profile.adresse, profile.codePostal, profile.ville].filter(Boolean).join(", ")}</div>}
           </div>
         </div>
 
@@ -532,8 +590,12 @@ export const ImpactTemplate = ({ profile, experienceEntries, atoutEntries, remov
 
   const main = (
     <div className="flex-1 flex flex-col bg-white relative overflow-hidden" style={{ ...fondStyle }}>
-      <div className="h-[3px]" style={{ background: `linear-gradient(90deg, ${colors.accent}, ${colors.primary})` }} />
-      <div className="absolute top-0 right-0 w-40 h-40 opacity-[0.03] rounded-full" style={{ background: `radial-gradient(circle, ${colors.accent}, transparent)` }} />
+      <div className="h-[3px]" style={{ background: `linear-gradient(90deg, ${shapeCol}, ${colors.primary})` }} />
+      {/* Decorative corner accent on main area */}
+      <div className="absolute top-8 right-4 w-20 h-20 opacity-[0.05]">
+        <svg viewBox="0 0 80 80" fill="none"><polygon points="40,5 75,40 40,75 5,40" stroke={shapeCol} strokeWidth="2" /><polygon points="40,20 60,40 40,60 20,40" fill={shapeCol} opacity="0.3" /></svg>
+      </div>
+      <div className="absolute bottom-16 right-8 w-6 h-6 rounded-full" style={{ background: `${shapeCol}10` }} />
 
       <div className="flex-1 px-6 py-5 overflow-y-auto relative z-10">
         {/* Expériences */}
@@ -561,7 +623,7 @@ export const ImpactTemplate = ({ profile, experienceEntries, atoutEntries, remov
             <ul style={{ margin: 0, padding: 0, listStyle: "none" }}>
               {atoutEntries.map(e => (
                 <li key={e.id} className="flex items-center gap-2 group/item" style={{ fontSize: "9px", lineHeight: "1.3", paddingTop: "2px", paddingBottom: "2px" }}>
-                  <ChevronRight className="w-3 h-3 flex-shrink-0" style={{ color: colors.accent }} />
+                  <ChevronRight className="w-3 h-3 flex-shrink-0" style={{ color: shapeCol }} />
                   <span className="flex-1" style={{ color: expTc || undefined }}>{e.selected}</span>
                   <DeleteBtn onClick={() => removeEntry(e.id)} />
                 </li>
@@ -576,7 +638,7 @@ export const ImpactTemplate = ({ profile, experienceEntries, atoutEntries, remov
             <SectionHeading color={expTc || colors.primary} icon={<Layers className="w-3.5 h-3.5" />}>Compétences</SectionHeading>
             <ul className="space-y-0.5">{experienceEntries.map(e => (
               <li key={e.id} className="flex items-start gap-2 text-[10px] group/item" style={{ color: expTc || undefined }}>
-                <span className="mt-0.5"><ModernBullet type={e.bullet} color={colors.accent} style={bulletStyle} shape={bulletShape} /></span>
+                <span className="mt-0.5"><ModernBullet type={e.bullet} color={shapeCol} style={bulletStyle} shape={bulletShape} /></span>
                 <span className="flex-1">{e.selected}</span><DeleteBtn onClick={() => removeEntry(e.id)} />
               </li>
             ))}</ul>
