@@ -428,8 +428,9 @@ export const MuralTemplate = ({ profile, experienceEntries, atoutEntries, remove
 // ═══════════════════════════════════════════════════════════════════
 export const MagazineTemplate = ({ profile, experienceEntries, atoutEntries, removeEntry, colors, bulletStyle, bulletShape, gradient, gradientTarget }: TemplateProps) => {
   const fondStyle = useGradientBg(gradient, gradientTarget);
+  const { isDark } = useAutoContrast(gradient, gradientTarget);
   return (
-    <div className="h-full flex flex-col text-[11px] leading-[1.6]" style={{ fontFamily: "'DM Sans', system-ui, sans-serif", ...fondStyle }}>
+    <div className="h-full flex flex-col text-[11px] leading-[1.8]" style={{ fontFamily: "'DM Sans', system-ui, sans-serif", ...fondStyle }}>
       {/* Split header — right zone now has full coordinates */}
       <div className="flex items-stretch relative overflow-hidden">
         <div className="flex-1 px-7 py-5 flex flex-col justify-center relative" style={{ background: `linear-gradient(135deg, ${colors.primary}, ${colors.swatch})`, ...useGradientRubrique(gradient, gradientTarget) }}>
