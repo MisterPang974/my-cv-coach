@@ -820,299 +820,345 @@ const CvGenerator = () => {
                     )}
                   </div>
 
-                  {/* ═══ Professional Experiences Panel ═══ */}
-                  <div className="rounded-2xl bg-card p-5 shadow-sm border border-border/50 space-y-4">
-                    <h3 className="font-semibold text-sm flex items-center gap-2"><Briefcase className="w-4 h-4 text-primary" /> Expérience Professionnelle</h3>
+                  {/* ═══ Dynamic Section Panels — follow sectionOrder ═══ */}
+                  {sectionOrder.map(sec => {
+                    if (sec === "experiences") return (
+                      <div key="experiences" className="rounded-2xl bg-card p-5 shadow-sm border border-border/50 space-y-4">
+                        <h3 className="font-semibold text-sm flex items-center gap-2"><Briefcase className="w-4 h-4 text-primary" /> EXPÉRIENCE PROFESSIONNELLE</h3>
 
-                    {experiences.length >= MAX_EXPERIENCES && (
-                      <div className="flex items-start gap-2 rounded-xl bg-amber-50 border border-amber-200 px-4 py-3 text-[11px] text-amber-700">
-                        <AlertTriangle className="w-4 h-4 mt-0.5 flex-shrink-0 text-amber-500" />
-                        <p>Attention, pour tenir sur une page, privilégiez vos <strong>3 à 5 expériences</strong> les plus récentes ou significatives.</p>
-                      </div>
-                    )}
-
-                    {/* Existing experiences list */}
-                    {experiences.map(exp => (
-                      <div key={exp.id} className="rounded-xl border border-border bg-background p-3.5 space-y-1.5">
-                        <div className="flex items-start justify-between">
-                          <div className="flex items-start gap-2.5">
-                            {exp.showLogo && exp.entreprise && (
-                              <img src={getCompanyLogoUrl(exp.entreprise)!} alt="" className="w-6 h-6 rounded mt-0.5 object-contain" onError={e => { (e.target as HTMLImageElement).style.display = 'none'; }} />
+                        {/* Puces Expériences — encapsulated */}
+                        <div className="rounded-xl bg-secondary/40 border border-border px-4 py-3">
+                          <div className="flex items-center gap-3 mb-2">
+                            <span className="text-xs font-semibold text-muted-foreground">✦ Puces Expériences</span>
+                            {activeBulletShape && (
+                              <button onClick={() => setActiveBulletShape(null)} className="text-[10px] text-muted-foreground hover:text-destructive transition-colors ml-auto">✕ Auto</button>
                             )}
-                            <div>
-                              <p className="text-sm font-bold text-foreground">{exp.poste}</p>
-                              <p className="text-xs text-muted-foreground">{exp.entreprise}{exp.ville ? `, ${exp.ville}` : ""}</p>
-                              <p className="text-[10px] text-muted-foreground">{exp.dateDebut}{exp.aujourdhui ? " — Aujourd'hui" : exp.dateFin ? ` — ${exp.dateFin}` : ""}</p>
-                            </div>
                           </div>
-                          <div className="flex items-center gap-1.5">
-                            <button onClick={() => toggleExpLogo(exp.id)} className="text-muted-foreground hover:text-primary transition-colors" title={exp.showLogo ? "Masquer le logo" : "Afficher le logo"}>
-                              {exp.showLogo ? <Eye className="w-3.5 h-3.5" /> : <EyeOff className="w-3.5 h-3.5" />}
-                            </button>
-                            <button onClick={() => removeExperience(exp.id)} className="text-muted-foreground hover:text-destructive transition-colors"><Trash2 className="w-4 h-4" /></button>
-                          </div>
-                        </div>
-                        {exp.missions.length > 0 && (
-                          <ul className="space-y-0.5">
-                            {exp.missions.map((m, mi) => (
-                              <li key={mi} className="flex items-center gap-2 text-[11px] text-foreground">
-                                <span className="flex-shrink-0"><ModernBullet type="action" color="hsl(24, 85%, 52%)" style={bulletStyle} shape={activeBulletShape || undefined} /></span>
-                                <span className="flex-1">{m}</span>
-                              </li>
+                          <div className="flex flex-wrap gap-1.5">
+                            {bulletShapes.map(bs => (
+                              <button key={bs.id} onClick={() => setActiveBulletShape(bs.id)} title={bs.label}
+                                className={`w-9 h-9 rounded-lg flex items-center justify-center transition-all active:scale-[0.95] ${activeBulletShape === bs.id ? "bg-primary text-primary-foreground ring-2 ring-offset-1 ring-ring" : "bg-secondary text-muted-foreground hover:bg-accent/20"}`}>
+                                <ShapeBullet shape={bs.id} color={activeBulletShape === bs.id ? "white" : "currentColor"} />
+                              </button>
                             ))}
-                          </ul>
+                          </div>
+                        </div>
+
+                        {experiences.length >= MAX_EXPERIENCES && (
+                          <div className="flex items-start gap-2 rounded-xl bg-amber-50 border border-amber-200 px-4 py-3 text-[11px] text-amber-700">
+                            <AlertTriangle className="w-4 h-4 mt-0.5 flex-shrink-0 text-amber-500" />
+                            <p>Attention, pour tenir sur une page, privilégiez vos <strong>3 à 5 expériences</strong> les plus récentes ou significatives.</p>
+                          </div>
                         )}
-                      </div>
-                    ))}
 
-                    {/* New experience form */}
-                    <div className="rounded-xl border border-dashed border-primary/30 bg-primary/[0.02] p-4 space-y-3">
-                      <p className="text-xs font-semibold text-primary">+ Nouvelle expérience</p>
-                      <div className="grid sm:grid-cols-2 gap-2">
-                        <div className="flex gap-2 items-center">
-                          <input value={editingExp.dateDebut} onChange={e => setEditingExp(p => ({ ...p, dateDebut: e.target.value }))}
-                            placeholder="MM/AAAA (ex: 01/2022)" className="flex-1 rounded-lg border border-input bg-background px-3 py-2 text-xs placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring" />
-                          <span className="text-muted-foreground text-xs">—</span>
-                          {editingExp.aujourdhui ? (
-                            <span className="flex-1 rounded-lg border border-primary/30 bg-primary/5 px-3 py-2 text-xs text-primary font-medium text-center">Aujourd'hui</span>
-                          ) : (
-                            <input value={editingExp.dateFin} onChange={e => setEditingExp(p => ({ ...p, dateFin: e.target.value }))}
-                              placeholder="MM/AAAA (ex: 09/2024)" className="flex-1 rounded-lg border border-input bg-background px-3 py-2 text-xs placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring" />
-                          )}
-                        </div>
-                        <label className="flex items-center gap-2 text-xs text-muted-foreground cursor-pointer">
-                          <input type="checkbox" checked={editingExp.aujourdhui} onChange={e => setEditingExp(p => ({ ...p, aujourdhui: e.target.checked, dateFin: "" }))} className="rounded border-primary text-primary focus:ring-primary" />
-                          Poste actuel
-                        </label>
-                      </div>
-                      <input value={editingExp.poste} onChange={e => setEditingExp(p => ({ ...p, poste: e.target.value }))}
-                        placeholder="Intitulé du poste *" className="w-full rounded-lg border border-input bg-background px-3 py-2.5 text-sm font-semibold placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring" />
-                      <div className="grid sm:grid-cols-2 gap-2">
-                        <input value={editingExp.entreprise} onChange={e => setEditingExp(p => ({ ...p, entreprise: e.target.value }))}
-                          placeholder="Nom de l'entreprise" className="rounded-lg border border-input bg-background px-3 py-2 text-xs placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring" />
-                        <input value={editingExp.ville} onChange={e => setEditingExp(p => ({ ...p, ville: e.target.value }))}
-                          placeholder="Ville" className="rounded-lg border border-input bg-background px-3 py-2 text-xs placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring" />
-                      </div>
-
-                      {/* Missions */}
-                      <div className="space-y-2">
-                        <p className="text-[10px] text-muted-foreground font-medium">Missions & Tâches</p>
-                        {editingExp.missions.map((m, mi) => (
-                          <div key={mi} className="flex items-center gap-2 text-xs text-foreground bg-background rounded-lg px-3 py-1.5 border border-border">
-                            <span className="flex-shrink-0"><ModernBullet type="action" color="hsl(24, 85%, 52%)" style={bulletStyle} shape={activeBulletShape || undefined} /></span>
-                            <span className="flex-1">{m}</span>
-                            <button onClick={() => removeMissionFromEditing(mi)} className="text-muted-foreground hover:text-destructive"><Trash2 className="w-3 h-3" /></button>
-                          </div>
-                        ))}
-                        <div className="flex gap-2">
-                          <input value={newMission} onChange={e => setNewMission(e.target.value)} onKeyDown={e => e.key === "Enter" && addMissionToEditing()}
-                            placeholder="Décrivez une mission…" className="flex-1 rounded-lg border border-input bg-background px-3 py-2 text-xs placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring" />
-                          <button onClick={addMissionToEditing} disabled={!newMission.trim()}
-                            className="rounded-lg bg-accent px-3 py-2 text-accent-foreground text-xs font-medium disabled:opacity-40 active:scale-[0.97]">
-                            <Plus className="w-3.5 h-3.5" />
-                          </button>
-                        </div>
-                      </div>
-
-                      <button onClick={addExperience} disabled={!editingExp.poste.trim()}
-                        className="w-full rounded-xl bg-primary px-4 py-2.5 text-primary-foreground text-sm font-medium shadow-sm hover:shadow-md transition-all disabled:opacity-40 active:scale-[0.97]">
-                        Ajouter cette expérience
-                      </button>
-                    </div>
-                  </div>
-
-                  {/* ═══ Formation & Diplômes Panel ═══ */}
-                  <div className="rounded-2xl bg-card p-5 shadow-sm border border-border/50 space-y-4">
-                    <div className="flex items-center justify-between">
-                      <h3 className="font-semibold text-sm flex items-center gap-2"><GraduationCap className="w-4 h-4 text-primary" /> {formationTitle}</h3>
-                      <div className="flex items-center gap-1 rounded-lg bg-secondary p-0.5">
-                        {(["diplomes", "parcours"] as const).map(m => (
-                          <button key={m} onClick={() => setFormationMode(m)}
-                            className={`px-2.5 py-1 rounded-md text-[10px] font-medium transition-all ${formationMode === m ? "bg-primary text-primary-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"}`}>
-                            {m === "diplomes" ? "Diplômes" : "Parcours"}
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-
-                    {/* Existing formations */}
-                    {formations.map(f => (
-                      <div key={f.id} className="rounded-xl border border-border bg-background p-3.5 space-y-0.5">
-                        <div className="flex items-start justify-between">
-                          <div>
-                            <p className="text-sm font-bold text-foreground">{f.intitule}</p>
-                            <p className="text-xs text-muted-foreground">{f.etablissement}{f.ville ? `, ${f.ville}` : ""}</p>
-                            <p className="text-[10px] text-muted-foreground">{f.dateDebut}{f.dateFin ? ` — ${f.dateFin}` : ""}</p>
-                          </div>
-                          <button onClick={() => removeFormation(f.id)} className="text-muted-foreground hover:text-destructive transition-colors"><Trash2 className="w-4 h-4" /></button>
-                        </div>
-                      </div>
-                    ))}
-
-                    {/* New formation form */}
-                    <div className="rounded-xl border border-dashed border-primary/30 bg-primary/[0.02] p-4 space-y-3">
-                      <p className="text-xs font-semibold text-primary">+ {formationMode === "parcours" ? "Nouvelle formation" : "Nouveau diplôme"}</p>
-                      <div className="grid sm:grid-cols-2 gap-2">
-                        <input value={editingFormation.dateDebut} onChange={e => setEditingFormation(p => ({ ...p, dateDebut: e.target.value }))}
-                          placeholder="MM/AAAA (ex: 09/2018)" className="rounded-lg border border-input bg-background px-3 py-2 text-xs placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring" />
-                        <input value={editingFormation.dateFin} onChange={e => setEditingFormation(p => ({ ...p, dateFin: e.target.value }))}
-                          placeholder="MM/AAAA (ex: 06/2020)" className="rounded-lg border border-input bg-background px-3 py-2 text-xs placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring" />
-                      </div>
-                      <input value={editingFormation.intitule} onChange={e => setEditingFormation(p => ({ ...p, intitule: e.target.value }))}
-                        placeholder={formationMode === "parcours" ? "Intitulé de la formation / VAE *" : "Intitulé du diplôme *"}
-                        className="w-full rounded-lg border border-input bg-background px-3 py-2.5 text-sm font-semibold placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring" />
-                      <div className="grid sm:grid-cols-2 gap-2">
-                        <input value={editingFormation.etablissement} onChange={e => setEditingFormation(p => ({ ...p, etablissement: e.target.value }))}
-                          placeholder="Nom de l'école / organisme" className="rounded-lg border border-input bg-background px-3 py-2 text-xs placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring" />
-                        <input value={editingFormation.ville} onChange={e => setEditingFormation(p => ({ ...p, ville: e.target.value }))}
-                          placeholder="Ville" className="rounded-lg border border-input bg-background px-3 py-2 text-xs placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring" />
-                      </div>
-                      <button onClick={addFormation} disabled={!editingFormation.intitule.trim()}
-                        className="w-full rounded-xl bg-primary px-4 py-2.5 text-primary-foreground text-sm font-medium shadow-sm hover:shadow-md transition-all disabled:opacity-40 active:scale-[0.97]">
-                        Ajouter
-                      </button>
-                    </div>
-
-                    {formations.length > 3 && (
-                      <div className="flex items-start gap-2 rounded-xl bg-amber-50 border border-amber-200 px-4 py-3 text-[11px] text-amber-700">
-                        <AlertTriangle className="w-4 h-4 mt-0.5 flex-shrink-0 text-amber-500" />
-                        <p>Pour tenir sur une page A4, limitez-vous à <strong>2-3 formations</strong> maximum ou passez en mise en page deux colonnes.</p>
-                      </div>
-                    )}
-                  </div>
-
-                  <div className="rounded-2xl bg-card p-5 shadow-sm border border-border/50 space-y-4">
-                    <div className="flex items-center justify-between">
-                      <h3 className="font-semibold text-sm flex items-center gap-2"><Layers className="w-4 h-4 text-primary" /> Compétences par domaine</h3>
-                      <div className="flex items-center gap-2">
-                        <Gauge className="w-3.5 h-3.5 text-muted-foreground" />
-                        <div className="w-24 h-2 rounded-full bg-secondary overflow-hidden">
-                          <div className="h-full rounded-full transition-all duration-300" style={{ width: `${usagePercent}%`, background: isOverloaded ? "hsl(0, 70%, 55%)" : usagePercent > 75 ? "hsl(35, 90%, 55%)" : "hsl(150, 50%, 45%)" }} />
-                        </div>
-                        <span className={`text-[10px] font-medium ${isOverloaded ? "text-red-500" : "text-muted-foreground"}`}>{activeCompetencyCount}/{maxCompetencies}</span>
-                      </div>
-                    </div>
-
-                    {/* Predictive hint */}
-                    <p className="text-[10px] text-muted-foreground bg-secondary/50 rounded-lg px-3 py-1.5">
-                      💡 Le modèle <span className="font-bold text-foreground">{layoutMeta[activeLayout].label}</span> accepte idéalement <span className="font-bold text-foreground">{maxCompetencies} compétences</span> max pour une mise en page A4 optimale.
-                    </p>
-
-                    {/* Overload alert */}
-                    {isOverloaded && (
-                      <div className="flex items-start gap-2 rounded-xl bg-red-50 border border-red-200 px-4 py-3 text-[11px] text-red-700">
-                        <AlertTriangle className="w-4 h-4 mt-0.5 flex-shrink-0 text-red-500" />
-                        <p>Votre CV est trop chargé. Pour une lecture optimale, choisissez vos <strong>4 domaines</strong> et <strong>4 sous-compétences</strong> les plus percutants.</p>
-                      </div>
-                    )}
-
-                    {/* Domain list */}
-                    <div className="space-y-3">
-                      {domains.map(domain => (
-                        <div key={domain.id} className={`rounded-xl border transition-all ${domain.enabled ? "border-primary/20 bg-primary/[0.02]" : "border-border bg-secondary/30 opacity-60"}`}>
-                          <div className="flex items-center gap-2 px-4 py-2.5">
-                            <button onClick={() => toggleDomain(domain.id)} className="text-primary">
-                              {domain.enabled ? <ToggleRight className="w-5 h-5" /> : <ToggleLeft className="w-5 h-5 text-muted-foreground" />}
-                            </button>
-                            <span className={`text-xs font-semibold flex-1 ${domain.enabled ? "text-foreground" : "text-muted-foreground"}`}>{domain.label}</span>
-                            <span className="text-[10px] text-muted-foreground">{domain.items.filter(i => i.enabled).length}/{domain.items.length}</span>
-                            {domain.custom && (
-                              <button onClick={() => removeCustomDomain(domain.id)} className="text-muted-foreground hover:text-red-500 transition-colors"><Trash2 className="w-3.5 h-3.5" /></button>
-                            )}
-                          </div>
-                          {domain.enabled && (
-                            <div className="px-4 pb-3 space-y-1.5">
-                              {domain.items.map(item => (
-                                <label key={item.id} className="flex items-start gap-2 cursor-pointer group">
-                                  <input type="checkbox" checked={item.enabled} onChange={() => {
-                                    if (!item.enabled && isOverloaded) return;
-                                    toggleCompetencyItem(domain.id, item.id);
-                                  }} className="mt-0.5 rounded border-primary text-primary focus:ring-primary" disabled={!item.enabled && isOverloaded} />
-                                  <span className={`text-[11px] leading-relaxed flex-1 ${item.enabled ? "text-foreground" : "text-muted-foreground line-through"}`}>{item.text}</span>
-                                  {domain.custom && (
-                                    <button onClick={() => removeCompetencyItem(domain.id, item.id)} className="opacity-0 group-hover:opacity-100 text-muted-foreground hover:text-red-400 transition-all"><Trash2 className="w-3 h-3" /></button>
-                                  )}
-                                </label>
-                              ))}
-                              {/* Add custom competency to domain */}
-                              <div className="flex gap-2 mt-2">
-                                <input placeholder="Ajouter une compétence…" className="flex-1 rounded-lg border border-input bg-background px-3 py-1.5 text-[11px] placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring"
-                                  onKeyDown={e => { if (e.key === "Enter") { addCustomCompetency(domain.id, (e.target as HTMLInputElement).value); (e.target as HTMLInputElement).value = ""; } }} />
+                        {/* Existing experiences list */}
+                        {experiences.map(exp => (
+                          <div key={exp.id} className="rounded-xl border border-border bg-background p-3.5 space-y-1.5">
+                            <div className="flex items-start justify-between">
+                              <div className="flex items-start gap-2.5">
+                                {exp.showLogo && exp.entreprise && (
+                                  <img src={getCompanyLogoUrl(exp.entreprise)!} alt="" className="w-6 h-6 rounded mt-0.5 object-contain" onError={e => { (e.target as HTMLImageElement).style.display = 'none'; }} />
+                                )}
+                                <div>
+                                  <p className="text-sm font-bold text-foreground">{exp.poste}</p>
+                                  <p className="text-xs text-muted-foreground">{exp.entreprise}{exp.ville ? `, ${exp.ville}` : ""}</p>
+                                  <p className="text-[10px] text-muted-foreground">{exp.dateDebut}{exp.aujourdhui ? " — Aujourd'hui" : exp.dateFin ? ` — ${exp.dateFin}` : ""}</p>
+                                </div>
+                              </div>
+                              <div className="flex items-center gap-1.5">
+                                <button onClick={() => toggleExpLogo(exp.id)} className="text-muted-foreground hover:text-primary transition-colors" title={exp.showLogo ? "Masquer le logo" : "Afficher le logo"}>
+                                  {exp.showLogo ? <Eye className="w-3.5 h-3.5" /> : <EyeOff className="w-3.5 h-3.5" />}
+                                </button>
+                                <button onClick={() => removeExperience(exp.id)} className="text-muted-foreground hover:text-destructive transition-colors"><Trash2 className="w-4 h-4" /></button>
                               </div>
                             </div>
-                          )}
-                        </div>
-                      ))}
-                    </div>
+                            {exp.missions.length > 0 && (
+                              <ul className="space-y-0.5">
+                                {exp.missions.map((m, mi) => (
+                                  <li key={mi} className="flex items-center gap-2 text-[11px] text-foreground">
+                                    <span className="flex-shrink-0"><ModernBullet type="action" color="hsl(24, 85%, 52%)" style={bulletStyle} shape={activeBulletShape || undefined} /></span>
+                                    <span className="flex-1">{m}</span>
+                                  </li>
+                                ))}
+                              </ul>
+                            )}
+                          </div>
+                        ))}
 
-                    {/* Add custom domain */}
-                    {domains.filter(d => d.custom).length < 2 && (
-                      <div className="flex gap-2">
-                        <input value={newDomainName} onChange={e => setNewDomainName(e.target.value)} placeholder="Nouveau domaine personnalisé…"
-                          className="flex-1 rounded-xl border border-input bg-background px-4 py-2.5 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
-                          onKeyDown={e => e.key === "Enter" && addCustomDomain()} />
-                        <button onClick={addCustomDomain} disabled={!newDomainName.trim()}
-                          className="rounded-xl bg-primary px-4 py-2.5 text-primary-foreground text-sm font-medium shadow-sm hover:shadow-md transition-all disabled:opacity-40 active:scale-[0.97]">
-                          <Plus className="w-4 h-4" />
-                        </button>
-                      </div>
-                    )}
-                  </div>
+                        {/* New experience form */}
+                        <div className="rounded-xl border border-dashed border-primary/30 bg-primary/[0.02] p-4 space-y-3">
+                          <p className="text-xs font-semibold text-primary">+ Nouvelle expérience</p>
+                          <div className="grid sm:grid-cols-2 gap-2">
+                            <div className="flex gap-2 items-center">
+                              <input value={editingExp.dateDebut} onChange={e => setEditingExp(p => ({ ...p, dateDebut: e.target.value }))}
+                                placeholder="MM/AAAA (ex: 01/2022)" className="flex-1 rounded-lg border border-input bg-background px-3 py-2 text-xs placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring" />
+                              <span className="text-muted-foreground text-xs">—</span>
+                              {editingExp.aujourdhui ? (
+                                <span className="flex-1 rounded-lg border border-primary/30 bg-primary/5 px-3 py-2 text-xs text-primary font-medium text-center">Aujourd'hui</span>
+                              ) : (
+                                <input value={editingExp.dateFin} onChange={e => setEditingExp(p => ({ ...p, dateFin: e.target.value }))}
+                                  placeholder="MM/AAAA (ex: 09/2024)" className="flex-1 rounded-lg border border-input bg-background px-3 py-2 text-xs placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring" />
+                              )}
+                            </div>
+                            <label className="flex items-center gap-2 text-xs text-muted-foreground cursor-pointer">
+                              <input type="checkbox" checked={editingExp.aujourdhui} onChange={e => setEditingExp(p => ({ ...p, aujourdhui: e.target.checked, dateFin: "" }))} className="rounded border-primary text-primary focus:ring-primary" />
+                              Poste actuel
+                            </label>
+                          </div>
+                          <input value={editingExp.poste} onChange={e => setEditingExp(p => ({ ...p, poste: e.target.value }))}
+                            placeholder="Intitulé du poste *" className="w-full rounded-lg border border-input bg-background px-3 py-2.5 text-sm font-semibold placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring" />
+                          <div className="grid sm:grid-cols-2 gap-2">
+                            <input value={editingExp.entreprise} onChange={e => setEditingExp(p => ({ ...p, entreprise: e.target.value }))}
+                              placeholder="Nom de l'entreprise" className="rounded-lg border border-input bg-background px-3 py-2 text-xs placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring" />
+                            <input value={editingExp.ville} onChange={e => setEditingExp(p => ({ ...p, ville: e.target.value }))}
+                              placeholder="Ville" className="rounded-lg border border-input bg-background px-3 py-2 text-xs placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring" />
+                          </div>
 
-                  {/* ═══ Divers & Centres d'intérêt Panel ═══ */}
-                  <div className="rounded-2xl bg-card p-5 shadow-sm border border-border/50 space-y-4">
-                    <div className="flex items-center justify-between">
-                      <h3 className="font-semibold text-sm flex items-center gap-2">🎯 Divers & Centres d'intérêt</h3>
-                      <div className="flex items-center gap-1 rounded-lg bg-secondary p-0.5">
-                        {(["badges", "list"] as const).map(m => (
-                          <button key={m} onClick={() => setInterestDisplayMode(m)}
-                            className={`px-2.5 py-1 rounded-md text-[10px] font-medium transition-all ${interestDisplayMode === m ? "bg-primary text-primary-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"}`}>
-                            {m === "badges" ? "Badges" : "Liste"}
+                          {/* Missions */}
+                          <div className="space-y-2">
+                            <p className="text-[10px] text-muted-foreground font-medium">Missions & Tâches</p>
+                            {editingExp.missions.map((m, mi) => (
+                              <div key={mi} className="flex items-center gap-2 text-xs text-foreground bg-background rounded-lg px-3 py-1.5 border border-border">
+                                <span className="flex-shrink-0"><ModernBullet type="action" color="hsl(24, 85%, 52%)" style={bulletStyle} shape={activeBulletShape || undefined} /></span>
+                                <span className="flex-1">{m}</span>
+                                <button onClick={() => removeMissionFromEditing(mi)} className="text-muted-foreground hover:text-destructive"><Trash2 className="w-3 h-3" /></button>
+                              </div>
+                            ))}
+                            <div className="flex gap-2">
+                              <input value={newMission} onChange={e => setNewMission(e.target.value)} onKeyDown={e => e.key === "Enter" && addMissionToEditing()}
+                                placeholder="Décrivez une mission…" className="flex-1 rounded-lg border border-input bg-background px-3 py-2 text-xs placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring" />
+                              <button onClick={addMissionToEditing} disabled={!newMission.trim()}
+                                className="rounded-lg bg-accent px-3 py-2 text-accent-foreground text-xs font-medium disabled:opacity-40 active:scale-[0.97]">
+                                <Plus className="w-3.5 h-3.5" />
+                              </button>
+                            </div>
+                          </div>
+
+                          <button onClick={addExperience} disabled={!editingExp.poste.trim()}
+                            className="w-full rounded-xl bg-primary px-4 py-2.5 text-primary-foreground text-sm font-medium shadow-sm hover:shadow-md transition-all disabled:opacity-40 active:scale-[0.97]">
+                            Ajouter cette expérience
                           </button>
+                        </div>
+                      </div>
+                    );
+
+                    if (sec === "formation") return (
+                      <div key="formation" className="rounded-2xl bg-card p-5 shadow-sm border border-border/50 space-y-4">
+                        <div className="flex items-center justify-between">
+                          <h3 className="font-semibold text-sm flex items-center gap-2"><GraduationCap className="w-4 h-4 text-primary" /> {formationTitle}</h3>
+                          <div className="flex items-center gap-1 rounded-lg bg-secondary p-0.5">
+                            {(["diplomes", "parcours"] as const).map(m => (
+                              <button key={m} onClick={() => setFormationMode(m)}
+                                className={`px-2.5 py-1 rounded-md text-[10px] font-medium transition-all ${formationMode === m ? "bg-primary text-primary-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"}`}>
+                                {m === "diplomes" ? "Diplômes" : "Parcours"}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+
+                        {/* Existing formations */}
+                        {formations.map(f => (
+                          <div key={f.id} className="rounded-xl border border-border bg-background p-3.5 space-y-0.5">
+                            <div className="flex items-start justify-between">
+                              <div>
+                                <p className="text-sm font-bold text-foreground">{f.intitule}</p>
+                                <p className="text-xs text-muted-foreground">{f.etablissement}{f.ville ? `, ${f.ville}` : ""}</p>
+                                <p className="text-[10px] text-muted-foreground">{f.dateDebut}{f.dateFin ? ` — ${f.dateFin}` : ""}</p>
+                              </div>
+                              <button onClick={() => removeFormation(f.id)} className="text-muted-foreground hover:text-destructive transition-colors"><Trash2 className="w-4 h-4" /></button>
+                            </div>
+                          </div>
                         ))}
+
+                        {/* New formation form */}
+                        <div className="rounded-xl border border-dashed border-primary/30 bg-primary/[0.02] p-4 space-y-3">
+                          <p className="text-xs font-semibold text-primary">+ {formationMode === "parcours" ? "Nouvelle formation" : "Nouveau diplôme"}</p>
+                          <div className="grid sm:grid-cols-2 gap-2">
+                            <input value={editingFormation.dateDebut} onChange={e => setEditingFormation(p => ({ ...p, dateDebut: e.target.value }))}
+                              placeholder="MM/AAAA (ex: 09/2018)" className="rounded-lg border border-input bg-background px-3 py-2 text-xs placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring" />
+                            <input value={editingFormation.dateFin} onChange={e => setEditingFormation(p => ({ ...p, dateFin: e.target.value }))}
+                              placeholder="MM/AAAA (ex: 06/2020)" className="rounded-lg border border-input bg-background px-3 py-2 text-xs placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring" />
+                          </div>
+                          <input value={editingFormation.intitule} onChange={e => setEditingFormation(p => ({ ...p, intitule: e.target.value }))}
+                            placeholder={formationMode === "parcours" ? "Intitulé de la formation / VAE *" : "Intitulé du diplôme *"}
+                            className="w-full rounded-lg border border-input bg-background px-3 py-2.5 text-sm font-semibold placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring" />
+                          <div className="grid sm:grid-cols-2 gap-2">
+                            <input value={editingFormation.etablissement} onChange={e => setEditingFormation(p => ({ ...p, etablissement: e.target.value }))}
+                              placeholder="Nom de l'école / organisme" className="rounded-lg border border-input bg-background px-3 py-2 text-xs placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring" />
+                            <input value={editingFormation.ville} onChange={e => setEditingFormation(p => ({ ...p, ville: e.target.value }))}
+                              placeholder="Ville" className="rounded-lg border border-input bg-background px-3 py-2 text-xs placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring" />
+                          </div>
+                          <button onClick={addFormation} disabled={!editingFormation.intitule.trim()}
+                            className="w-full rounded-xl bg-primary px-4 py-2.5 text-primary-foreground text-sm font-medium shadow-sm hover:shadow-md transition-all disabled:opacity-40 active:scale-[0.97]">
+                            Ajouter
+                          </button>
+                        </div>
+
+                        {formations.length > 3 && (
+                          <div className="flex items-start gap-2 rounded-xl bg-amber-50 border border-amber-200 px-4 py-3 text-[11px] text-amber-700">
+                            <AlertTriangle className="w-4 h-4 mt-0.5 flex-shrink-0 text-amber-500" />
+                            <p>Pour tenir sur une page A4, limitez-vous à <strong>2-3 formations</strong> maximum ou passez en mise en page deux colonnes.</p>
+                          </div>
+                        )}
                       </div>
-                    </div>
+                    );
 
-                    {/* Quick suggestions */}
-                    <div className="flex flex-wrap gap-1.5">
-                      {INTEREST_SUGGESTIONS.filter(s => !interests.some(i => i.text === s.text)).map(s => (
-                        <button key={s.text} onClick={() => addInterest(s.text, s.icon, s.category)}
-                          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] border border-border bg-background hover:bg-secondary hover:shadow-sm transition-all active:scale-[0.97]">
-                          <span>{s.icon}</span> {s.text}
-                        </button>
-                      ))}
-                    </div>
+                    if (sec === "competences") return (
+                      <div key="competences" className="rounded-2xl bg-card p-5 shadow-sm border border-border/50 space-y-4">
+                        <div className="flex items-center justify-between">
+                          <h3 className="font-semibold text-sm flex items-center gap-2"><Layers className="w-4 h-4 text-primary" /> COMPÉTENCES PAR DOMAINE</h3>
+                          <div className="flex items-center gap-2">
+                            <Gauge className="w-3.5 h-3.5 text-muted-foreground" />
+                            <div className="w-24 h-2 rounded-full bg-secondary overflow-hidden">
+                              <div className="h-full rounded-full transition-all duration-300" style={{ width: `${usagePercent}%`, background: isOverloaded ? "hsl(0, 70%, 55%)" : usagePercent > 75 ? "hsl(35, 90%, 55%)" : "hsl(150, 50%, 45%)" }} />
+                            </div>
+                            <span className={`text-[10px] font-medium ${isOverloaded ? "text-red-500" : "text-muted-foreground"}`}>{activeCompetencyCount}/{maxCompetencies}</span>
+                          </div>
+                        </div>
 
-                    {/* Current interests */}
-                    {interests.length > 0 && (
-                      <div className="flex flex-wrap gap-1.5">
-                        {interests.map(i => (
-                          <span key={i.id} className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-medium bg-primary/5 border border-primary/15 text-foreground">
-                            <span>{i.icon}</span> {i.text}
-                            <button onClick={() => removeInterest(i.id)} className="text-muted-foreground hover:text-destructive transition-colors ml-0.5"><Trash2 className="w-3 h-3" /></button>
-                          </span>
-                        ))}
+                        {/* Puces Compétences — encapsulated */}
+                        <div className="rounded-xl bg-secondary/40 border border-border px-4 py-3">
+                          <div className="flex items-center gap-3 mb-2">
+                            <span className="text-xs font-semibold text-muted-foreground">✦ Puces Compétences</span>
+                            {competencyBulletShape && (
+                              <button onClick={() => setCompetencyBulletShape(null)} className="text-[10px] text-muted-foreground hover:text-destructive transition-colors ml-auto">✕ Auto</button>
+                            )}
+                          </div>
+                          <div className="flex flex-wrap gap-1.5">
+                            {bulletShapes.map(bs => (
+                              <button key={bs.id} onClick={() => setCompetencyBulletShape(bs.id)} title={bs.label}
+                                className={`w-9 h-9 rounded-lg flex items-center justify-center transition-all active:scale-[0.95] ${competencyBulletShape === bs.id ? "bg-accent text-accent-foreground ring-2 ring-offset-1 ring-ring" : "bg-secondary text-muted-foreground hover:bg-accent/20"}`}>
+                                <ShapeBullet shape={bs.id} color={competencyBulletShape === bs.id ? "white" : "currentColor"} />
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+
+                        {/* Predictive hint */}
+                        <p className="text-[10px] text-muted-foreground bg-secondary/50 rounded-lg px-3 py-1.5">
+                          💡 Le modèle <span className="font-bold text-foreground">{layoutMeta[activeLayout].label}</span> accepte idéalement <span className="font-bold text-foreground">{maxCompetencies} compétences</span> max pour une mise en page A4 optimale.
+                        </p>
+
+                        {/* Overload alert */}
+                        {isOverloaded && (
+                          <div className="flex items-start gap-2 rounded-xl bg-red-50 border border-red-200 px-4 py-3 text-[11px] text-red-700">
+                            <AlertTriangle className="w-4 h-4 mt-0.5 flex-shrink-0 text-red-500" />
+                            <p>Votre CV est trop chargé. Pour une lecture optimale, choisissez vos <strong>4 domaines</strong> et <strong>4 sous-compétences</strong> les plus percutants.</p>
+                          </div>
+                        )}
+
+                        {/* Domain list */}
+                        <div className="space-y-3">
+                          {domains.map(domain => (
+                            <div key={domain.id} className={`rounded-xl border transition-all ${domain.enabled ? "border-primary/20 bg-primary/[0.02]" : "border-border bg-secondary/30 opacity-60"}`}>
+                              <div className="flex items-center gap-2 px-4 py-2.5">
+                                <button onClick={() => toggleDomain(domain.id)} className="text-primary">
+                                  {domain.enabled ? <ToggleRight className="w-5 h-5" /> : <ToggleLeft className="w-5 h-5 text-muted-foreground" />}
+                                </button>
+                                <span className={`text-xs font-semibold flex-1 ${domain.enabled ? "text-foreground" : "text-muted-foreground"}`}>{domain.label}</span>
+                                <span className="text-[10px] text-muted-foreground">{domain.items.filter(i => i.enabled).length}/{domain.items.length}</span>
+                                {domain.custom && (
+                                  <button onClick={() => removeCustomDomain(domain.id)} className="text-muted-foreground hover:text-red-500 transition-colors"><Trash2 className="w-3.5 h-3.5" /></button>
+                                )}
+                              </div>
+                              {domain.enabled && (
+                                <div className="px-4 pb-3 space-y-1.5">
+                                  {domain.items.map(item => (
+                                    <label key={item.id} className="flex items-start gap-2 cursor-pointer group">
+                                      <input type="checkbox" checked={item.enabled} onChange={() => {
+                                        if (!item.enabled && isOverloaded) return;
+                                        toggleCompetencyItem(domain.id, item.id);
+                                      }} className="mt-0.5 rounded border-primary text-primary focus:ring-primary" disabled={!item.enabled && isOverloaded} />
+                                      <span className={`text-[11px] leading-relaxed flex-1 ${item.enabled ? "text-foreground" : "text-muted-foreground line-through"}`}>{item.text}</span>
+                                      {domain.custom && (
+                                        <button onClick={() => removeCompetencyItem(domain.id, item.id)} className="opacity-0 group-hover:opacity-100 text-muted-foreground hover:text-red-400 transition-all"><Trash2 className="w-3 h-3" /></button>
+                                      )}
+                                    </label>
+                                  ))}
+                                  {/* Add custom competency to domain */}
+                                  <div className="flex gap-2 mt-2">
+                                    <input placeholder="Ajouter une compétence…" className="flex-1 rounded-lg border border-input bg-background px-3 py-1.5 text-[11px] placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring"
+                                      onKeyDown={e => { if (e.key === "Enter") { addCustomCompetency(domain.id, (e.target as HTMLInputElement).value); (e.target as HTMLInputElement).value = ""; } }} />
+                                  </div>
+                                </div>
+                              )}
+                            </div>
+                          ))}
+                        </div>
+
+                        {/* Add custom domain */}
+                        {domains.filter(d => d.custom).length < 2 && (
+                          <div className="flex gap-2">
+                            <input value={newDomainName} onChange={e => setNewDomainName(e.target.value)} placeholder="Nouveau domaine personnalisé…"
+                              className="flex-1 rounded-xl border border-input bg-background px-4 py-2.5 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+                              onKeyDown={e => e.key === "Enter" && addCustomDomain()} />
+                            <button onClick={addCustomDomain} disabled={!newDomainName.trim()}
+                              className="rounded-xl bg-primary px-4 py-2.5 text-primary-foreground text-sm font-medium shadow-sm hover:shadow-md transition-all disabled:opacity-40 active:scale-[0.97]">
+                              <Plus className="w-4 h-4" />
+                            </button>
+                          </div>
+                        )}
                       </div>
-                    )}
+                    );
 
-                    {/* Custom interest */}
-                    <div className="flex gap-2">
-                      <input value={newInterestText} onChange={e => setNewInterestText(e.target.value)} onKeyDown={e => e.key === "Enter" && addCustomInterest()}
-                        placeholder="Ajouter un centre d'intérêt personnalisé…"
-                        className="flex-1 rounded-xl border border-input bg-background px-4 py-2.5 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring" />
-                      <button onClick={addCustomInterest} disabled={!newInterestText.trim()}
-                        className="rounded-xl bg-primary px-4 py-2.5 text-primary-foreground text-sm font-medium shadow-sm hover:shadow-md transition-all disabled:opacity-40 active:scale-[0.97]">
-                        <Plus className="w-4 h-4" />
-                      </button>
-                    </div>
+                    if (sec === "divers") return (
+                      <div key="divers" className="rounded-2xl bg-card p-5 shadow-sm border border-border/50 space-y-4">
+                        <div className="flex items-center justify-between">
+                          <h3 className="font-semibold text-sm flex items-center gap-2">🎯 DIVERS & CENTRES D'INTÉRÊT</h3>
+                          <div className="flex items-center gap-1 rounded-lg bg-secondary p-0.5">
+                            {(["badges", "list"] as const).map(m => (
+                              <button key={m} onClick={() => setInterestDisplayMode(m)}
+                                className={`px-2.5 py-1 rounded-md text-[10px] font-medium transition-all ${interestDisplayMode === m ? "bg-primary text-primary-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"}`}>
+                                {m === "badges" ? "Badges" : "Liste"}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
 
-                    {interests.length > 6 && (
-                      <div className="flex items-start gap-2 rounded-xl bg-amber-50 border border-amber-200 px-4 py-3 text-[11px] text-amber-700">
-                        <AlertTriangle className="w-4 h-4 mt-0.5 flex-shrink-0 text-amber-500" />
-                        <p>Cette rubrique est votre variable d'ajustement. <strong>4-5 éléments</strong> suffisent pour un CV professionnel.</p>
+                        {/* Quick suggestions */}
+                        <div className="flex flex-wrap gap-1.5">
+                          {INTEREST_SUGGESTIONS.filter(s => !interests.some(i => i.text === s.text)).map(s => (
+                            <button key={s.text} onClick={() => addInterest(s.text, s.icon, s.category)}
+                              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] border border-border bg-background hover:bg-secondary hover:shadow-sm transition-all active:scale-[0.97]">
+                              <span>{s.icon}</span> {s.text}
+                            </button>
+                          ))}
+                        </div>
+
+                        {/* Current interests */}
+                        {interests.length > 0 && (
+                          <div className="flex flex-wrap gap-1.5">
+                            {interests.map(i => (
+                              <span key={i.id} className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-medium bg-primary/5 border border-primary/15 text-foreground">
+                                <span>{i.icon}</span> {i.text}
+                                <button onClick={() => removeInterest(i.id)} className="text-muted-foreground hover:text-destructive transition-colors ml-0.5"><Trash2 className="w-3 h-3" /></button>
+                              </span>
+                            ))}
+                          </div>
+                        )}
+
+                        {/* Custom interest */}
+                        <div className="flex gap-2">
+                          <input value={newInterestText} onChange={e => setNewInterestText(e.target.value)} onKeyDown={e => e.key === "Enter" && addCustomInterest()}
+                            placeholder="Ajouter un centre d'intérêt personnalisé…"
+                            className="flex-1 rounded-xl border border-input bg-background px-4 py-2.5 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring" />
+                          <button onClick={addCustomInterest} disabled={!newInterestText.trim()}
+                            className="rounded-xl bg-primary px-4 py-2.5 text-primary-foreground text-sm font-medium shadow-sm hover:shadow-md transition-all disabled:opacity-40 active:scale-[0.97]">
+                            <Plus className="w-4 h-4" />
+                          </button>
+                        </div>
+
+                        {interests.length > 6 && (
+                          <div className="flex items-start gap-2 rounded-xl bg-amber-50 border border-amber-200 px-4 py-3 text-[11px] text-amber-700">
+                            <AlertTriangle className="w-4 h-4 mt-0.5 flex-shrink-0 text-amber-500" />
+                            <p>Cette rubrique est votre variable d'ajustement. <strong>4-5 éléments</strong> suffisent pour un CV professionnel.</p>
+                          </div>
+                        )}
                       </div>
-                    )}
-                  </div>
+                    );
+
+                    return null;
+                  })}
 
                   <div className="rounded-2xl bg-accent/8 border border-accent/20 p-5">
                     <h3 className="font-semibold text-sm mb-3 flex items-center gap-2"><Star className="w-4 h-4 text-accent" /> Atouts à valoriser</h3>
