@@ -7,6 +7,18 @@ interface CvEntry { id: number; input: string; selected: string; bullet: BulletT
 interface CvProfile { nom: string; prenom: string; titre: string; email: string; telephone: string; adresse: string; codePostal: string; ville: string; }
 interface Colors { primary: string; accent: string; swatch: string; }
 
+export type TextColorSection = "header" | "experiences" | "competences";
+export type FontId = "dm-sans" | "montserrat" | "open-sans" | "playfair" | "roboto" | "lato";
+
+export const fontOptions: { id: FontId; label: string; family: string }[] = [
+  { id: "dm-sans", label: "DM Sans", family: "'DM Sans', system-ui, sans-serif" },
+  { id: "montserrat", label: "Montserrat", family: "'Montserrat', system-ui, sans-serif" },
+  { id: "open-sans", label: "Open Sans", family: "'Open Sans', system-ui, sans-serif" },
+  { id: "playfair", label: "Playfair Display", family: "'Playfair Display', Georgia, serif" },
+  { id: "roboto", label: "Roboto", family: "'Roboto', system-ui, sans-serif" },
+  { id: "lato", label: "Lato", family: "'Lato', system-ui, sans-serif" },
+];
+
 export interface TemplateProps {
   profile: CvProfile;
   experienceEntries: CvEntry[];
@@ -20,6 +32,9 @@ export interface TemplateProps {
   gradient?: { id: string; label: string; from: string; to: string; angle?: number };
   gradientTarget?: "fond" | "rubriques";
   bgCircleColor?: string;
+  textColors?: Record<TextColorSection, "noir" | "blanc">;
+  titleColor?: string;
+  fontFamily?: string;
 }
 
 // ─── Bullet renderers ──────────────────────────────────────────────
