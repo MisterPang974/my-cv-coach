@@ -910,7 +910,7 @@ const CvGenerator = () => {
                             <span className="flex-1 rounded-lg border border-primary/30 bg-primary/5 px-3 py-2 text-xs text-primary font-medium text-center">Aujourd'hui</span>
                           ) : (
                             <input value={editingExp.dateFin} onChange={e => setEditingExp(p => ({ ...p, dateFin: e.target.value }))}
-                              placeholder="Date fin" className="flex-1 rounded-lg border border-input bg-background px-3 py-2 text-xs placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring" />
+                              placeholder="MM/AAAA (ex: 09/2024)" className="flex-1 rounded-lg border border-input bg-background px-3 py-2 text-xs placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring" />
                           )}
                         </div>
                         <label className="flex items-center gap-2 text-xs text-muted-foreground cursor-pointer">
