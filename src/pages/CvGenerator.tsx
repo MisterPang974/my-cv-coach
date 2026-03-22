@@ -2,10 +2,10 @@ import { useState, useRef, useEffect } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import {
-  Wand2, Copy, Check, Plus, Trash2, User, Briefcase, Palette, Star, Settings2, ChevronRight
+  Wand2, Copy, Check, Plus, Trash2, User, Briefcase, Palette, Star, Settings2, ChevronRight, Type, AlertTriangle
 } from "lucide-react";
 import { detectSector, sectorConfigs, layoutMeta, gradientLibrary, bulletShapes, type SectorId, type LayoutId, type SidebarPosition, type BulletStyle, type SectorPalette, type SectorGradient, type BulletShapeId } from "@/lib/cv-sectors";
-import { templateRegistry, ModernBullet, ShapeBullet, type TemplateProps } from "@/components/cv-templates";
+import { templateRegistry, ModernBullet, ShapeBullet, fontOptions, type TemplateProps, type TextColorSection, type FontId } from "@/components/cv-templates";
 
 // ─── Types ─────────────────────────────────────────────────────────
 type BulletType = "action" | "technique" | "relationnel";
@@ -160,6 +160,9 @@ const CvGenerator = () => {
   const [gradientTarget, setGradientTarget] = useState<"fond" | "rubriques">("fond");
   const [activeBulletShape, setActiveBulletShape] = useState<BulletShapeId | null>(null);
   const [bgCircleColor, setBgCircleColor] = useState<string>("");
+  const [textColors, setTextColors] = useState<Record<TextColorSection, "noir" | "blanc">>({ header: "noir", experiences: "noir", competences: "noir" });
+  const [titleColor, setTitleColor] = useState<string>("");
+  const [selectedFont, setSelectedFont] = useState<FontId>("dm-sans");
 
   // White palette option (always available)
   const whitePalette: SectorPalette = { id: "blanc", label: "Blanc pur", primary: "#2d2d2d", accent: "#555555", swatch: "#ffffff", bg: "#ffffff" };
@@ -187,6 +190,16 @@ const CvGenerator = () => {
   const experienceEntries = entries.filter(e => e.input !== "Atout");
   const atoutEntries = entries.filter(e => e.input === "Atout");
 
+  // Contrast warning logic
+  const getContrastWarning = (section: TextColorSection): string | null => {
+    const textC = textColors[section];
+    const hasDarkBg = activeGradient && gradientTarget === "fond";
+    // Simple check: white text on white/light background or black text on dark background
+    if (textC === "blanc" && !hasDarkBg && activePalette.id === "blanc") return "Attention, le texte risque d'être illisible à cause du manque de contraste !";
+    if (textC === "blanc" && !hasDarkBg && !activeGradient) return "Attention, le texte risque d'être illisible à cause du manque de contraste !";
+    return null;
+  };
+
   const handleTransform = () => {
     if (!input.trim()) return;
     setSearching(true);
@@ -201,9 +214,11 @@ const CvGenerator = () => {
     setCopied(true); setTimeout(() => setCopied(false), 2000);
   };
   const updateProfile = (field: keyof CvProfile, value: string) => setProfile(p => ({ ...p, [field]: value }));
+  const updateTextColor = (section: TextColorSection, val: "noir" | "blanc") => setTextColors(p => ({ ...p, [section]: val }));
 
+  const currentFont = fontOptions.find(f => f.id === selectedFont)?.family;
   const Template = templateRegistry[activeLayout];
-  const templateProps: TemplateProps = { profile, experienceEntries, atoutEntries, entries, removeEntry, colors, sidebarPos, bulletStyle, bulletShape: activeBulletShape || undefined, gradient: activeGradient || undefined, gradientTarget, bgCircleColor: bgCircleColor || undefined };
+  const templateProps: TemplateProps = { profile, experienceEntries, atoutEntries, entries, removeEntry, colors, sidebarPos, bulletStyle, bulletShape: activeBulletShape || undefined, gradient: activeGradient || undefined, gradientTarget, bgCircleColor: bgCircleColor || undefined, textColors, titleColor: titleColor || undefined, fontFamily: currentFont };
 
   return (
     <div className="min-h-screen bg-background">
@@ -366,6 +381,82 @@ const CvGenerator = () => {
                       <ShapeBullet shape={bs.id} color={activeBulletShape === bs.id ? "white" : "currentColor"} />
                     </button>
                   ))}
+                </div>
+              </div>
+
+              {/* Row 5: Style du texte — font, text colors per section, title color */}
+              <div className="rounded-xl bg-card border border-border px-4 py-3 space-y-3">
+                <div className="flex items-center gap-2 mb-1">
+                  <Type className="w-4 h-4 text-muted-foreground" />
+                  <span className="text-xs font-semibold text-muted-foreground">Style du texte</span>
+                </div>
+
+                {/* Font selector */}
+                <div>
+                  <p className="text-[10px] text-muted-foreground mb-1.5 font-medium">Police (Nom & Coordonnées)</p>
+                  <div className="flex flex-wrap gap-1.5">
+                    {fontOptions.map(f => (
+                      <button key={f.id} onClick={() => setSelectedFont(f.id)}
+                        className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all active:scale-[0.97] ${selectedFont === f.id ? "bg-primary text-primary-foreground shadow-sm" : "bg-secondary text-muted-foreground hover:text-foreground"}`}
+                        style={{ fontFamily: f.family }}>
+                        {f.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Text color per section */}
+                <div>
+                  <p className="text-[10px] text-muted-foreground mb-1.5 font-medium">Couleur du texte par rubrique</p>
+                  <div className="space-y-2">
+                    {([
+                      { key: "header" as TextColorSection, label: "En-tête (Header)" },
+                      { key: "experiences" as TextColorSection, label: "Expériences" },
+                      { key: "competences" as TextColorSection, label: "Compétences" },
+                    ]).map(s => (
+                      <div key={s.key}>
+                        <div className="flex items-center gap-2">
+                          <span className="text-[11px] text-foreground font-medium w-28">{s.label}</span>
+                          <div className="flex gap-1">
+                            {(["noir", "blanc"] as const).map(c => (
+                              <button key={c} onClick={() => updateTextColor(s.key, c)}
+                                className={`px-3 py-1 rounded-md text-[10px] font-medium transition-all active:scale-[0.97] ${textColors[s.key] === c ? "ring-2 ring-ring shadow-sm" : "hover:bg-secondary"}`}
+                                style={{ background: c === "noir" ? "hsl(215, 25%, 12%)" : "white", color: c === "noir" ? "white" : "hsl(215, 25%, 12%)", border: c === "blanc" ? "1px solid hsl(0,0%,85%)" : "none" }}>
+                                {c === "noir" ? "Noir" : "Blanc"}
+                              </button>
+                            ))}
+                          </div>
+                          {getContrastWarning(s.key) && (
+                            <span className="flex items-center gap-1 text-[9px] text-amber-600 bg-amber-50 px-2 py-0.5 rounded-md">
+                              <AlertTriangle className="w-3 h-3" /> {getContrastWarning(s.key)}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Title color */}
+                <div>
+                  <p className="text-[10px] text-muted-foreground mb-1.5 font-medium">Couleur du Poste Visé</p>
+                  <div className="flex flex-wrap gap-1.5">
+                    {[
+                      { label: "Auto", value: "" },
+                      { label: "Noir", value: "hsl(215, 25%, 12%)" },
+                      { label: "Blanc", value: "white" },
+                      { label: "Orange Action", value: "hsl(24, 85%, 52%)" },
+                      { label: "Bleu Profond", value: "hsl(213, 65%, 38%)" },
+                      { label: "Vert Émeraude", value: "hsl(150, 40%, 35%)" },
+                      { label: "Rouge Vif", value: "hsl(350, 70%, 50%)" },
+                    ].map(c => (
+                      <button key={c.label} onClick={() => setTitleColor(c.value)}
+                        className={`px-3 py-1.5 rounded-lg text-[10px] font-medium transition-all active:scale-[0.97] ${titleColor === c.value ? "ring-2 ring-ring shadow-sm" : "hover:bg-secondary"}`}
+                        style={{ background: c.value || undefined, color: c.value && c.value !== "white" ? "white" : undefined, border: c.value === "white" ? "1px solid hsl(0,0%,85%)" : undefined }}>
+                        {c.label}
+                      </button>
+                    ))}
+                  </div>
                 </div>
               </div>
             </div>
