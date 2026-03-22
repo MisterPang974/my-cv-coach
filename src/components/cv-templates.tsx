@@ -280,7 +280,7 @@ export const ImpactTemplate = ({ profile, experienceEntries, atoutEntries, remov
           {competencyDomains && competencyDomains.length > 0 ? (
             <DomainsBlock domains={competencyDomains} colors={colors} bulletStyle={bulletStyle} bulletShape={bulletShape} competencyBulletShape={competencyBulletShape} textColor={compTc} light />
           ) : experienceEntries.length > 0 ? (
-            <ul className="space-y-1.5">{experienceEntries.map(e => (
+            <ul className="space-y-0.5">{experienceEntries.map(e => (
               <li key={e.id} className="flex items-start gap-2 text-white/80 text-[10px] group/item" style={compTc ? { color: compTc } : undefined}>
                 <span className="mt-0.5"><ModernBullet type={e.bullet} color={colors.accent} style={bulletStyle} shape={bulletShape} /></span>
                 <span className="flex-1">{e.selected}</span><DeleteBtn onClick={() => removeEntry(e.id)} light />
@@ -303,7 +303,7 @@ export const ImpactTemplate = ({ profile, experienceEntries, atoutEntries, remov
           <Star className="w-3.5 h-3.5" /> Atouts
         </h3>
         {atoutEntries.length > 0 ? (
-          <ul className="space-y-3">{atoutEntries.map(e => (
+          <ul className="space-y-0.5">{atoutEntries.map(e => (
             <li key={e.id} className="flex items-start gap-2.5 group/item rounded-xl px-4 py-3 transition-all hover:translate-x-0.5"
               style={{ background: isDark ? "rgba(255,255,255,0.08)" : `${colors.primary}04`, boxShadow: `0 1px 4px ${colors.primary}08`, border: `1px solid ${isDark ? "rgba(255,255,255,0.1)" : `${colors.primary}08`}` }}>
               <ChevronRight className="w-3 h-3 mt-0.5 flex-shrink-0" style={{ color: colors.accent }} />
@@ -357,7 +357,7 @@ export const ArtisanTemplate = ({ profile, experienceEntries, atoutEntries, remo
           {competencyDomains && competencyDomains.length > 0 ? (
             <DomainsBlock domains={competencyDomains} colors={colors} bulletStyle={bulletStyle} bulletShape={bulletShape} competencyBulletShape={competencyBulletShape} textColor={compTc} light={isDark} />
           ) : experienceEntries.length > 0 ? (
-            <ul className="space-y-3">{experienceEntries.map((e, i) => (
+            <ul className="space-y-0.5">{experienceEntries.map((e, i) => (
               <li key={e.id} className="flex items-start gap-3 group/item px-4 py-3 transition-all hover:translate-x-0.5"
                 style={{ borderRadius: i % 2 === 0 ? "12px 4px 12px 4px" : "4px 12px 4px 12px", background: isDark ? "rgba(255,255,255,0.08)" : "rgba(255,255,255,0.6)", boxShadow: "0 2px 8px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.06)", backdropFilter: "blur(4px)" }}>
                 <span className="mt-0.5"><ModernBullet type={e.bullet} color={e.bullet === "technique" ? colors.primary : colors.accent} style={bulletStyle} shape={bulletShape} /></span>
@@ -370,7 +370,7 @@ export const ArtisanTemplate = ({ profile, experienceEntries, atoutEntries, remo
           <div className="p-3" style={{ borderRadius: "8px 20px 8px 20px", background: "rgba(255,255,255,0.5)", backdropFilter: "blur(8px)", boxShadow: `0 4px 12px ${colors.primary}08` }}>
             <p className="text-[9px] uppercase tracking-widest font-semibold mb-2" style={{ color: compTc || colors.accent, fontFamily: "'DM Sans', sans-serif" }}>Atouts</p>
             {atoutEntries.length > 0 ? (
-              <ul className="space-y-1.5">{atoutEntries.map(e => (
+              <ul className="space-y-0.5">{atoutEntries.map(e => (
                 <li key={e.id} className="flex items-start gap-2 text-[10px] group/item" style={{ color: compTc || TEXT_MUTED, fontFamily: "'DM Sans', sans-serif" }}>
                   <Star className="w-3 h-3 mt-0.5 flex-shrink-0" style={{ color: colors.accent }} /><span className="flex-1">{e.selected}</span><DeleteBtn onClick={() => removeEntry(e.id)} />
                 </li>
@@ -438,7 +438,7 @@ export const CreatifTemplate = ({ profile, experienceEntries, atoutEntries, remo
           {competencyDomains && competencyDomains.length > 0 ? (
             <DomainsBlock domains={competencyDomains} colors={colors} bulletStyle={bulletStyle} bulletShape={bulletShape} competencyBulletShape={competencyBulletShape} textColor={expTc} />
           ) : experienceEntries.length > 0 ? (
-            <ul className="space-y-2">{experienceEntries.map((e, idx) => (
+            <ul className="space-y-0.5">{experienceEntries.map((e, idx) => (
               <li key={e.id} className="flex items-start gap-2 group/item px-3 py-2 transition-all hover:translate-x-0.5" style={{
                 borderRadius: idx % 3 === 0 ? "14px 4px 14px 4px" : idx % 3 === 1 ? "4px 14px 4px 14px" : "14px",
                 borderLeft: `3px solid ${idx % 2 === 0 ? colors.primary : colors.accent}`,
@@ -456,7 +456,7 @@ export const CreatifTemplate = ({ profile, experienceEntries, atoutEntries, remo
             <div className="p-3 bg-white" style={{ borderRadius: "7px 19px 7px 19px" }}>
               <p className="text-[9px] uppercase tracking-widest font-black mb-2" style={{ color: compTc || colors.primary }}>Atouts</p>
               {atoutEntries.length > 0 ? (
-                <ul className="space-y-1.5">{atoutEntries.map(e => (
+                <ul className="space-y-0.5">{atoutEntries.map(e => (
                   <li key={e.id} className="flex items-start gap-1.5 text-[10px] group/item" style={{ color: compTc || TEXT_MUTED }}>
                     <span className="w-2 h-2 rounded-full mt-0.5 flex-shrink-0" style={{ background: `linear-gradient(135deg, ${colors.primary}, ${colors.accent})` }} /><span className="flex-1">{e.selected}</span><DeleteBtn onClick={() => removeEntry(e.id)} />
                   </li>
@@ -580,7 +580,7 @@ export const MagazineTemplate = ({ profile, experienceEntries, atoutEntries, rem
           {competencyDomains && competencyDomains.length > 0 ? (
             <DomainsBlock domains={competencyDomains} colors={colors} bulletStyle={bulletStyle} bulletShape={bulletShape} competencyBulletShape={competencyBulletShape} textColor={expTc} />
           ) : experienceEntries.length > 0 ? (
-            <ul className="space-y-2">{experienceEntries.map(e => (
+            <ul className="space-y-0.5">{experienceEntries.map(e => (
               <li key={e.id} className="flex items-start gap-2.5 group/item py-1.5 px-2 rounded-lg transition-all hover:bg-gray-50/80"
                 style={{ boxShadow: "0 1px 3px rgba(0,0,0,0.03)" }}>
                 <span className="mt-0.5"><ModernBullet type={e.bullet} color={e.bullet === "technique" ? colors.primary : colors.accent} style={bulletStyle} shape={bulletShape} /></span>
@@ -593,7 +593,7 @@ export const MagazineTemplate = ({ profile, experienceEntries, atoutEntries, rem
         <div className="w-[35%] px-5 py-5">
           <h3 className="text-[10px] font-black uppercase tracking-[0.2em] mb-4 pb-2" style={{ color: compTc || colors.accent, borderBottom: "2px solid transparent", borderImage: `linear-gradient(90deg, ${colors.primary}, transparent) 1` }}>Atouts clés</h3>
           {atoutEntries.length > 0 ? (
-            <ul className="space-y-2.5">{atoutEntries.map((e, idx) => (
+            <ul className="space-y-0.5">{atoutEntries.map((e, idx) => (
               <li key={e.id} className="flex items-start gap-2.5 text-[10px] group/item" style={{ color: compTc || TEXT_MUTED }}>
                 <span className="w-5 h-5 rounded-lg flex items-center justify-center text-[9px] text-white font-black flex-shrink-0"
                   style={{ background: `linear-gradient(135deg, ${idx % 2 === 0 ? colors.primary : colors.accent}, ${idx % 2 === 0 ? colors.swatch : colors.primary})`, boxShadow: `0 2px 6px ${colors.primary}25` }}>
@@ -642,7 +642,7 @@ export const MedicalTemplate = ({ profile, experienceEntries, atoutEntries, remo
           {competencyDomains && competencyDomains.length > 0 ? (
             <DomainsBlock domains={competencyDomains} colors={colors} bulletStyle={bulletStyle} bulletShape={bulletShape} competencyBulletShape={competencyBulletShape} textColor={expTc} />
           ) : experienceEntries.length > 0 ? (
-            <ul className="space-y-2">{experienceEntries.map(e => (
+            <ul className="space-y-0.5">{experienceEntries.map(e => (
               <li key={e.id} className="flex items-start gap-2.5 group/item px-3 py-1.5 rounded-2xl transition-all hover:bg-white/80" style={{ boxShadow: "0 1px 3px rgba(0,0,0,0.03)" }}>
                 <span className="mt-0.5"><ModernBullet type={e.bullet} color={e.bullet === "technique" ? colors.primary : colors.accent} style={bulletStyle} shape={bulletShape} /></span>
                 <span className="flex-1" style={{ color: expTc || TEXT_BLACK }}>{e.selected}</span><DeleteBtn onClick={() => removeEntry(e.id)} />
@@ -702,7 +702,7 @@ export const FluxTemplate = ({ profile, experienceEntries, atoutEntries, removeE
         {competencyDomains && competencyDomains.length > 0 ? (
           <div className="ml-10"><DomainsBlock domains={competencyDomains} colors={colors} bulletStyle={bulletStyle} bulletShape={bulletShape} competencyBulletShape={competencyBulletShape} textColor={expTc} /></div>
         ) : experienceEntries.length > 0 ? (
-          <div className="space-y-2.5 ml-3">{experienceEntries.map(e => (
+          <div className="space-y-0.5 ml-3">{experienceEntries.map(e => (
             <div key={e.id} className="flex items-start gap-3 group/item relative">
               <div className="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 z-10"
                 style={{ background: `linear-gradient(135deg, ${e.bullet === "technique" ? colors.primary : colors.accent}, ${e.bullet === "technique" ? colors.swatch : colors.primary})`, boxShadow: `0 2px 8px ${colors.accent}30` }}>
@@ -778,7 +778,7 @@ export const SereniteTemplate = ({ profile, experienceEntries, atoutEntries, rem
           {competencyDomains && competencyDomains.length > 0 ? (
             <DomainsBlock domains={competencyDomains} colors={colors} bulletStyle={bulletStyle} bulletShape={bulletShape} competencyBulletShape={competencyBulletShape} textColor={expTc} />
           ) : experienceEntries.length > 0 ? (
-            <ul className="space-y-2">{experienceEntries.map(e => (
+            <ul className="space-y-0.5">{experienceEntries.map(e => (
               <li key={e.id} className="flex items-start gap-2.5 group/item px-4 py-2.5 transition-all hover:translate-x-0.5"
                 style={{ borderRadius: "20px", background: "rgba(255,255,255,0.65)", backdropFilter: "blur(8px)", boxShadow: `0 2px 12px rgba(0,0,0,0.03), 0 0 0 1px ${colors.accent}08` }}>
                 <span className="mt-0.5"><ModernBullet type={e.bullet} color={e.bullet === "technique" ? colors.primary : colors.accent} style={bulletStyle} shape={bulletShape} /></span>
