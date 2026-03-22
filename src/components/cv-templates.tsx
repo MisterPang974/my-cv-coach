@@ -1,3 +1,4 @@
+import React from "react";
 import { Mail, Phone, MapPin, Briefcase, Layers, Star, ChevronRight, Sparkles, Trash2, Grid3X3, ArrowRightCircle, Heart, Calendar, GraduationCap, Building2 } from "lucide-react";
 import type { SidebarPosition, BulletStyle, BulletShapeId } from "@/lib/cv-sectors";
 
