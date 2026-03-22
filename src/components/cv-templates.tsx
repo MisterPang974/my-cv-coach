@@ -124,8 +124,27 @@ const useGradientBg = (gradient?: TemplateProps["gradient"], target?: TemplatePr
 };
 const useGradientRubrique = (gradient?: TemplateProps["gradient"], target?: TemplateProps["gradientTarget"], fallback?: string) => {
   if (!gradient || target !== "rubriques") return fallback ? { background: fallback } : {};
-  return { background: `linear-gradient(${gradient.angle || 135}deg, ${gradient.from}, ${gradient.to})`, color: "white" };
+  const dark = isGradientDark(gradient.from, gradient.to);
+  return { background: `linear-gradient(${gradient.angle || 135}deg, ${gradient.from}, ${gradient.to})`, color: dark ? "white" : "hsl(215, 25%, 12%)" };
 };
+
+// ─── Auto-contrast: detect if a color/gradient is dark ─────────────
+function parseHslLightness(hsl: string): number {
+  const match = hsl.match(/hsl\(\s*[\d.]+\s*,\s*[\d.]+%?\s*,\s*([\d.]+)%/);
+  return match ? parseFloat(match[1]) : 50;
+}
+function isGradientDark(from: string, to: string): boolean {
+  const avg = (parseHslLightness(from) + parseHslLightness(to)) / 2;
+  return avg < 60;
+}
+/** Returns text color class: dark text for light backgrounds, white for dark */
+export function useAutoContrast(gradient?: TemplateProps["gradient"], target?: TemplateProps["gradientTarget"]): { isDark: boolean; textClass: string; textColor: string } {
+  if (!gradient || target !== "fond") return { isDark: false, textClass: "text-gray-700", textColor: "hsl(215, 25%, 12%)" };
+  const dark = isGradientDark(gradient.from, gradient.to);
+  return dark
+    ? { isDark: true, textClass: "text-white", textColor: "white" }
+    : { isDark: false, textClass: "text-gray-700", textColor: "hsl(215, 25%, 12%)" };
+}
 
 // ─── Organic blob SVG ──────────────────────────────────────────────
 const Blob = ({ color, className, style }: { color: string; className?: string; style?: React.CSSProperties }) => (
