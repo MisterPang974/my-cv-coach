@@ -121,14 +121,14 @@ const DomainsBlock = ({ domains, colors, bulletStyle, bulletShape, competencyBul
   if (!domains || domains.length === 0) return null;
   const effectiveShape = competencyBulletShape || bulletShape;
   return (
-    <div className="space-y-3">
+    <div className="space-y-1.5">
       {domains.map(d => (
         <div key={d.id}>
-          <p className="text-[9px] font-bold uppercase tracking-widest mb-1.5" style={{ color: textColor || colors.accent }}>{d.label}</p>
-          <ul className="space-y-1">
+          <p className="text-[8px] font-bold uppercase tracking-widest mb-0.5" style={{ color: textColor || colors.accent }}>{d.label}</p>
+          <ul style={{ margin: 0, padding: 0, listStyle: "none" }}>
             {d.items.map(item => (
-              <li key={item.id} className="flex items-start gap-2 text-[10px]" style={{ color: textColor || (light ? "rgba(255,255,255,0.8)" : undefined) }}>
-                <span className="mt-0.5"><ModernBullet type="technique" color={colors.accent} style={bulletStyle} shape={effectiveShape} /></span>
+              <li key={item.id} className="flex items-center gap-1.5" style={{ color: textColor || (light ? "rgba(255,255,255,0.85)" : undefined), fontSize: "9px", lineHeight: "1.3", paddingTop: "1px", paddingBottom: "1px" }}>
+                <span className="flex-shrink-0 w-[12px] h-[12px] flex items-center justify-center"><ModernBullet type="technique" color={colors.accent} style={bulletStyle} shape={effectiveShape} /></span>
                 <span className="flex-1">{item.text}</span>
               </li>
             ))}
