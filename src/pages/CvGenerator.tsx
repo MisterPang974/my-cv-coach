@@ -250,6 +250,11 @@ const CvGenerator = () => {
   const [domains, setDomains] = useState<CompetencyDomain[]>(DEFAULT_DOMAINS);
   const [newDomainName, setNewDomainName] = useState("");
 
+  // Professional experiences state
+  const [experiences, setExperiences] = useState<ExperienceEntry[]>([]);
+  const [editingExp, setEditingExp] = useState<ExperienceEntry>({ id: 0, dateDebut: "", dateFin: "", aujourdhui: false, poste: "", entreprise: "", ville: "", missions: [] });
+  const [newMission, setNewMission] = useState("");
+
   // White palette option (always available)
   const whitePalette: SectorPalette = { id: "blanc", label: "Blanc pur", primary: "#2d2d2d", accent: "#555555", swatch: "#ffffff", bg: "#ffffff" };
 
