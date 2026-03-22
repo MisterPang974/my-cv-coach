@@ -1,8 +1,8 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useMemo } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import {
-  Wand2, Copy, Check, Plus, Trash2, User, Briefcase, Palette, Star, Settings2, ChevronRight, Type, AlertTriangle
+  Wand2, Copy, Check, Plus, Trash2, User, Briefcase, Palette, Star, Settings2, ChevronRight, Type, AlertTriangle, ToggleLeft, ToggleRight, Gauge, Layers
 } from "lucide-react";
 import { detectSector, sectorConfigs, layoutMeta, gradientLibrary, bulletShapes, type SectorId, type LayoutId, type SidebarPosition, type BulletStyle, type SectorPalette, type SectorGradient, type BulletShapeId } from "@/lib/cv-sectors";
 import { templateRegistry, ModernBullet, ShapeBullet, fontOptions, type TemplateProps, type TextColorSection, type FontId } from "@/components/cv-templates";
@@ -12,6 +12,65 @@ type BulletType = "action" | "technique" | "relationnel";
 interface Transformation { text: string; bullet: BulletType; }
 interface CvEntry { id: number; input: string; selected: string; bullet: BulletType; }
 interface CvProfile { nom: string; prenom: string; titre: string; email: string; telephone: string; adresse: string; codePostal: string; ville: string; }
+
+// ─── Competencies Domain System ────────────────────────────────────
+interface CompetencyItem { id: string; text: string; enabled: boolean; }
+interface CompetencyDomain { id: string; label: string; enabled: boolean; items: CompetencyItem[]; custom?: boolean; }
+
+const DEFAULT_DOMAINS: CompetencyDomain[] = [
+  {
+    id: "administratif", label: "Administratif", enabled: true, items: [
+      { id: "a1", text: "Gestion documentaire et archivage", enabled: true },
+      { id: "a2", text: "Rédaction de courriers et comptes-rendus", enabled: true },
+      { id: "a3", text: "Maîtrise des outils bureautiques (Pack Office)", enabled: true },
+      { id: "a4", text: "Organisation et planification d'agendas", enabled: false },
+    ],
+  },
+  {
+    id: "technique", label: "Technique", enabled: true, items: [
+      { id: "t1", text: "Application des procédures et normes en vigueur", enabled: true },
+      { id: "t2", text: "Utilisation d'outils et équipements spécialisés", enabled: true },
+      { id: "t3", text: "Lecture de plans et documentation technique", enabled: false },
+      { id: "t4", text: "Maintenance préventive et curative", enabled: false },
+    ],
+  },
+  {
+    id: "relationnel", label: "Relationnel", enabled: true, items: [
+      { id: "r1", text: "Communication professionnelle et écoute active", enabled: true },
+      { id: "r2", text: "Travail en équipe pluridisciplinaire", enabled: true },
+      { id: "r3", text: "Gestion des conflits et médiation", enabled: false },
+      { id: "r4", text: "Accueil et orientation du public", enabled: false },
+    ],
+  },
+  {
+    id: "manutention", label: "Manutention / Logistique", enabled: false, items: [
+      { id: "m1", text: "Chargement / déchargement de marchandises", enabled: true },
+      { id: "m2", text: "Conduite d'engins de manutention (CACES)", enabled: true },
+      { id: "m3", text: "Gestion des stocks et inventaires", enabled: false },
+      { id: "m4", text: "Préparation de commandes", enabled: false },
+    ],
+  },
+  {
+    id: "securite", label: "Sécurité / Normes", enabled: false, items: [
+      { id: "s1", text: "Respect des consignes de sécurité et EPI", enabled: true },
+      { id: "s2", text: "Application des normes HACCP / hygiène", enabled: true },
+      { id: "s3", text: "Gestes de premiers secours (SST)", enabled: false },
+      { id: "s4", text: "Veille réglementaire", enabled: false },
+    ],
+  },
+];
+
+// Layout capacity (max active competency items for clean A4 rendering)
+const LAYOUT_MAX_COMPETENCIES: Record<string, number> = {
+  impact: 10,
+  artisan: 12,
+  creatif: 10,
+  mural: 14,
+  magazine: 12,
+  medical: 12,
+  flux: 10,
+  serenite: 11,
+};
 
 // ─── Transformations (Méthode Fred) ────────────────────────────────
 const transformations: Record<string, Transformation[]> = {
@@ -164,8 +223,45 @@ const CvGenerator = () => {
   const [titleColor, setTitleColor] = useState<string>("");
   const [selectedFont, setSelectedFont] = useState<FontId>("dm-sans");
 
+  // Competency domains state
+  const [domains, setDomains] = useState<CompetencyDomain[]>(DEFAULT_DOMAINS);
+  const [newDomainName, setNewDomainName] = useState("");
+
   // White palette option (always available)
   const whitePalette: SectorPalette = { id: "blanc", label: "Blanc pur", primary: "#2d2d2d", accent: "#555555", swatch: "#ffffff", bg: "#ffffff" };
+
+  // ─── A4 Space Intelligence ────────────────────────────────────────
+  const activeCompetencyCount = useMemo(() => {
+    return domains.filter(d => d.enabled).reduce((sum, d) => sum + d.items.filter(i => i.enabled).length, 0);
+  }, [domains]);
+
+  const maxCompetencies = LAYOUT_MAX_COMPETENCIES[activeLayout] || 12;
+  const totalContentItems = activeCompetencyCount + entries.length + atouts.filter((_, i) => entries.some(e => e.input === "Atout" && e.selected === atouts[i])).length;
+  const isOverloaded = activeCompetencyCount > maxCompetencies;
+  const usagePercent = Math.min(100, Math.round((activeCompetencyCount / maxCompetencies) * 100));
+
+  const toggleDomain = (domainId: string) => {
+    setDomains(prev => prev.map(d => d.id === domainId ? { ...d, enabled: !d.enabled } : d));
+  };
+  const toggleCompetencyItem = (domainId: string, itemId: string) => {
+    setDomains(prev => prev.map(d => d.id === domainId ? { ...d, items: d.items.map(i => i.id === itemId ? { ...i, enabled: !i.enabled } : i) } : d));
+  };
+  const addCustomDomain = () => {
+    if (!newDomainName.trim() || domains.filter(d => d.custom).length >= 2) return;
+    const id = `custom-${Date.now()}`;
+    setDomains(prev => [...prev, { id, label: newDomainName.trim(), enabled: true, custom: true, items: [] }]);
+    setNewDomainName("");
+  };
+  const addCustomCompetency = (domainId: string, text: string) => {
+    if (!text.trim()) return;
+    setDomains(prev => prev.map(d => d.id === domainId ? { ...d, items: [...d.items, { id: `ci-${Date.now()}`, text: text.trim(), enabled: true }] } : d));
+  };
+  const removeCustomDomain = (domainId: string) => {
+    setDomains(prev => prev.filter(d => d.id !== domainId));
+  };
+  const removeCompetencyItem = (domainId: string, itemId: string) => {
+    setDomains(prev => prev.map(d => d.id === domainId ? { ...d, items: d.items.filter(i => i.id !== itemId) } : d));
+  };
 
   const a4Ref = useRef<HTMLDivElement>(null);
 
@@ -240,7 +336,8 @@ const CvGenerator = () => {
 
   const currentFont = fontOptions.find(f => f.id === selectedFont)?.family;
   const Template = templateRegistry[activeLayout];
-  const templateProps: TemplateProps = { profile, experienceEntries, atoutEntries, entries, removeEntry, colors, sidebarPos, bulletStyle, bulletShape: activeBulletShape || undefined, gradient: activeGradient || undefined, gradientTarget, bgCircleColor: bgCircleColor || undefined, textColors, titleColor: titleColor || undefined, fontFamily: currentFont };
+  const activeDomains = domains.filter(d => d.enabled).map(d => ({ ...d, items: d.items.filter(i => i.enabled) })).filter(d => d.items.length > 0);
+  const templateProps: TemplateProps = { profile, experienceEntries, atoutEntries, entries, removeEntry, colors, sidebarPos, bulletStyle, bulletShape: activeBulletShape || undefined, gradient: activeGradient || undefined, gradientTarget, bgCircleColor: bgCircleColor || undefined, textColors, titleColor: titleColor || undefined, fontFamily: currentFont, competencyDomains: activeDomains };
 
   return (
     <div className="min-h-screen bg-background">
@@ -534,6 +631,85 @@ const CvGenerator = () => {
                             <Plus className="w-4 h-4 ml-auto mt-0.5 text-accent opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0" />
                           </button>
                         ))}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* ═══ Competency Domains Panel ═══ */}
+                  <div className="rounded-2xl bg-card p-5 shadow-sm border border-border/50 space-y-4">
+                    <div className="flex items-center justify-between">
+                      <h3 className="font-semibold text-sm flex items-center gap-2"><Layers className="w-4 h-4 text-primary" /> Compétences par domaine</h3>
+                      <div className="flex items-center gap-2">
+                        <Gauge className="w-3.5 h-3.5 text-muted-foreground" />
+                        <div className="w-24 h-2 rounded-full bg-secondary overflow-hidden">
+                          <div className="h-full rounded-full transition-all duration-300" style={{ width: `${usagePercent}%`, background: isOverloaded ? "hsl(0, 70%, 55%)" : usagePercent > 75 ? "hsl(35, 90%, 55%)" : "hsl(150, 50%, 45%)" }} />
+                        </div>
+                        <span className={`text-[10px] font-medium ${isOverloaded ? "text-red-500" : "text-muted-foreground"}`}>{activeCompetencyCount}/{maxCompetencies}</span>
+                      </div>
+                    </div>
+
+                    {/* Predictive hint */}
+                    <p className="text-[10px] text-muted-foreground bg-secondary/50 rounded-lg px-3 py-1.5">
+                      💡 Le modèle <span className="font-bold text-foreground">{layoutMeta[activeLayout].label}</span> accepte idéalement <span className="font-bold text-foreground">{maxCompetencies} compétences</span> max pour une mise en page A4 optimale.
+                    </p>
+
+                    {/* Overload alert */}
+                    {isOverloaded && (
+                      <div className="flex items-start gap-2 rounded-xl bg-red-50 border border-red-200 px-4 py-3 text-[11px] text-red-700">
+                        <AlertTriangle className="w-4 h-4 mt-0.5 flex-shrink-0 text-red-500" />
+                        <p>Votre CV est trop chargé. Pour une lecture optimale, choisissez vos <strong>4 domaines</strong> et <strong>4 sous-compétences</strong> les plus percutants.</p>
+                      </div>
+                    )}
+
+                    {/* Domain list */}
+                    <div className="space-y-3">
+                      {domains.map(domain => (
+                        <div key={domain.id} className={`rounded-xl border transition-all ${domain.enabled ? "border-primary/20 bg-primary/[0.02]" : "border-border bg-secondary/30 opacity-60"}`}>
+                          <div className="flex items-center gap-2 px-4 py-2.5">
+                            <button onClick={() => toggleDomain(domain.id)} className="text-primary">
+                              {domain.enabled ? <ToggleRight className="w-5 h-5" /> : <ToggleLeft className="w-5 h-5 text-muted-foreground" />}
+                            </button>
+                            <span className={`text-xs font-semibold flex-1 ${domain.enabled ? "text-foreground" : "text-muted-foreground"}`}>{domain.label}</span>
+                            <span className="text-[10px] text-muted-foreground">{domain.items.filter(i => i.enabled).length}/{domain.items.length}</span>
+                            {domain.custom && (
+                              <button onClick={() => removeCustomDomain(domain.id)} className="text-muted-foreground hover:text-red-500 transition-colors"><Trash2 className="w-3.5 h-3.5" /></button>
+                            )}
+                          </div>
+                          {domain.enabled && (
+                            <div className="px-4 pb-3 space-y-1.5">
+                              {domain.items.map(item => (
+                                <label key={item.id} className="flex items-start gap-2 cursor-pointer group">
+                                  <input type="checkbox" checked={item.enabled} onChange={() => {
+                                    if (!item.enabled && isOverloaded) return;
+                                    toggleCompetencyItem(domain.id, item.id);
+                                  }} className="mt-0.5 rounded border-primary text-primary focus:ring-primary" disabled={!item.enabled && isOverloaded} />
+                                  <span className={`text-[11px] leading-relaxed flex-1 ${item.enabled ? "text-foreground" : "text-muted-foreground line-through"}`}>{item.text}</span>
+                                  {domain.custom && (
+                                    <button onClick={() => removeCompetencyItem(domain.id, item.id)} className="opacity-0 group-hover:opacity-100 text-muted-foreground hover:text-red-400 transition-all"><Trash2 className="w-3 h-3" /></button>
+                                  )}
+                                </label>
+                              ))}
+                              {/* Add custom competency to domain */}
+                              <div className="flex gap-2 mt-2">
+                                <input placeholder="Ajouter une compétence…" className="flex-1 rounded-lg border border-input bg-background px-3 py-1.5 text-[11px] placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring"
+                                  onKeyDown={e => { if (e.key === "Enter") { addCustomCompetency(domain.id, (e.target as HTMLInputElement).value); (e.target as HTMLInputElement).value = ""; } }} />
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+
+                    {/* Add custom domain */}
+                    {domains.filter(d => d.custom).length < 2 && (
+                      <div className="flex gap-2">
+                        <input value={newDomainName} onChange={e => setNewDomainName(e.target.value)} placeholder="Nouveau domaine personnalisé…"
+                          className="flex-1 rounded-xl border border-input bg-background px-4 py-2.5 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+                          onKeyDown={e => e.key === "Enter" && addCustomDomain()} />
+                        <button onClick={addCustomDomain} disabled={!newDomainName.trim()}
+                          className="rounded-xl bg-primary px-4 py-2.5 text-primary-foreground text-sm font-medium shadow-sm hover:shadow-md transition-all disabled:opacity-40 active:scale-[0.97]">
+                          <Plus className="w-4 h-4" />
+                        </button>
                       </div>
                     )}
                   </div>
