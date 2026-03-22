@@ -46,16 +46,32 @@ export const gradientLibrary: SectorGradient[] = [
   { id: "lavande-blanc", label: "Lavande → Blanc", from: "hsl(260, 40%, 90%)", to: "hsl(0, 0%, 100%)", angle: 180 },
   { id: "sable-blanc", label: "Sable → Blanc", from: "hsl(38, 35%, 90%)", to: "hsl(0, 0%, 100%)", angle: 160 },
   { id: "rose-blanc", label: "Rose poudré → Blanc", from: "hsl(340, 45%, 90%)", to: "hsl(0, 0%, 100%)", angle: 180 },
-  // ── Classiques (existants, légèrement éclaircis) ──
+  // ── Vibrantes nouvelles ──
+  { id: "jaune-soleil", label: "Jaune soleil → Or", from: "hsl(48, 95%, 70%)", to: "hsl(38, 90%, 82%)", angle: 135 },
+  { id: "rose-fuchsia", label: "Rose fuchsia → Rose", from: "hsl(330, 80%, 60%)", to: "hsl(345, 70%, 80%)", angle: 135 },
+  { id: "violet-prune", label: "Violet prune → Mauve", from: "hsl(285, 50%, 40%)", to: "hsl(270, 45%, 70%)", angle: 135 },
+  { id: "orange-mandarine", label: "Orange mandarine → Pêche", from: "hsl(28, 90%, 58%)", to: "hsl(16, 80%, 75%)", angle: 135 },
+  { id: "turquoise-azur", label: "Turquoise azur → Ciel", from: "hsl(178, 65%, 45%)", to: "hsl(195, 70%, 75%)", angle: 135 },
+  { id: "gris-perle-deep", label: "Gris perle → Argent", from: "hsl(220, 8%, 70%)", to: "hsl(210, 12%, 88%)", angle: 180 },
+  // ── Classiques ──
   { id: "lavande-ciel", label: "Lavande → Ciel", from: "hsl(270, 35%, 75%)", to: "hsl(205, 60%, 82%)", angle: 135 },
   { id: "menthe-givre", label: "Menthe givrée", from: "hsl(170, 45%, 72%)", to: "hsl(185, 55%, 85%)", angle: 140 },
   { id: "orange-rose", label: "Orange → Rose", from: "hsl(24, 75%, 72%)", to: "hsl(340, 55%, 78%)", angle: 135 },
   { id: "ocean-clair", label: "Océan clair", from: "hsl(210, 50%, 70%)", to: "hsl(195, 60%, 82%)", angle: 135 },
   { id: "terre-sable", label: "Terre → Sable", from: "hsl(15, 35%, 65%)", to: "hsl(40, 45%, 82%)", angle: 160 },
   { id: "acier-bleu", label: "Acier → Bleu", from: "hsl(215, 20%, 55%)", to: "hsl(213, 55%, 72%)", angle: 135 },
+  // ── Radiaux (multi-stop simulés par angle) ──
+  { id: "aurore-radial", label: "Aurore boréale", from: "hsl(180, 60%, 50%)", to: "hsl(280, 50%, 55%)", angle: 160 },
+  { id: "sunset-radial", label: "Coucher de soleil", from: "hsl(15, 85%, 60%)", to: "hsl(45, 90%, 65%)", angle: 90 },
+  { id: "ocean-profond", label: "Océan profond", from: "hsl(200, 70%, 35%)", to: "hsl(220, 60%, 55%)", angle: 180 },
+  { id: "foret-emeraude", label: "Forêt émeraude", from: "hsl(145, 55%, 35%)", to: "hsl(165, 50%, 55%)", angle: 150 },
+  { id: "cerise-corail", label: "Cerise → Corail", from: "hsl(350, 75%, 50%)", to: "hsl(15, 80%, 65%)", angle: 120 },
+  { id: "indigo-violet", label: "Indigo → Violet", from: "hsl(240, 55%, 45%)", to: "hsl(290, 50%, 60%)", angle: 135 },
   // ── Sombres (optionnels) ──
   { id: "nuit-violette", label: "Nuit violette", from: "hsl(230, 40%, 20%)", to: "hsl(280, 50%, 40%)", angle: 135 },
   { id: "charbon-or", label: "Charbon → Or", from: "hsl(0, 0%, 15%)", to: "hsl(45, 85%, 55%)", angle: 150 },
+  { id: "minuit-bleu", label: "Minuit bleu", from: "hsl(220, 50%, 15%)", to: "hsl(210, 60%, 35%)", angle: 180 },
+  { id: "noir-rouge", label: "Noir → Rouge sombre", from: "hsl(0, 0%, 10%)", to: "hsl(350, 60%, 30%)", angle: 150 },
 ];
 
 // ─── 15 bullet styles ──────────────────────────────────────────────
