@@ -390,17 +390,25 @@ const CvGenerator = () => {
   const removeFormation = (id: number) => setFormations(prev => prev.filter(f => f.id !== id));
 
   // Interests CRUD
-  const addInterest = (text: string, icon: string, category: InterestEntry["category"]) => {
+  const addInterest = (text: string, category: InterestEntry["category"]) => {
     if (!text.trim()) return;
-    setInterests(prev => [...prev, { id: Date.now(), text: text.trim(), icon, category }]);
+    setInterests(prev => [...prev, { id: Date.now(), text: text.trim(), icon: "", category }]);
   };
   const addCustomInterest = () => {
     if (!newInterestText.trim()) return;
-    const icon = INTEREST_ICONS[newInterestText.trim()] || "✦";
-    addInterest(newInterestText.trim(), icon, "autre");
+    addInterest(newInterestText.trim(), "autre");
     setNewInterestText("");
   };
   const removeInterest = (id: number) => setInterests(prev => prev.filter(i => i.id !== id));
+
+  // Qualities CRUD
+  const addQuality = (text: string) => { if (text.trim() && !qualities.includes(text.trim())) setQualities(prev => [...prev, text.trim()]); };
+  const removeQuality = (idx: number) => setQualities(prev => prev.filter((_, i) => i !== idx));
+  const generateAIQualities = () => {
+    const sectorQualities = QUALITIES_BY_SECTOR[detectedSector] || QUALITIES_BY_SECTOR.default;
+    setQualities(sectorQualities);
+    setQualitiesMode("ia");
+  };
 
   // Company logo URL helper (Google S2 Favicon service - free, no API key)
   const getCompanyLogoUrl = (company: string): string | null => {
