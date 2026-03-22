@@ -804,6 +804,57 @@ const CvGenerator = () => {
                   ))}
                 </div>
               </div>
+
+              {/* Row 7: Casse & Finitions */}
+              <div className="rounded-xl bg-card border border-border px-4 py-3 space-y-3">
+                <div className="flex items-center gap-2 mb-1">
+                  <Type className="w-4 h-4 text-muted-foreground" />
+                  <span className="text-xs font-semibold text-muted-foreground">Casse & Finitions</span>
+                </div>
+
+                {/* Case toggle */}
+                <div>
+                  <p className="text-[10px] text-muted-foreground mb-1.5 font-medium">Casse des titres</p>
+                  <div className="flex items-center gap-1 rounded-lg bg-secondary p-0.5">
+                    {(["standard", "majuscules"] as const).map(m => (
+                      <button key={m} onClick={() => setCaseStyle(m)}
+                        className={`px-3 py-1.5 rounded-md text-[10px] font-medium transition-all ${caseStyle === m ? "bg-primary text-primary-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"}`}>
+                        {m === "standard" ? "Aa Casse Standard" : "AA TOUT EN MAJUSCULES"}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Text alignment */}
+                <div>
+                  <p className="text-[10px] text-muted-foreground mb-1.5 font-medium">Alignement des rubriques</p>
+                  <div className="flex items-center gap-1 rounded-lg bg-secondary p-0.5">
+                    {(["left", "center"] as const).map(m => (
+                      <button key={m} onClick={() => setTextAlign(m)}
+                        className={`px-3 py-1.5 rounded-md text-[10px] font-medium transition-all ${textAlign === m ? "bg-primary text-primary-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"}`}>
+                        {m === "left" ? "← Gauche" : "↔ Centré"}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Title decoration */}
+                <div>
+                  <p className="text-[10px] text-muted-foreground mb-1.5 font-medium">Style des titres de rubrique</p>
+                  <div className="flex items-center gap-1 rounded-lg bg-secondary p-0.5">
+                    {(["none", "underline", "border"] as const).map(m => (
+                      <button key={m} onClick={() => setTitleDecoration(m)}
+                        className={`px-3 py-1.5 rounded-md text-[10px] font-medium transition-all ${titleDecoration === m ? "bg-primary text-primary-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"}`}>
+                        {m === "none" ? "Normal" : m === "underline" ? "Souligné" : "Encadré"}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <p className="text-[10px] text-muted-foreground bg-secondary/50 rounded-lg px-3 py-1.5">
+                  📅 Les expériences et formations sont triées automatiquement du plus récent au plus ancien.
+                </p>
+              </div>
             </div>
 
             {/* ═══ STEP 2: Détails (shown after Suivant) ═══ */}
