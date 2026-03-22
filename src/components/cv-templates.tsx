@@ -54,7 +54,7 @@ const TEXT_MUTED = "hsl(var(--muted-foreground))";
 
 export interface CompetencyDomainData { id: string; label: string; items: { id: string; text: string; enabled: boolean }[]; }
 
-export type CvSectionId = "experiences" | "competences" | "formation" | "divers";
+export type CvSectionId = "experiences" | "competences" | "formation" | "qualites" | "divers";
 
 export interface TemplateProps {
   profile: CvProfile;
@@ -67,6 +67,9 @@ export interface TemplateProps {
   bulletStyle: BulletStyle;
   bulletShape?: BulletShapeId;
   competencyBulletShape?: BulletShapeId;
+  formationBulletShape?: BulletShapeId;
+  diversBulletShape?: BulletShapeId;
+  qualitesBulletShape?: BulletShapeId;
   gradient?: { id: string; label: string; from: string; to: string; angle?: number };
   gradientTarget?: "fond" | "rubriques";
   bgCircleColor?: string;
@@ -84,6 +87,8 @@ export interface TemplateProps {
   removeInterest?: (id: number) => void;
   interestDisplayMode?: "badges" | "list";
   sectionOrder?: CvSectionId[];
+  qualities?: string[];
+  removeQuality?: (idx: number) => void;
 }
 
 // ─── Bullet renderers ──────────────────────────────────────────────

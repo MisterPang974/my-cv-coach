@@ -1138,9 +1138,9 @@ const CvGenerator = () => {
                         {/* Quick suggestions */}
                         <div className="flex flex-wrap gap-1.5">
                           {INTEREST_SUGGESTIONS.filter(s => !interests.some(i => i.text === s.text)).map(s => (
-                            <button key={s.text} onClick={() => addInterest(s.text, s.icon, s.category)}
+                            <button key={s.text} onClick={() => addInterest(s.text, s.category)}
                               className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] border border-border bg-background hover:bg-secondary hover:shadow-sm transition-all active:scale-[0.97]">
-                              <span>{s.icon}</span> {s.text}
+                              {s.text}
                             </button>
                           ))}
                         </div>
@@ -1150,7 +1150,7 @@ const CvGenerator = () => {
                           <div className="flex flex-wrap gap-1.5">
                             {interests.map(i => (
                               <span key={i.id} className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-medium bg-primary/5 border border-primary/15 text-foreground">
-                                <span>{i.icon}</span> {i.text}
+                                {i.text}
                                 <button onClick={() => removeInterest(i.id)} className="text-muted-foreground hover:text-destructive transition-colors ml-0.5"><Trash2 className="w-3 h-3" /></button>
                               </span>
                             ))}
