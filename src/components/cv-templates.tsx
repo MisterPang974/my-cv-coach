@@ -616,8 +616,9 @@ export const FluxTemplate = ({ profile, experienceEntries, atoutEntries, removeE
 // ═══════════════════════════════════════════════════════════════════
 export const SereniteTemplate = ({ profile, experienceEntries, atoutEntries, removeEntry, colors, bulletStyle, bulletShape, gradient, gradientTarget }: TemplateProps) => {
   const fondStyle = useGradientBg(gradient, gradientTarget);
+  const { isDark } = useAutoContrast(gradient, gradientTarget);
   return (
-    <div className="h-full flex flex-col text-[11px] leading-[1.6] relative overflow-hidden" style={{ fontFamily: "'DM Sans', system-ui, sans-serif", background: `linear-gradient(180deg, ${colors.primary}05, white 40%, ${colors.accent}04 100%)`, ...fondStyle }}>
+    <div className="h-full flex flex-col text-[11px] leading-[1.8] relative overflow-hidden" style={{ fontFamily: "'DM Sans', system-ui, sans-serif", background: `linear-gradient(180deg, ${colors.primary}05, white 40%, ${colors.accent}04 100%)`, ...fondStyle }}>
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[80%] h-48 rounded-full" style={{ background: `radial-gradient(ellipse, ${colors.primary}08, transparent)` }} />
       <div className="absolute bottom-0 right-0 w-64 h-64 rounded-full" style={{ background: `radial-gradient(circle, ${colors.accent}06, transparent)` }} />
 
