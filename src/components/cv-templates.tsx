@@ -571,6 +571,17 @@ export const MuralTemplate = ({ profile, experienceEntries, atoutEntries, remove
 
       <div className="flex-1 flex" style={{ flexDirection: sidebarPos === "left" ? "row-reverse" : "row" }}>
         <div className="flex-1 px-5 py-4 overflow-y-auto">
+          {professionalExperiences && professionalExperiences.length > 0 && (
+            <>
+              <div className="flex items-center gap-2 mb-3">
+                <Briefcase className="w-4 h-4" style={{ color: colors.primary }} />
+                <h3 className="text-[10px] font-black uppercase tracking-[0.25em]" style={{ color: expTc || colors.primary }}>Expérience Professionnelle</h3>
+                <div className="flex-1 h-px" style={{ background: `linear-gradient(90deg, ${colors.primary}25, transparent)` }} />
+              </div>
+              <ExperiencesBlock experiences={professionalExperiences} colors={colors} bulletStyle={bulletStyle} bulletShape={bulletShape} textColor={expTc} onRemove={removeProfessionalExperience} />
+              <div className="my-3" />
+            </>
+          )}
           <div className="flex items-center gap-2 mb-3">
             <Grid3X3 className="w-4 h-4" style={{ color: colors.primary }} />
             <h3 className="text-[10px] font-black uppercase tracking-[0.25em]" style={{ color: compTc || colors.primary }}>Compétences</h3>
