@@ -325,8 +325,17 @@ const CvGenerator = () => {
     setSearching(true);
     setTimeout(() => { setSuggestions(findSuggestions(input)); setSearching(false); }, 350);
   };
-  const addEntry = (t: Transformation) => { setEntries(p => [...p, { id: Date.now(), input, selected: t.text, bullet: t.bullet }]); setInput(""); setSuggestions([]); };
+  const addEntry = (t: Transformation) => { setEntries(p => [...p, { id: Date.now(), input, selected: t.text, bullet: t.bullet }]); setInput(""); setSuggestions([]); setDispatchTarget(null); };
   const addAtout = (text: string) => { setEntries(p => [...p, { id: Date.now(), input: "Atout", selected: text, bullet: "action" }]); };
+  const dispatchToCompetency = (text: string, domainId: string) => {
+    addCustomCompetency(domainId, text);
+    setDispatchTarget(null);
+  };
+  const dispatchToNewDomain = (text: string, domainLabel: string) => {
+    const id = `custom-${Date.now()}`;
+    setDomains(prev => [...prev, { id, label: domainLabel.trim(), enabled: true, custom: true, items: [{ id: `ci-${Date.now()}`, text: text.trim(), enabled: true }] }]);
+    setDispatchTarget(null);
+  };
   const removeEntry = (id: number) => { setEntries(p => p.filter(e => e.id !== id)); };
   const copyAll = () => {
     const symbols: Record<BulletType, string> = { action: "→", technique: "■", relationnel: "●" };
