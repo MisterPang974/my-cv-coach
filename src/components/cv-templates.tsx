@@ -278,7 +278,7 @@ export const ImpactTemplate = ({ profile, experienceEntries, atoutEntries, remov
         <div className="p-3" style={{ borderRadius: "4px 16px 4px 16px", background: "rgba(255,255,255,0.06)", backdropFilter: "blur(12px)", border: "1px solid rgba(255,255,255,0.08)", boxShadow: "0 4px 16px rgba(0,0,0,0.1)" }}>
           <p className="text-[8px] text-white/35 uppercase tracking-[0.2em] font-bold mb-2" style={compTc ? { color: compTc } : undefined}>Compétences</p>
           {competencyDomains && competencyDomains.length > 0 ? (
-            <DomainsBlock domains={competencyDomains} colors={colors} bulletStyle={bulletStyle} bulletShape={bulletShape} textColor={compTc} light />
+            <DomainsBlock domains={competencyDomains} colors={colors} bulletStyle={bulletStyle} bulletShape={bulletShape} competencyBulletShape={competencyBulletShape} textColor={compTc} light />
           ) : experienceEntries.length > 0 ? (
             <ul className="space-y-1.5">{experienceEntries.map(e => (
               <li key={e.id} className="flex items-start gap-2 text-white/80 text-[10px] group/item" style={compTc ? { color: compTc } : undefined}>
@@ -355,7 +355,7 @@ export const ArtisanTemplate = ({ profile, experienceEntries, atoutEntries, remo
             <span className="w-6 h-1 rounded-full" style={{ background: `linear-gradient(90deg, ${colors.accent}, ${colors.primary})` }} /> Compétences
           </h3>
           {competencyDomains && competencyDomains.length > 0 ? (
-            <DomainsBlock domains={competencyDomains} colors={colors} bulletStyle={bulletStyle} bulletShape={bulletShape} textColor={compTc} light={isDark} />
+            <DomainsBlock domains={competencyDomains} colors={colors} bulletStyle={bulletStyle} bulletShape={bulletShape} competencyBulletShape={competencyBulletShape} textColor={compTc} light={isDark} />
           ) : experienceEntries.length > 0 ? (
             <ul className="space-y-3">{experienceEntries.map((e, i) => (
               <li key={e.id} className="flex items-start gap-3 group/item px-4 py-3 transition-all hover:translate-x-0.5"
@@ -436,7 +436,7 @@ export const CreatifTemplate = ({ profile, experienceEntries, atoutEntries, remo
             <span className="w-6 h-0.5 rounded-full" style={{ background: `linear-gradient(90deg, ${colors.accent}, transparent)` }} /> Compétences
           </h3>
           {competencyDomains && competencyDomains.length > 0 ? (
-            <DomainsBlock domains={competencyDomains} colors={colors} bulletStyle={bulletStyle} bulletShape={bulletShape} textColor={expTc} />
+            <DomainsBlock domains={competencyDomains} colors={colors} bulletStyle={bulletStyle} bulletShape={bulletShape} competencyBulletShape={competencyBulletShape} textColor={expTc} />
           ) : experienceEntries.length > 0 ? (
             <ul className="space-y-2">{experienceEntries.map((e, idx) => (
               <li key={e.id} className="flex items-start gap-2 group/item px-3 py-2 transition-all hover:translate-x-0.5" style={{
@@ -503,7 +503,7 @@ export const MuralTemplate = ({ profile, experienceEntries, atoutEntries, remove
             <div className="flex-1 h-px" style={{ background: `linear-gradient(90deg, ${colors.primary}25, transparent)` }} />
           </div>
           {competencyDomains && competencyDomains.length > 0 ? (
-            <DomainsBlock domains={competencyDomains} colors={colors} bulletStyle={bulletStyle} bulletShape={bulletShape} textColor={expTc} />
+            <DomainsBlock domains={competencyDomains} colors={colors} bulletStyle={bulletStyle} bulletShape={bulletShape} competencyBulletShape={competencyBulletShape} textColor={expTc} />
           ) : experienceEntries.length > 0 ? (
             <div className="grid grid-cols-1 gap-2">{experienceEntries.map(e => (
               <div key={e.id} className="flex items-start gap-2.5 group/item p-2.5 transition-all hover:translate-y-[-1px]"
@@ -578,7 +578,7 @@ export const MagazineTemplate = ({ profile, experienceEntries, atoutEntries, rem
             <h3 className="text-[10px] font-black uppercase tracking-[0.25em]" style={{ color: compTc || colors.primary }}>Compétences professionnelles</h3>
           </div>
           {competencyDomains && competencyDomains.length > 0 ? (
-            <DomainsBlock domains={competencyDomains} colors={colors} bulletStyle={bulletStyle} bulletShape={bulletShape} textColor={expTc} />
+            <DomainsBlock domains={competencyDomains} colors={colors} bulletStyle={bulletStyle} bulletShape={bulletShape} competencyBulletShape={competencyBulletShape} textColor={expTc} />
           ) : experienceEntries.length > 0 ? (
             <ul className="space-y-2">{experienceEntries.map(e => (
               <li key={e.id} className="flex items-start gap-2.5 group/item py-1.5 px-2 rounded-lg transition-all hover:bg-gray-50/80"
@@ -640,7 +640,7 @@ export const MedicalTemplate = ({ profile, experienceEntries, atoutEntries, remo
             Compétences
           </h3>
           {competencyDomains && competencyDomains.length > 0 ? (
-            <DomainsBlock domains={competencyDomains} colors={colors} bulletStyle={bulletStyle} bulletShape={bulletShape} textColor={expTc} />
+            <DomainsBlock domains={competencyDomains} colors={colors} bulletStyle={bulletStyle} bulletShape={bulletShape} competencyBulletShape={competencyBulletShape} textColor={expTc} />
           ) : experienceEntries.length > 0 ? (
             <ul className="space-y-2">{experienceEntries.map(e => (
               <li key={e.id} className="flex items-start gap-2.5 group/item px-3 py-1.5 rounded-2xl transition-all hover:bg-white/80" style={{ boxShadow: "0 1px 3px rgba(0,0,0,0.03)" }}>
@@ -700,7 +700,7 @@ export const FluxTemplate = ({ profile, experienceEntries, atoutEntries, removeE
         </h3>
 
         {competencyDomains && competencyDomains.length > 0 ? (
-          <div className="ml-10"><DomainsBlock domains={competencyDomains} colors={colors} bulletStyle={bulletStyle} bulletShape={bulletShape} textColor={expTc} /></div>
+          <div className="ml-10"><DomainsBlock domains={competencyDomains} colors={colors} bulletStyle={bulletStyle} bulletShape={bulletShape} competencyBulletShape={competencyBulletShape} textColor={expTc} /></div>
         ) : experienceEntries.length > 0 ? (
           <div className="space-y-2.5 ml-3">{experienceEntries.map(e => (
             <div key={e.id} className="flex items-start gap-3 group/item relative">
@@ -776,7 +776,7 @@ export const SereniteTemplate = ({ profile, experienceEntries, atoutEntries, rem
             Compétences
           </h3>
           {competencyDomains && competencyDomains.length > 0 ? (
-            <DomainsBlock domains={competencyDomains} colors={colors} bulletStyle={bulletStyle} bulletShape={bulletShape} textColor={expTc} />
+            <DomainsBlock domains={competencyDomains} colors={colors} bulletStyle={bulletStyle} bulletShape={bulletShape} competencyBulletShape={competencyBulletShape} textColor={expTc} />
           ) : experienceEntries.length > 0 ? (
             <ul className="space-y-2">{experienceEntries.map(e => (
               <li key={e.id} className="flex items-start gap-2.5 group/item px-4 py-2.5 transition-all hover:translate-x-0.5"
