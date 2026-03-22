@@ -186,12 +186,32 @@ const LevelBar = ({ level = 0, max = 5, color }: { level: number; max?: number; 
 );
 
 // ─── Section heading with separator line ───────────────────────────
-const SectionHeading = ({ children, color, icon }: { children: React.ReactNode; color: string; icon?: React.ReactNode }) => (
-  <div className="flex items-center gap-2" style={{ borderBottom: `1.5px solid ${color}20`, marginBottom: `calc(10px * var(--cv-gap-scale, 1))`, paddingBottom: `calc(6px * var(--cv-gap-scale, 1))` }}>
-    {icon && <span style={{ color }}>{icon}</span>}
-    <h3 className="font-black uppercase tracking-[0.2em]" style={{ color, fontSize: `calc(10px * var(--cv-title-scale, 1))` }}>{children}</h3>
-  </div>
-);
+/** Apply case style to text */
+const applyCase = (text: string, caseStyle?: CaseStyle): string => {
+  if (caseStyle === "majuscules") return text.toUpperCase();
+  return text;
+};
+
+const SectionHeading = ({ children, color, icon, caseStyle, decoration, align }: { children: React.ReactNode; color: string; icon?: React.ReactNode; caseStyle?: CaseStyle; decoration?: TitleDecoration; align?: TextAlign }) => {
+  const decoStyle: React.CSSProperties = {};
+  if (decoration === "underline") {
+    decoStyle.textDecoration = "underline";
+    decoStyle.textUnderlineOffset = "4px";
+    decoStyle.textDecorationColor = `${color}60`;
+  }
+  if (decoration === "border") {
+    decoStyle.border = `1.5px solid ${color}30`;
+    decoStyle.padding = "4px 8px";
+    decoStyle.borderRadius = "6px";
+    decoStyle.background = `${color}06`;
+  }
+  return (
+    <div className="flex items-center gap-2" style={{ borderBottom: decoration !== "border" ? `1.5px solid ${color}20` : undefined, marginBottom: `calc(10px * var(--cv-gap-scale, 1))`, paddingBottom: `calc(6px * var(--cv-gap-scale, 1))`, justifyContent: align === "center" ? "center" : undefined }}>
+      {icon && <span style={{ color }}>{icon}</span>}
+      <h3 className="font-black uppercase tracking-[0.2em]" style={{ color, fontSize: `calc(10px * var(--cv-title-scale, 1))`, ...decoStyle }}>{typeof children === "string" ? applyCase(children, caseStyle) : children}</h3>
+    </div>
+  );
+};
 
 /** Render competency domains with optional level indicators */
 const DomainsBlock = ({ domains, colors, bulletStyle, bulletShape, competencyBulletShape, textColor, light, levelDisplay = "none" }: { domains?: CompetencyDomainData[]; colors: Colors; bulletStyle: BulletStyle; bulletShape?: BulletShapeId; competencyBulletShape?: BulletShapeId; textColor?: string; light?: boolean; levelDisplay?: "dots" | "bars" | "none" }) => {
