@@ -283,10 +283,10 @@ const InterestsBlock = ({ interests, colors, bulletStyle, bulletShape, textColor
   if (!interests || interests.length === 0) return null;
   if (displayMode === "badges") {
     return (
-      <div className="flex flex-wrap gap-1">
+      <div className="flex flex-wrap" style={{ gap: `calc(4px * var(--cv-gap-scale, 1))` }}>
         {interests.map(i => (
-          <span key={i.id} className="inline-flex items-center gap-1 px-2 py-0.5 text-[8px] font-medium group/item"
-            style={{ borderRadius: "8px", background: light ? "rgba(255,255,255,0.12)" : `${colors.accent}08`, border: `1px solid ${light ? "rgba(255,255,255,0.15)" : `${colors.accent}18`}`, color: textColor || (light ? "rgba(255,255,255,0.85)" : undefined) }}>
+          <span key={i.id} className="inline-flex items-center gap-1 px-2 py-0.5 font-medium group/item"
+            style={{ borderRadius: "8px", background: light ? "rgba(255,255,255,0.12)" : `${colors.accent}08`, border: `1px solid ${light ? "rgba(255,255,255,0.15)" : `${colors.accent}18`}`, color: textColor || (light ? "rgba(255,255,255,0.85)" : undefined), fontSize: `calc(8px * var(--cv-font-scale, 1))` }}>
             <span className="flex-shrink-0 w-[10px] h-[10px] flex items-center justify-center"><ModernBullet type="action" color={colors.accent} style={bulletStyle} shape={bulletShape} /></span>
             {i.text}
             {onRemove && <button onClick={() => onRemove(i.id)} className={`opacity-0 group-hover/item:opacity-100 ml-0.5 ${light ? "text-white/30 hover:text-red-300" : "text-gray-300 hover:text-red-400"}`}><Trash2 className="w-2 h-2" /></button>}
@@ -298,7 +298,7 @@ const InterestsBlock = ({ interests, colors, bulletStyle, bulletShape, textColor
   return (
     <ul style={{ margin: 0, padding: 0, listStyle: "none" }}>
       {interests.map(i => (
-        <li key={i.id} className="flex items-center gap-1.5 group/item" style={{ color: textColor || (light ? "rgba(255,255,255,0.85)" : undefined), fontSize: "9px", lineHeight: "1.3", paddingTop: "1px", paddingBottom: "1px" }}>
+        <li key={i.id} className="flex items-center gap-1.5 group/item" style={{ color: textColor || (light ? "rgba(255,255,255,0.85)" : undefined), fontSize: `calc(9px * var(--cv-font-scale, 1))`, lineHeight: "var(--cv-line-height, 1.3)", paddingTop: `calc(1px * var(--cv-gap-scale, 1))`, paddingBottom: `calc(1px * var(--cv-gap-scale, 1))` }}>
           <span className="flex-shrink-0 w-[12px] h-[12px] flex items-center justify-center"><ModernBullet type="action" color={colors.accent} style={bulletStyle} shape={bulletShape} /></span>
           <span className="flex-1">{i.text}</span>
           {onRemove && <button onClick={() => onRemove(i.id)} className={`opacity-0 group-hover/item:opacity-100 ${light ? "text-white/30 hover:text-red-300" : "text-gray-300 hover:text-red-400"}`}><Trash2 className="w-2 h-2" /></button>}
@@ -314,7 +314,7 @@ const QualitiesBlock = ({ qualities, colors, bulletStyle, bulletShape, textColor
   return (
     <ul style={{ margin: 0, padding: 0, listStyle: "none" }}>
       {qualities.map((q, idx) => (
-        <li key={idx} className="flex items-center gap-1.5 group/item" style={{ color: textColor || (light ? "rgba(255,255,255,0.85)" : undefined), fontSize: "9px", lineHeight: "1.3", paddingTop: "1px", paddingBottom: "1px" }}>
+        <li key={idx} className="flex items-center gap-1.5 group/item" style={{ color: textColor || (light ? "rgba(255,255,255,0.85)" : undefined), fontSize: `calc(9px * var(--cv-font-scale, 1))`, lineHeight: "var(--cv-line-height, 1.3)", paddingTop: `calc(1px * var(--cv-gap-scale, 1))`, paddingBottom: `calc(1px * var(--cv-gap-scale, 1))` }}>
           <span className="flex-shrink-0 w-[12px] h-[12px] flex items-center justify-center"><ModernBullet type="relationnel" color={colors.accent} style={bulletStyle} shape={bulletShape} /></span>
           <span className="flex-1">{q}</span>
           {onRemove && <button onClick={() => onRemove(idx)} className={`opacity-0 group-hover/item:opacity-100 ${light ? "text-white/30 hover:text-red-300" : "text-gray-300 hover:text-red-400"}`}><Trash2 className="w-2 h-2" /></button>}
