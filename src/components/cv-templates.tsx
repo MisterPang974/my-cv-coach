@@ -522,7 +522,6 @@ export const templateRegistry: Record<string, React.FC<TemplateProps>> = {
   creatif: CreatifTemplate,
   mural: MuralTemplate,
   magazine: MagazineTemplate,
-  dashboard: DashboardTemplate,
   medical: MedicalTemplate,
   flux: FluxTemplate,
 };
