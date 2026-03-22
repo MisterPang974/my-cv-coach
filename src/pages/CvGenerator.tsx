@@ -1121,6 +1121,68 @@ const CvGenerator = () => {
                       </div>
                     );
 
+                    if (sec === "qualites") return (
+                      <div key="qualites" className="rounded-2xl bg-card p-5 shadow-sm border border-border/50 space-y-4">
+                        <div className="flex items-center justify-between">
+                          <h3 className="font-semibold text-sm flex items-center gap-2"><Heart className="w-4 h-4 text-primary" /> QUALITÉS</h3>
+                          <div className="flex items-center gap-1 rounded-lg bg-secondary p-0.5">
+                            {(["libre", "ia"] as const).map(m => (
+                              <button key={m} onClick={() => m === "ia" ? generateAIQualities() : setQualitiesMode(m)}
+                                className={`px-2.5 py-1 rounded-md text-[10px] font-medium transition-all ${qualitiesMode === m ? "bg-primary text-primary-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"}`}>
+                                {m === "libre" ? "Saisie libre" : "✨ Générer par IA"}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+
+                        {/* Puces Qualités */}
+                        <div className="rounded-xl bg-secondary/40 border border-border px-4 py-3">
+                          <div className="flex items-center gap-3 mb-2">
+                            <span className="text-xs font-semibold text-muted-foreground">✦ Puces Qualités</span>
+                            {qualitesBulletShape && (
+                              <button onClick={() => setQualitesBulletShape(null)} className="text-[10px] text-muted-foreground hover:text-destructive transition-colors ml-auto">✕ Auto</button>
+                            )}
+                          </div>
+                          <div className="flex flex-wrap gap-1.5">
+                            {bulletShapes.map(bs => (
+                              <button key={bs.id} onClick={() => setQualitesBulletShape(bs.id)} title={bs.label}
+                                className={`w-9 h-9 rounded-lg flex items-center justify-center transition-all active:scale-[0.95] ${qualitesBulletShape === bs.id ? "bg-primary text-primary-foreground ring-2 ring-offset-1 ring-ring" : "bg-secondary text-muted-foreground hover:bg-accent/20"}`}>
+                                <ShapeBullet shape={bs.id} color={qualitesBulletShape === bs.id ? "white" : "currentColor"} />
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+
+                        {qualitiesMode === "ia" && qualities.length > 0 && (
+                          <p className="text-[10px] text-muted-foreground bg-secondary/50 rounded-lg px-3 py-1.5">
+                            ✨ Qualités suggérées pour le secteur <span className="font-bold text-foreground">{sectorCfg.label}</span>. Modifiez ou ajoutez les vôtres.
+                          </p>
+                        )}
+
+                        {qualities.length > 0 && (
+                          <div className="space-y-1">
+                            {qualities.map((q, idx) => (
+                              <div key={idx} className="flex items-center gap-2 text-xs text-foreground bg-background rounded-lg px-3 py-1.5 border border-border">
+                                <span className="flex-shrink-0"><ShapeBullet shape={qualitesBulletShape || "cercle"} color={colors.accent} /></span>
+                                <span className="flex-1">{q}</span>
+                                <button onClick={() => removeQuality(idx)} className="text-muted-foreground hover:text-destructive"><Trash2 className="w-3 h-3" /></button>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+
+                        <div className="flex gap-2">
+                          <input value={newQualityText} onChange={e => setNewQualityText(e.target.value)} onKeyDown={e => { if (e.key === "Enter") { addQuality(newQualityText); setNewQualityText(""); } }}
+                            placeholder="Ajouter une qualité…"
+                            className="flex-1 rounded-xl border border-input bg-background px-4 py-2.5 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring" />
+                          <button onClick={() => { addQuality(newQualityText); setNewQualityText(""); }} disabled={!newQualityText.trim()}
+                            className="rounded-xl bg-primary px-4 py-2.5 text-primary-foreground text-sm font-medium shadow-sm hover:shadow-md transition-all disabled:opacity-40 active:scale-[0.97]">
+                            <Plus className="w-4 h-4" />
+                          </button>
+                        </div>
+                      </div>
+                    );
+
                     if (sec === "divers") return (
                       <div key="divers" className="rounded-2xl bg-card p-5 shadow-sm border border-border/50 space-y-4">
                         <div className="flex items-center justify-between">
@@ -1130,6 +1192,24 @@ const CvGenerator = () => {
                               <button key={m} onClick={() => setInterestDisplayMode(m)}
                                 className={`px-2.5 py-1 rounded-md text-[10px] font-medium transition-all ${interestDisplayMode === m ? "bg-primary text-primary-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"}`}>
                                 {m === "badges" ? "Badges" : "Liste"}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+
+                        {/* Puces Divers */}
+                        <div className="rounded-xl bg-secondary/40 border border-border px-4 py-3">
+                          <div className="flex items-center gap-3 mb-2">
+                            <span className="text-xs font-semibold text-muted-foreground">✦ Puces Divers</span>
+                            {diversBulletShape && (
+                              <button onClick={() => setDiversBulletShape(null)} className="text-[10px] text-muted-foreground hover:text-destructive transition-colors ml-auto">✕ Auto</button>
+                            )}
+                          </div>
+                          <div className="flex flex-wrap gap-1.5">
+                            {bulletShapes.map(bs => (
+                              <button key={bs.id} onClick={() => setDiversBulletShape(bs.id)} title={bs.label}
+                                className={`w-9 h-9 rounded-lg flex items-center justify-center transition-all active:scale-[0.95] ${diversBulletShape === bs.id ? "bg-primary text-primary-foreground ring-2 ring-offset-1 ring-ring" : "bg-secondary text-muted-foreground hover:bg-accent/20"}`}>
+                                <ShapeBullet shape={bs.id} color={diversBulletShape === bs.id ? "white" : "currentColor"} />
                               </button>
                             ))}
                           </div>
@@ -1145,7 +1225,6 @@ const CvGenerator = () => {
                           ))}
                         </div>
 
-                        {/* Current interests */}
                         {interests.length > 0 && (
                           <div className="flex flex-wrap gap-1.5">
                             {interests.map(i => (
@@ -1157,7 +1236,6 @@ const CvGenerator = () => {
                           </div>
                         )}
 
-                        {/* Custom interest */}
                         <div className="flex gap-2">
                           <input value={newInterestText} onChange={e => setNewInterestText(e.target.value)} onKeyDown={e => e.key === "Enter" && addCustomInterest()}
                             placeholder="Ajouter un centre d'intérêt personnalisé…"
