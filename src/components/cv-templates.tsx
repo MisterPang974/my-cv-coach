@@ -345,6 +345,16 @@ export const ImpactTemplate = ({ profile, experienceEntries, atoutEntries, remov
       <div className="absolute top-0 right-0 w-40 h-40 opacity-[0.04] rounded-full" style={{ background: `radial-gradient(circle, ${colors.accent}, transparent)` }} />
 
       <div className="flex-1 px-7 py-6 overflow-y-auto relative z-10">
+        {/* Professional Experiences */}
+        {professionalExperiences && professionalExperiences.length > 0 && (
+          <>
+            <h3 className="text-[10px] font-black uppercase tracking-[0.25em] mb-3 pb-2 flex items-center gap-2" style={{ color: expTc || (isDark ? "white" : colors.primary), borderBottom: `2px solid transparent`, borderImage: `linear-gradient(90deg, ${colors.accent}, ${colors.primary}) 1` }}>
+              <Briefcase className="w-3.5 h-3.5" /> Expérience Professionnelle
+            </h3>
+            <ExperiencesBlock experiences={professionalExperiences} colors={colors} bulletStyle={bulletStyle} bulletShape={bulletShape} textColor={expTc || (isDark ? "white" : undefined)} light={isDark} onRemove={removeProfessionalExperience} />
+            <div className="my-3" />
+          </>
+        )}
         <h3 className="text-[10px] font-black uppercase tracking-[0.25em] mb-5 pb-2.5 flex items-center gap-2" style={{ color: expTc || (isDark ? "white" : colors.primary), borderBottom: `2px solid transparent`, borderImage: `linear-gradient(90deg, ${colors.accent}, ${colors.primary}) 1` }}>
           <Star className="w-3.5 h-3.5" /> Atouts
         </h3>
