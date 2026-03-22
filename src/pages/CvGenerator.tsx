@@ -23,6 +23,17 @@ export interface ExperienceEntry {
   entreprise: string;
   ville: string;
   missions: string[];
+  showLogo: boolean;
+}
+
+// ─── Formation ────────────────────────────────────────────────────
+export interface FormationEntry {
+  id: number;
+  dateDebut: string;
+  dateFin: string;
+  intitule: string;
+  etablissement: string;
+  ville: string;
 }
 
 // ─── Competencies Domain System ────────────────────────────────────
