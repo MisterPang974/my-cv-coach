@@ -115,6 +115,28 @@ const EmptyState = ({ color, label, dark }: { color: string; label?: string; dar
   </div>
 );
 
+/** Render competency domains */
+const DomainsBlock = ({ domains, colors, bulletStyle, bulletShape, textColor, light }: { domains?: CompetencyDomainData[]; colors: Colors; bulletStyle: BulletStyle; bulletShape?: BulletShapeId; textColor?: string; light?: boolean }) => {
+  if (!domains || domains.length === 0) return null;
+  return (
+    <div className="space-y-3">
+      {domains.map(d => (
+        <div key={d.id}>
+          <p className="text-[9px] font-bold uppercase tracking-widest mb-1.5" style={{ color: textColor || colors.accent }}>{d.label}</p>
+          <ul className="space-y-1">
+            {d.items.map(item => (
+              <li key={item.id} className="flex items-start gap-2 text-[10px]" style={{ color: textColor || (light ? "rgba(255,255,255,0.8)" : undefined) }}>
+                <span className="mt-0.5"><ModernBullet type="technique" color={colors.accent} style={bulletStyle} shape={bulletShape} /></span>
+                <span className="flex-1">{item.text}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      ))}
+    </div>
+  );
+};
+
 const DeleteBtn = ({ onClick, light }: { onClick: () => void; light?: boolean }) => (
   <button onClick={onClick} className={`opacity-0 group-hover/item:opacity-100 transition-opacity ${light ? "text-white/30 hover:text-red-300" : "text-gray-300 hover:text-red-400"}`}>
     <Trash2 className="w-2.5 h-2.5" />
