@@ -1371,7 +1371,9 @@ const CvGenerator = () => {
                     maxHeight: "50vh",
                     boxShadow: `0 4px 24px -4px rgba(0,0,0,0.12), 0 0 0 1px rgba(0,0,0,0.04), 0 20px 40px -12px ${colors.primary}15`,
                   }}>
-                  {Template && <Template {...templateProps} />}
+                  <A4AutoFitWrapper className="w-full h-full">
+                    {Template && <Template {...templateProps} />}
+                  </A4AutoFitWrapper>
                 </div>
               </div>
             )}
