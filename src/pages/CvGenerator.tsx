@@ -297,6 +297,11 @@ const CvGenerator = () => {
   const [editingFormation, setEditingFormation] = useState<FormationEntry>({ id: 0, dateDebut: "", dateFin: "", intitule: "", etablissement: "", ville: "" });
   const [formationMode, setFormationMode] = useState<"diplomes" | "parcours">("diplomes");
 
+  // Interests state
+  const [interests, setInterests] = useState<InterestEntry[]>([]);
+  const [newInterestText, setNewInterestText] = useState("");
+  const [interestDisplayMode, setInterestDisplayMode] = useState<"badges" | "list">("badges");
+
   // White palette option (always available)
   const whitePalette: SectorPalette = { id: "blanc", label: "Blanc pur", primary: "#2d2d2d", accent: "#555555", swatch: "#ffffff", bg: "#ffffff" };
 
