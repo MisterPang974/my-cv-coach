@@ -77,6 +77,9 @@ export interface TemplateProps {
   removeFormation?: (id: number) => void;
   formationTitle?: string;
   getCompanyLogoUrl?: (company: string) => string | null;
+  interests?: InterestEntry[];
+  removeInterest?: (id: number) => void;
+  interestDisplayMode?: "badges" | "list";
 }
 
 // ─── Bullet renderers ──────────────────────────────────────────────
