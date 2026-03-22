@@ -85,11 +85,11 @@ const SectorLogo = ({ sector, color, size = 48 }: { sector?: string; color: stri
 };
 
 // ─── Shared pieces ─────────────────────────────────────────────────
-const EmptyState = ({ color, label }: { color: string; label?: string }) => (
-  <div className="rounded-2xl border-2 border-dashed p-5 text-center mt-3" style={{ borderColor: `${color}20`, background: `${color}03` }}>
-    <Briefcase className="w-7 h-7 mx-auto mb-1.5" style={{ color: `${color}25` }} />
-    <p className="text-gray-400 text-[10px] font-medium">{label || "Votre CV se construit ici en temps réel"}</p>
-    <p className="text-gray-300 text-[9px] mt-0.5">Style télégraphique · Verbes d'action</p>
+const EmptyState = ({ color, label, dark }: { color: string; label?: string; dark?: boolean }) => (
+  <div className="rounded-2xl border-2 border-dashed p-6 text-center mt-4" style={{ borderColor: `${color}20`, background: `${color}03` }}>
+    <Briefcase className="w-7 h-7 mx-auto mb-2" style={{ color: `${color}25` }} />
+    <p className={`text-[10px] font-medium ${dark ? "text-white/40" : "text-gray-400"}`}>{label || "Votre CV se construit ici en temps réel"}</p>
+    <p className={`text-[9px] mt-1 ${dark ? "text-white/25" : "text-gray-300"}`}>Style télégraphique · Verbes d'action</p>
   </div>
 );
 
@@ -124,8 +124,27 @@ const useGradientBg = (gradient?: TemplateProps["gradient"], target?: TemplatePr
 };
 const useGradientRubrique = (gradient?: TemplateProps["gradient"], target?: TemplateProps["gradientTarget"], fallback?: string) => {
   if (!gradient || target !== "rubriques") return fallback ? { background: fallback } : {};
-  return { background: `linear-gradient(${gradient.angle || 135}deg, ${gradient.from}, ${gradient.to})`, color: "white" };
+  const dark = isGradientDark(gradient.from, gradient.to);
+  return { background: `linear-gradient(${gradient.angle || 135}deg, ${gradient.from}, ${gradient.to})`, color: dark ? "white" : "hsl(215, 25%, 12%)" };
 };
+
+// ─── Auto-contrast: detect if a color/gradient is dark ─────────────
+function parseHslLightness(hsl: string): number {
+  const match = hsl.match(/hsl\(\s*[\d.]+\s*,\s*[\d.]+%?\s*,\s*([\d.]+)%/);
+  return match ? parseFloat(match[1]) : 50;
+}
+function isGradientDark(from: string, to: string): boolean {
+  const avg = (parseHslLightness(from) + parseHslLightness(to)) / 2;
+  return avg < 60;
+}
+/** Returns text color class: dark text for light backgrounds, white for dark */
+export function useAutoContrast(gradient?: TemplateProps["gradient"], target?: TemplateProps["gradientTarget"]): { isDark: boolean; textClass: string; textColor: string } {
+  if (!gradient || target !== "fond") return { isDark: false, textClass: "text-gray-700", textColor: "hsl(215, 25%, 12%)" };
+  const dark = isGradientDark(gradient.from, gradient.to);
+  return dark
+    ? { isDark: true, textClass: "text-white", textColor: "white" }
+    : { isDark: false, textClass: "text-gray-700", textColor: "hsl(215, 25%, 12%)" };
+}
 
 // ─── Organic blob SVG ──────────────────────────────────────────────
 const Blob = ({ color, className, style }: { color: string; className?: string; style?: React.CSSProperties }) => (
@@ -141,6 +160,7 @@ const Blob = ({ color, className, style }: { color: string; className?: string; 
 export const ImpactTemplate = ({ profile, experienceEntries, atoutEntries, removeEntry, colors, sidebarPos, bulletStyle, bulletShape, gradient, gradientTarget }: TemplateProps) => {
   const fondStyle = useGradientBg(gradient, gradientTarget);
   const rubriqueStyle = useGradientRubrique(gradient, gradientTarget, `linear-gradient(170deg, ${colors.primary}, ${colors.swatch})`);
+  const { isDark, textColor } = useAutoContrast(gradient, gradientTarget);
 
   const sidebar = (
     <div className="w-[38%] flex flex-col relative overflow-hidden" style={{ background: `linear-gradient(170deg, ${colors.primary}, ${colors.swatch})`, ...rubriqueStyle }}>
@@ -178,29 +198,29 @@ export const ImpactTemplate = ({ profile, experienceEntries, atoutEntries, remov
   );
 
   const main = (
-    <div className="flex-1 flex flex-col bg-white relative overflow-hidden" style={fondStyle}>
+    <div className="flex-1 flex flex-col relative overflow-hidden" style={{ background: isDark ? undefined : "white", ...fondStyle }}>
       <div className="h-1.5" style={{ background: `linear-gradient(90deg, ${colors.accent}, ${colors.primary}, ${colors.accent})` }} />
       <div className="absolute top-0 right-0 w-40 h-40 opacity-[0.04] rounded-full" style={{ background: `radial-gradient(circle, ${colors.accent}, transparent)` }} />
 
-      <div className="flex-1 px-6 py-5 overflow-y-auto relative z-10">
-        <h3 className="text-[10px] font-black uppercase tracking-[0.25em] mb-4 pb-2 flex items-center gap-2" style={{ color: colors.primary, borderBottom: `2px solid transparent`, borderImage: `linear-gradient(90deg, ${colors.accent}, ${colors.primary}) 1` }}>
+      <div className="flex-1 px-7 py-6 overflow-y-auto relative z-10">
+        <h3 className="text-[10px] font-black uppercase tracking-[0.25em] mb-5 pb-2.5 flex items-center gap-2" style={{ color: isDark ? "white" : colors.primary, borderBottom: `2px solid transparent`, borderImage: `linear-gradient(90deg, ${colors.accent}, ${colors.primary}) 1` }}>
           <Star className="w-3.5 h-3.5" /> Atouts
         </h3>
         {atoutEntries.length > 0 ? (
-          <ul className="space-y-2">{atoutEntries.map(e => (
-            <li key={e.id} className="flex items-start gap-2.5 group/item rounded-xl px-3 py-2 transition-all hover:translate-x-0.5"
-              style={{ background: `${colors.primary}04`, boxShadow: `0 1px 4px ${colors.primary}08`, border: `1px solid ${colors.primary}08` }}>
+          <ul className="space-y-3">{atoutEntries.map(e => (
+            <li key={e.id} className="flex items-start gap-2.5 group/item rounded-xl px-4 py-3 transition-all hover:translate-x-0.5"
+              style={{ background: isDark ? "rgba(255,255,255,0.08)" : `${colors.primary}04`, boxShadow: `0 1px 4px ${colors.primary}08`, border: `1px solid ${isDark ? "rgba(255,255,255,0.1)" : `${colors.primary}08`}` }}>
               <ChevronRight className="w-3 h-3 mt-0.5 flex-shrink-0" style={{ color: colors.accent }} />
-              <span className="flex-1 text-gray-700">{e.selected}</span><DeleteBtn onClick={() => removeEntry(e.id)} />
+              <span className="flex-1" style={{ color: isDark ? "rgba(255,255,255,0.85)" : undefined }}>{e.selected}</span><DeleteBtn onClick={() => removeEntry(e.id)} light={isDark} />
             </li>
           ))}</ul>
-        ) : <EmptyState color={colors.primary} label="Ajoutez des atouts…" />}
+        ) : <EmptyState color={colors.primary} label="Ajoutez des atouts…" dark={isDark} />}
       </div>
     </div>
   );
 
   return (
-    <div className="h-full flex text-[11px] leading-[1.6]" style={{ fontFamily: "'DM Sans', system-ui, sans-serif", flexDirection: sidebarPos === "right" ? "row-reverse" : "row" }}>
+    <div className="h-full flex text-[11px] leading-[1.8]" style={{ fontFamily: "'DM Sans', system-ui, sans-serif", flexDirection: sidebarPos === "right" ? "row-reverse" : "row" }}>
       {sidebarPos === "top" ? <div className="h-full flex flex-col">{sidebar}{main}</div> : <>{sidebar}{main}</>}
     </div>
   );
@@ -213,9 +233,10 @@ export const ImpactTemplate = ({ profile, experienceEntries, atoutEntries, remov
 export const ArtisanTemplate = ({ profile, experienceEntries, atoutEntries, removeEntry, colors, sidebarPos, bulletStyle, bulletShape, gradient, gradientTarget, bgCircleColor }: TemplateProps) => {
   const fondStyle = useGradientBg(gradient, gradientTarget);
   const circleCol = bgCircleColor || colors.accent;
+  const { isDark } = useAutoContrast(gradient, gradientTarget);
 
   return (
-    <div className="h-full flex flex-col text-[11px] leading-[1.6] relative overflow-hidden" style={{ fontFamily: "'DM Serif Display', Georgia, serif", background: `linear-gradient(180deg, hsl(40, 30%, 97%), hsl(35, 25%, 94%))`, ...fondStyle }}>
+    <div className="h-full flex flex-col text-[11px] leading-[1.8] relative overflow-hidden" style={{ fontFamily: "'DM Serif Display', Georgia, serif", background: `linear-gradient(180deg, hsl(40, 30%, 97%), hsl(35, 25%, 94%))`, ...fondStyle }}>
       <Blob color={`${circleCol}08`} className="absolute -top-20 -right-20 w-56 h-56" />
       <Blob color={`${colors.primary}06`} className="absolute bottom-10 -left-16 w-44 h-44" />
 
@@ -228,20 +249,20 @@ export const ArtisanTemplate = ({ profile, experienceEntries, atoutEntries, remo
         <div className="relative mt-3" style={{ fontFamily: "'DM Sans', sans-serif" }}><ContactLine profile={profile} light colors={colors} /></div>
       </div>
 
-      <div className="flex-1 flex relative z-10 mt-3" style={{ flexDirection: sidebarPos === "left" ? "row-reverse" : "row" }}>
-        <div className="flex-1 px-6 py-4 overflow-y-auto">
-          <h3 className="text-[11px] font-bold uppercase tracking-[0.12em] mb-3 pb-1.5 flex items-center gap-2" style={{ color: colors.primary, fontFamily: "'DM Sans', sans-serif" }}>
+      <div className="flex-1 flex relative z-10 mt-4" style={{ flexDirection: sidebarPos === "left" ? "row-reverse" : "row" }}>
+        <div className="flex-1 px-7 py-5 overflow-y-auto">
+          <h3 className="text-[11px] font-bold uppercase tracking-[0.12em] mb-4 pb-2 flex items-center gap-2" style={{ color: isDark ? "white" : colors.primary, fontFamily: "'DM Sans', sans-serif" }}>
             <span className="w-6 h-1 rounded-full" style={{ background: `linear-gradient(90deg, ${colors.accent}, ${colors.primary})` }} /> Compétences
           </h3>
           {experienceEntries.length > 0 ? (
-            <ul className="space-y-2">{experienceEntries.map((e, i) => (
-              <li key={e.id} className="flex items-start gap-2.5 group/item px-3 py-2 transition-all hover:translate-x-0.5"
-                style={{ borderRadius: i % 2 === 0 ? "12px 4px 12px 4px" : "4px 12px 4px 12px", background: "rgba(255,255,255,0.6)", boxShadow: "0 2px 8px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.06)", backdropFilter: "blur(4px)" }}>
+            <ul className="space-y-3">{experienceEntries.map((e, i) => (
+              <li key={e.id} className="flex items-start gap-3 group/item px-4 py-3 transition-all hover:translate-x-0.5"
+                style={{ borderRadius: i % 2 === 0 ? "12px 4px 12px 4px" : "4px 12px 4px 12px", background: isDark ? "rgba(255,255,255,0.08)" : "rgba(255,255,255,0.6)", boxShadow: "0 2px 8px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.06)", backdropFilter: "blur(4px)" }}>
                 <span className="mt-0.5"><ModernBullet type={e.bullet} color={e.bullet === "technique" ? colors.primary : colors.accent} style={bulletStyle} shape={bulletShape} /></span>
-                <span className="flex-1 text-gray-700" style={{ fontFamily: "'DM Sans', sans-serif" }}>{e.selected}</span><DeleteBtn onClick={() => removeEntry(e.id)} />
+                <span className="flex-1" style={{ color: isDark ? "rgba(255,255,255,0.85)" : "#374151", fontFamily: "'DM Sans', sans-serif" }}>{e.selected}</span><DeleteBtn onClick={() => removeEntry(e.id)} light={isDark} />
               </li>
             ))}</ul>
-          ) : <EmptyState color={colors.accent} />}
+          ) : <EmptyState color={colors.accent} dark={isDark} />}
         </div>
         <div className="w-[34%] px-4 py-4 space-y-3" style={{ background: `${colors.primary}05` }}>
           <div className="p-3" style={{ borderRadius: "8px 20px 8px 20px", background: "rgba(255,255,255,0.5)", backdropFilter: "blur(8px)", boxShadow: `0 4px 12px ${colors.primary}08` }}>
@@ -267,9 +288,10 @@ export const ArtisanTemplate = ({ profile, experienceEntries, atoutEntries, remo
 export const CreatifTemplate = ({ profile, experienceEntries, atoutEntries, removeEntry, colors, bulletStyle, bulletShape, gradient, gradientTarget, bgCircleColor }: TemplateProps) => {
   const fondStyle = useGradientBg(gradient, gradientTarget);
   const circleBg = bgCircleColor || "#1a1a1a";
+  const { isDark } = useAutoContrast(gradient, gradientTarget);
 
   return (
-    <div className="h-full flex flex-col text-[11px] leading-[1.6] relative overflow-hidden bg-white" style={{ fontFamily: "'DM Sans', system-ui, sans-serif", ...fondStyle }}>
+    <div className="h-full flex flex-col text-[11px] leading-[1.8] relative overflow-hidden bg-white" style={{ fontFamily: "'DM Sans', system-ui, sans-serif", ...fondStyle }}>
       {/* Floating geometric shapes with gradients */}
       <div className="absolute -top-8 -right-8 w-32 h-32 rounded-full" style={{ background: `radial-gradient(circle, ${colors.accent}12, transparent)` }} />
       <svg className="absolute top-1/4 -left-3 opacity-[0.08]" width="50" height="50" viewBox="0 0 50 50"><rect x="5" y="5" width="40" height="40" rx="4" fill="none" stroke={colors.primary} strokeWidth="2" transform="rotate(15 25 25)" /></svg>
@@ -347,8 +369,9 @@ export const CreatifTemplate = ({ profile, experienceEntries, atoutEntries, remo
 // ═══════════════════════════════════════════════════════════════════
 export const MuralTemplate = ({ profile, experienceEntries, atoutEntries, removeEntry, colors, sidebarPos, bulletStyle, bulletShape, gradient, gradientTarget }: TemplateProps) => {
   const fondStyle = useGradientBg(gradient, gradientTarget);
+  const { isDark } = useAutoContrast(gradient, gradientTarget);
   return (
-    <div className="h-full flex flex-col text-[11px] leading-[1.6] relative" style={{ fontFamily: "'DM Sans', system-ui, sans-serif", background: `linear-gradient(180deg, hsl(210,10%,96%), hsl(210,8%,93%))`, ...fondStyle }}>
+    <div className="h-full flex flex-col text-[11px] leading-[1.8] relative" style={{ fontFamily: "'DM Sans', system-ui, sans-serif", background: `linear-gradient(180deg, hsl(210,10%,96%), hsl(210,8%,93%))`, ...fondStyle }}>
       <div className="px-7 py-5 relative overflow-hidden" style={{ background: `linear-gradient(135deg, ${colors.primary}, ${colors.swatch})`, boxShadow: `0 6px 24px ${colors.primary}30`, ...useGradientRubrique(gradient, gradientTarget) }}>
         <svg className="absolute inset-0 w-full h-full opacity-[0.04]"><pattern id="grid" width="20" height="20" patternUnits="userSpaceOnUse"><rect width="20" height="20" fill="none" stroke="white" strokeWidth="0.5"/></pattern><rect width="100%" height="100%" fill="url(#grid)"/></svg>
         <div className="relative">
@@ -405,8 +428,9 @@ export const MuralTemplate = ({ profile, experienceEntries, atoutEntries, remove
 // ═══════════════════════════════════════════════════════════════════
 export const MagazineTemplate = ({ profile, experienceEntries, atoutEntries, removeEntry, colors, bulletStyle, bulletShape, gradient, gradientTarget }: TemplateProps) => {
   const fondStyle = useGradientBg(gradient, gradientTarget);
+  const { isDark } = useAutoContrast(gradient, gradientTarget);
   return (
-    <div className="h-full flex flex-col text-[11px] leading-[1.6]" style={{ fontFamily: "'DM Sans', system-ui, sans-serif", ...fondStyle }}>
+    <div className="h-full flex flex-col text-[11px] leading-[1.8]" style={{ fontFamily: "'DM Sans', system-ui, sans-serif", ...fondStyle }}>
       {/* Split header — right zone now has full coordinates */}
       <div className="flex items-stretch relative overflow-hidden">
         <div className="flex-1 px-7 py-5 flex flex-col justify-center relative" style={{ background: `linear-gradient(135deg, ${colors.primary}, ${colors.swatch})`, ...useGradientRubrique(gradient, gradientTarget) }}>
@@ -473,8 +497,9 @@ export const MagazineTemplate = ({ profile, experienceEntries, atoutEntries, rem
 // ═══════════════════════════════════════════════════════════════════
 export const MedicalTemplate = ({ profile, experienceEntries, atoutEntries, removeEntry, colors, bulletStyle, bulletShape, gradient, gradientTarget }: TemplateProps) => {
   const fondStyle = useGradientBg(gradient, gradientTarget);
+  const { isDark } = useAutoContrast(gradient, gradientTarget);
   return (
-    <div className="h-full flex flex-col text-[11px] leading-[1.6] relative overflow-hidden" style={{ fontFamily: "'DM Sans', system-ui, sans-serif", background: `linear-gradient(180deg, ${colors.primary}06, white, ${colors.accent}04)`, ...fondStyle }}>
+    <div className="h-full flex flex-col text-[11px] leading-[1.8] relative overflow-hidden" style={{ fontFamily: "'DM Sans', system-ui, sans-serif", background: `linear-gradient(180deg, ${colors.primary}06, white, ${colors.accent}04)`, ...fondStyle }}>
       <div className="absolute top-20 -right-16 w-48 h-48 rounded-full" style={{ background: `radial-gradient(circle, ${colors.accent}08, transparent)` }} />
       <div className="absolute -bottom-10 -left-10 w-36 h-36 rounded-full" style={{ background: `radial-gradient(circle, ${colors.primary}06, transparent)` }} />
 
@@ -528,8 +553,9 @@ export const MedicalTemplate = ({ profile, experienceEntries, atoutEntries, remo
 // ═══════════════════════════════════════════════════════════════════
 export const FluxTemplate = ({ profile, experienceEntries, atoutEntries, removeEntry, colors, bulletStyle, bulletShape, gradient, gradientTarget }: TemplateProps) => {
   const fondStyle = useGradientBg(gradient, gradientTarget);
+  const { isDark } = useAutoContrast(gradient, gradientTarget);
   return (
-    <div className="h-full flex flex-col text-[11px] leading-[1.6] relative" style={{ fontFamily: "'DM Sans', system-ui, sans-serif", background: `linear-gradient(180deg, white, ${colors.primary}04)`, ...fondStyle }}>
+    <div className="h-full flex flex-col text-[11px] leading-[1.8] relative" style={{ fontFamily: "'DM Sans', system-ui, sans-serif", background: `linear-gradient(180deg, white, ${colors.primary}04)`, ...fondStyle }}>
       <div className="px-7 py-5 relative overflow-hidden" style={{ background: `linear-gradient(135deg, ${colors.primary}, ${colors.swatch})`, boxShadow: `0 6px 24px ${colors.primary}25`, ...useGradientRubrique(gradient, gradientTarget) }}>
         <div className="absolute top-0 right-0 w-2/5 h-full" style={{ background: `linear-gradient(135deg, ${colors.accent}, ${colors.accent}cc)`, clipPath: "polygon(25% 0, 100% 0, 100% 100%, 0% 100%)" }} />
         <Blob color="rgba(255,255,255,0.04)" className="absolute -bottom-16 left-10 w-36 h-36" />
@@ -590,8 +616,9 @@ export const FluxTemplate = ({ profile, experienceEntries, atoutEntries, removeE
 // ═══════════════════════════════════════════════════════════════════
 export const SereniteTemplate = ({ profile, experienceEntries, atoutEntries, removeEntry, colors, bulletStyle, bulletShape, gradient, gradientTarget }: TemplateProps) => {
   const fondStyle = useGradientBg(gradient, gradientTarget);
+  const { isDark } = useAutoContrast(gradient, gradientTarget);
   return (
-    <div className="h-full flex flex-col text-[11px] leading-[1.6] relative overflow-hidden" style={{ fontFamily: "'DM Sans', system-ui, sans-serif", background: `linear-gradient(180deg, ${colors.primary}05, white 40%, ${colors.accent}04 100%)`, ...fondStyle }}>
+    <div className="h-full flex flex-col text-[11px] leading-[1.8] relative overflow-hidden" style={{ fontFamily: "'DM Sans', system-ui, sans-serif", background: `linear-gradient(180deg, ${colors.primary}05, white 40%, ${colors.accent}04 100%)`, ...fondStyle }}>
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[80%] h-48 rounded-full" style={{ background: `radial-gradient(ellipse, ${colors.primary}08, transparent)` }} />
       <div className="absolute bottom-0 right-0 w-64 h-64 rounded-full" style={{ background: `radial-gradient(circle, ${colors.accent}06, transparent)` }} />
 
