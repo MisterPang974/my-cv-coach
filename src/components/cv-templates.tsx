@@ -214,12 +214,12 @@ const DomainsBlock = ({ domains, colors, bulletStyle, bulletShape, competencyBul
 const ExperiencesBlock = ({ experiences, colors, bulletStyle, bulletShape, textColor, light, onRemove, useTimeline = true, getCompanyLogoUrl }: { experiences?: ProfessionalExperience[]; colors: Colors; bulletStyle: BulletStyle; bulletShape?: BulletShapeId; textColor?: string; light?: boolean; onRemove?: (id: number) => void; useTimeline?: boolean; getCompanyLogoUrl?: (company: string) => string | null }) => {
   if (!experiences || experiences.length === 0) return null;
   return (
-    <div className={useTimeline ? "relative pl-3" : "space-y-2"}>
+    <div className={useTimeline ? "relative pl-3" : ""} style={!useTimeline ? { display: "flex", flexDirection: "column", gap: `calc(8px * var(--cv-gap-scale, 1))` } : undefined}>
       {useTimeline && <div className="absolute left-0 top-1 bottom-1 w-[2px] rounded-full" style={{ background: `linear-gradient(180deg, ${colors.accent}, ${colors.primary}40, transparent)` }} />}
       {experiences.map((exp, idx) => {
         const logoUrl = exp.showLogo && getCompanyLogoUrl ? getCompanyLogoUrl(exp.entreprise) : null;
         return (
-          <div key={exp.id} className={`${useTimeline ? "relative pl-3 pb-2" : "pb-2"} group/item`}>
+          <div key={exp.id} className={`${useTimeline ? "relative pl-3" : ""} group/item`} style={{ paddingBottom: `calc(8px * var(--cv-gap-scale, 1))` }}>
             {useTimeline && (
               <div className="absolute -left-3 top-[3px] w-[8px] h-[8px] rounded-full border-2 z-10" style={{ borderColor: colors.accent, background: light ? colors.primary : "white" }} />
             )}
@@ -232,8 +232,8 @@ const ExperiencesBlock = ({ experiences, colors, bulletStyle, bulletShape, textC
                   <Building2 className="w-3.5 h-3.5 mt-[1px] flex-shrink-0 opacity-20" style={{ color: textColor || (light ? "white" : colors.primary) }} />
                 )}
                 <div>
-                  <p className="text-[10px] font-black leading-tight" style={{ color: textColor || (light ? "white" : colors.primary) }}>{exp.poste}</p>
-                  <p className="text-[8px]" style={{ color: textColor ? `${textColor}99` : (light ? "rgba(255,255,255,0.6)" : TEXT_MUTED) }}>
+                  <p className="font-black leading-tight" style={{ color: textColor || (light ? "white" : colors.primary), fontSize: `calc(10px * var(--cv-font-scale, 1))` }}>{exp.poste}</p>
+                  <p style={{ color: textColor ? `${textColor}99` : (light ? "rgba(255,255,255,0.6)" : TEXT_MUTED), fontSize: `calc(8px * var(--cv-font-scale, 1))` }}>
                     {exp.entreprise}{exp.ville ? ` · ${exp.ville}` : ""}{exp.dateDebut ? ` | ${formatDateDisplay(exp.dateDebut)}` : ""}{exp.aujourdhui ? " — Aujourd'hui" : exp.dateFin ? ` — ${formatDateDisplay(exp.dateFin)}` : ""}
                   </p>
                 </div>
@@ -243,7 +243,7 @@ const ExperiencesBlock = ({ experiences, colors, bulletStyle, bulletShape, textC
             {exp.missions.length > 0 && (
               <ul style={{ margin: 0, padding: 0, listStyle: "none" }}>
                 {exp.missions.map((m, mi) => (
-                  <li key={mi} className="flex items-center gap-1.5" style={{ color: textColor || (light ? "rgba(255,255,255,0.85)" : undefined), fontSize: "9px", lineHeight: "1.3", paddingTop: "1px", paddingBottom: "1px" }}>
+                  <li key={mi} className="flex items-center gap-1.5" style={{ color: textColor || (light ? "rgba(255,255,255,0.85)" : undefined), fontSize: `calc(9px * var(--cv-font-scale, 1))`, lineHeight: "var(--cv-line-height, 1.3)", paddingTop: `calc(1px * var(--cv-gap-scale, 1))`, paddingBottom: `calc(1px * var(--cv-gap-scale, 1))` }}>
                     <span className="flex-shrink-0 w-[12px] h-[12px] flex items-center justify-center"><ModernBullet type="action" color={colors.accent} style={bulletStyle} shape={bulletShape} /></span>
                     <span className="flex-1">{m}</span>
                   </li>
