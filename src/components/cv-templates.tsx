@@ -575,7 +575,9 @@ export const MagazineTemplate = ({ profile, experienceEntries, atoutEntries, rem
           <div className="mb-4 pb-2" style={{ borderBottom: "2px solid transparent", borderImage: `linear-gradient(90deg, ${colors.accent}, ${colors.primary}, transparent) 1` }}>
             <h3 className="text-[10px] font-black uppercase tracking-[0.25em]" style={{ color: compTc || colors.primary }}>Compétences professionnelles</h3>
           </div>
-          {experienceEntries.length > 0 ? (
+          {competencyDomains && competencyDomains.length > 0 ? (
+            <DomainsBlock domains={competencyDomains} colors={colors} bulletStyle={bulletStyle} bulletShape={bulletShape} textColor={expTc} />
+          ) : experienceEntries.length > 0 ? (
             <ul className="space-y-2">{experienceEntries.map(e => (
               <li key={e.id} className="flex items-start gap-2.5 group/item py-1.5 px-2 rounded-lg transition-all hover:bg-gray-50/80"
                 style={{ boxShadow: "0 1px 3px rgba(0,0,0,0.03)" }}>
