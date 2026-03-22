@@ -156,6 +156,9 @@ const CvGenerator = () => {
   const [activePalette, setActivePalette] = useState<SectorPalette>(sectorConfigs.tertiaire.palettes[0]);
   const [sidebarPos, setSidebarPos] = useState<SidebarPosition>("left");
   const [bulletStyle, setBulletStyle] = useState<BulletStyle>("mixte");
+  const [activeGradient, setActiveGradient] = useState<SectorGradient | null>(null);
+  const [gradientTarget, setGradientTarget] = useState<"fond" | "rubriques">("fond");
+  const [activeBulletShape, setActiveBulletShape] = useState<BulletShapeId | null>(null);
 
   const a4Ref = useRef<HTMLDivElement>(null);
 
