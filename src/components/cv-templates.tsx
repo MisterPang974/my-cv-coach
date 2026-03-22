@@ -255,9 +255,9 @@ export const CreatifTemplate = ({ profile, experienceEntries, atoutEntries, remo
       <div className="flex items-end gap-4">
         <div className="flex-1">
           <h2 className="text-2xl font-black tracking-[-0.02em] leading-[0.9]" style={{ color: colors.primary }}>
-            {(profile.nom || "Votre Nom").split(" ").map((w, i) => (
+            {[profile.prenom, profile.nom].filter(Boolean).join(" ").split(" ").map((w, i) => (
               <span key={i} className={i === 0 ? "" : "block"} style={i > 0 ? { color: colors.accent } : undefined}>{w} </span>
-            ))}
+            )) || <span>Votre Nom</span>}
           </h2>
           <div className="mt-2 inline-flex items-center gap-1.5">
             <span className="w-5 h-1 rounded-full" style={{ background: `linear-gradient(90deg, ${colors.primary}, ${colors.accent})` }} />
