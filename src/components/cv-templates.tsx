@@ -16,6 +16,16 @@ export interface ProfessionalExperience {
   entreprise: string;
   ville: string;
   missions: string[];
+  showLogo: boolean;
+}
+
+export interface FormationEntry {
+  id: number;
+  dateDebut: string;
+  dateFin: string;
+  intitule: string;
+  etablissement: string;
+  ville: string;
 }
 
 export type TextColorSection = "header" | "experiences" | "competences";
