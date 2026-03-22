@@ -1116,16 +1116,28 @@ const CvGenerator = () => {
                               {domain.enabled && (
                                 <div className="px-4 pb-3 space-y-1.5">
                                   {domain.items.map(item => (
-                                    <label key={item.id} className="flex items-start gap-2 cursor-pointer group">
+                                    <div key={item.id} className="flex items-center gap-2 group">
                                       <input type="checkbox" checked={item.enabled} onChange={() => {
                                         if (!item.enabled && isOverloaded) return;
                                         toggleCompetencyItem(domain.id, item.id);
-                                      }} className="mt-0.5 rounded border-primary text-primary focus:ring-primary" disabled={!item.enabled && isOverloaded} />
+                                      }} className="rounded border-primary text-primary focus:ring-primary flex-shrink-0" disabled={!item.enabled && isOverloaded} />
                                       <span className={`text-[11px] leading-relaxed flex-1 ${item.enabled ? "text-foreground" : "text-muted-foreground line-through"}`}>{item.text}</span>
+                                      {/* Level selector dots */}
+                                      {levelDisplay !== "none" && item.enabled && (
+                                        <div className="flex gap-0.5 flex-shrink-0">
+                                          {[1, 2, 3, 4, 5].map(l => (
+                                            <button key={l} onClick={() => {
+                                              setDomains(prev => prev.map(d => d.id === domain.id ? { ...d, items: d.items.map(i => i.id === item.id ? { ...i, level: l } : i) } : d));
+                                            }}
+                                              className={`w-3.5 h-3.5 rounded-full transition-all ${(item.level || 0) >= l ? "bg-accent" : "bg-secondary border border-border"}`}
+                                              title={`Niveau ${l}/5`} />
+                                          ))}
+                                        </div>
+                                      )}
                                       {domain.custom && (
                                         <button onClick={() => removeCompetencyItem(domain.id, item.id)} className="opacity-0 group-hover:opacity-100 text-muted-foreground hover:text-red-400 transition-all"><Trash2 className="w-3 h-3" /></button>
                                       )}
-                                    </label>
+                                    </div>
                                   ))}
                                   {/* Add custom competency to domain */}
                                   <div className="flex gap-2 mt-2">
