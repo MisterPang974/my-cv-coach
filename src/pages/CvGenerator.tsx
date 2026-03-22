@@ -2,7 +2,7 @@ import { useState, useRef, useEffect, useMemo } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import {
-  Wand2, Copy, Check, Plus, Trash2, User, Briefcase, Palette, Star, Settings2, ChevronRight, Type, AlertTriangle, ToggleLeft, ToggleRight, Gauge, Layers, Send, FolderPlus, GraduationCap, Building2, Eye, EyeOff, ArrowUp, ArrowDown, GripVertical
+  Wand2, Copy, Check, Plus, Trash2, User, Briefcase, Palette, Star, Settings2, ChevronRight, Type, AlertTriangle, ToggleLeft, ToggleRight, Gauge, Layers, Send, FolderPlus, GraduationCap, Building2, Eye, EyeOff, ArrowUp, ArrowDown, GripVertical, Sparkles, Heart
 } from "lucide-react";
 import { detectSector, sectorConfigs, layoutMeta, gradientLibrary, bulletShapes, type SectorId, type LayoutId, type SidebarPosition, type BulletStyle, type SectorPalette, type SectorGradient, type BulletShapeId } from "@/lib/cv-sectors";
 import { templateRegistry, ModernBullet, ShapeBullet, fontOptions, type TemplateProps, type TextColorSection, type FontId } from "@/components/cv-templates";
