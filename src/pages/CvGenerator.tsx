@@ -4,8 +4,8 @@ import Footer from "@/components/Footer";
 import {
   Wand2, Copy, Check, Plus, Trash2, User, Briefcase, Palette, Star, Settings2, ChevronRight
 } from "lucide-react";
-import { detectSector, sectorConfigs, layoutMeta, type SectorId, type LayoutId, type SidebarPosition, type BulletStyle, type SectorPalette } from "@/lib/cv-sectors";
-import { templateRegistry, ModernBullet, type TemplateProps } from "@/components/cv-templates";
+import { detectSector, sectorConfigs, layoutMeta, gradientLibrary, bulletShapes, type SectorId, type LayoutId, type SidebarPosition, type BulletStyle, type SectorPalette, type SectorGradient, type BulletShapeId } from "@/lib/cv-sectors";
+import { templateRegistry, ModernBullet, ShapeBullet, type TemplateProps } from "@/components/cv-templates";
 
 // ─── Types ─────────────────────────────────────────────────────────
 type BulletType = "action" | "technique" | "relationnel";
