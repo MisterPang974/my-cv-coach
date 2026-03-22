@@ -382,7 +382,7 @@ const Blob = ({ color, className, style }: { color: string; className?: string; 
 // 1. IMPACT — Glassmorphism sidebar, gradient accents, floating depth
 //    - Photo removed. Competences moved to sidebar to fill right void.
 // ═══════════════════════════════════════════════════════════════════
-export const ImpactTemplate = ({ profile, experienceEntries, atoutEntries, removeEntry, colors, sidebarPos, bulletStyle, bulletShape, gradient, gradientTarget, textColors, titleColor, fontFamily, competencyDomains, competencyBulletShape, professionalExperiences, removeProfessionalExperience, formations, removeFormation, formationTitle, getCompanyLogoUrl }: TemplateProps) => {
+export const ImpactTemplate = ({ profile, experienceEntries, atoutEntries, removeEntry, colors, sidebarPos, bulletStyle, bulletShape, gradient, gradientTarget, textColors, titleColor, fontFamily, competencyDomains, competencyBulletShape, professionalExperiences, removeProfessionalExperience, formations, removeFormation, formationTitle, getCompanyLogoUrl, interests, removeInterest, interestDisplayMode }: TemplateProps) => {
   const fondStyle = useGradientBg(gradient, gradientTarget);
   const rubriqueStyle = useGradientRubrique(gradient, gradientTarget, `linear-gradient(170deg, ${colors.primary}, ${colors.swatch})`);
   const { isDark } = useAutoContrast(gradient, gradientTarget);
@@ -478,7 +478,7 @@ export const ImpactTemplate = ({ profile, experienceEntries, atoutEntries, remov
 // 2. ARTISAN — Organic shapes, variable radius, warm textures
 //    - Photo removed. bgCircleColor for background circles.
 // ═══════════════════════════════════════════════════════════════════
-export const ArtisanTemplate = ({ profile, experienceEntries, atoutEntries, removeEntry, colors, sidebarPos, bulletStyle, bulletShape, gradient, gradientTarget, bgCircleColor, textColors, titleColor, fontFamily, competencyDomains, competencyBulletShape, professionalExperiences, removeProfessionalExperience, formations, removeFormation, formationTitle, getCompanyLogoUrl }: TemplateProps) => {
+export const ArtisanTemplate = ({ profile, experienceEntries, atoutEntries, removeEntry, colors, sidebarPos, bulletStyle, bulletShape, gradient, gradientTarget, bgCircleColor, textColors, titleColor, fontFamily, competencyDomains, competencyBulletShape, professionalExperiences, removeProfessionalExperience, formations, removeFormation, formationTitle, getCompanyLogoUrl, interests, removeInterest, interestDisplayMode }: TemplateProps) => {
   const fondStyle = useGradientBg(gradient, gradientTarget);
   const circleCol = bgCircleColor || colors.accent;
   const { isDark } = useAutoContrast(gradient, gradientTarget);
@@ -556,7 +556,7 @@ export const ArtisanTemplate = ({ profile, experienceEntries, atoutEntries, remo
 // ═══════════════════════════════════════════════════════════════════
 // 3. CRÉATIF — Sector logo replaces letter "A". Customizable circle bg.
 // ═══════════════════════════════════════════════════════════════════
-export const CreatifTemplate = ({ profile, experienceEntries, atoutEntries, removeEntry, colors, bulletStyle, bulletShape, gradient, gradientTarget, bgCircleColor, textColors, titleColor, fontFamily, competencyDomains, competencyBulletShape, professionalExperiences, removeProfessionalExperience, formations, removeFormation, formationTitle, getCompanyLogoUrl }: TemplateProps) => {
+export const CreatifTemplate = ({ profile, experienceEntries, atoutEntries, removeEntry, colors, bulletStyle, bulletShape, gradient, gradientTarget, bgCircleColor, textColors, titleColor, fontFamily, competencyDomains, competencyBulletShape, professionalExperiences, removeProfessionalExperience, formations, removeFormation, formationTitle, getCompanyLogoUrl, interests, removeInterest, interestDisplayMode }: TemplateProps) => {
   const fondStyle = useGradientBg(gradient, gradientTarget);
   const circleBg = bgCircleColor || "#1a1a1a";
   const headerTc = sectionTextColor("header", textColors, TEXT_BLACK);
@@ -660,7 +660,7 @@ export const CreatifTemplate = ({ profile, experienceEntries, atoutEntries, remo
 // ═══════════════════════════════════════════════════════════════════
 // 4. MURAL — Photo removed.
 // ═══════════════════════════════════════════════════════════════════
-export const MuralTemplate = ({ profile, experienceEntries, atoutEntries, removeEntry, colors, sidebarPos, bulletStyle, bulletShape, gradient, gradientTarget, textColors, titleColor, fontFamily, competencyDomains, competencyBulletShape, professionalExperiences, removeProfessionalExperience, formations, removeFormation, formationTitle, getCompanyLogoUrl }: TemplateProps) => {
+export const MuralTemplate = ({ profile, experienceEntries, atoutEntries, removeEntry, colors, sidebarPos, bulletStyle, bulletShape, gradient, gradientTarget, textColors, titleColor, fontFamily, competencyDomains, competencyBulletShape, professionalExperiences, removeProfessionalExperience, formations, removeFormation, formationTitle, getCompanyLogoUrl, interests, removeInterest, interestDisplayMode }: TemplateProps) => {
   const fondStyle = useGradientBg(gradient, gradientTarget);
   const { isDark } = useAutoContrast(gradient, gradientTarget);
   const headerTc = sectionTextColor("header", textColors, TEXT_WHITE);
@@ -744,7 +744,7 @@ export const MuralTemplate = ({ profile, experienceEntries, atoutEntries, remove
 // ═══════════════════════════════════════════════════════════════════
 // 5. MAGAZINE — Right zone now shows coordinates. Photo removed.
 // ═══════════════════════════════════════════════════════════════════
-export const MagazineTemplate = ({ profile, experienceEntries, atoutEntries, removeEntry, colors, bulletStyle, bulletShape, gradient, gradientTarget, textColors, titleColor, fontFamily, competencyDomains, competencyBulletShape, professionalExperiences, removeProfessionalExperience, formations, removeFormation, formationTitle, getCompanyLogoUrl }: TemplateProps) => {
+export const MagazineTemplate = ({ profile, experienceEntries, atoutEntries, removeEntry, colors, bulletStyle, bulletShape, gradient, gradientTarget, textColors, titleColor, fontFamily, competencyDomains, competencyBulletShape, professionalExperiences, removeProfessionalExperience, formations, removeFormation, formationTitle, getCompanyLogoUrl, interests, removeInterest, interestDisplayMode }: TemplateProps) => {
   const fondStyle = useGradientBg(gradient, gradientTarget);
   const headerTc = sectionTextColor("header", textColors, TEXT_WHITE);
   const compTc = sectionTextColor("competences", textColors, colors.accent);
@@ -835,7 +835,7 @@ export const MagazineTemplate = ({ profile, experienceEntries, atoutEntries, rem
 // ═══════════════════════════════════════════════════════════════════
 // 7. MÉDICAL — Photo removed, contacts fixed.
 // ═══════════════════════════════════════════════════════════════════
-export const MedicalTemplate = ({ profile, experienceEntries, atoutEntries, removeEntry, colors, bulletStyle, bulletShape, gradient, gradientTarget, textColors, titleColor, fontFamily, competencyDomains, competencyBulletShape, professionalExperiences, removeProfessionalExperience, formations, removeFormation, formationTitle, getCompanyLogoUrl }: TemplateProps) => {
+export const MedicalTemplate = ({ profile, experienceEntries, atoutEntries, removeEntry, colors, bulletStyle, bulletShape, gradient, gradientTarget, textColors, titleColor, fontFamily, competencyDomains, competencyBulletShape, professionalExperiences, removeProfessionalExperience, formations, removeFormation, formationTitle, getCompanyLogoUrl, interests, removeInterest, interestDisplayMode }: TemplateProps) => {
   const fondStyle = useGradientBg(gradient, gradientTarget);
   const headerTc = sectionTextColor("header", textColors, TEXT_WHITE);
   const compTc = sectionTextColor("competences", textColors, colors.primary);
@@ -914,7 +914,7 @@ export const MedicalTemplate = ({ profile, experienceEntries, atoutEntries, remo
 // ═══════════════════════════════════════════════════════════════════
 // 8. FLUX — Photo removed.
 // ═══════════════════════════════════════════════════════════════════
-export const FluxTemplate = ({ profile, experienceEntries, atoutEntries, removeEntry, colors, bulletStyle, bulletShape, gradient, gradientTarget, textColors, titleColor, fontFamily, competencyDomains, competencyBulletShape, professionalExperiences, removeProfessionalExperience, formations, removeFormation, formationTitle, getCompanyLogoUrl }: TemplateProps) => {
+export const FluxTemplate = ({ profile, experienceEntries, atoutEntries, removeEntry, colors, bulletStyle, bulletShape, gradient, gradientTarget, textColors, titleColor, fontFamily, competencyDomains, competencyBulletShape, professionalExperiences, removeProfessionalExperience, formations, removeFormation, formationTitle, getCompanyLogoUrl, interests, removeInterest, interestDisplayMode }: TemplateProps) => {
   const fondStyle = useGradientBg(gradient, gradientTarget);
   const headerTc = sectionTextColor("header", textColors, TEXT_WHITE);
   const compTc = sectionTextColor("competences", textColors, colors.primary);
@@ -1000,7 +1000,7 @@ export const FluxTemplate = ({ profile, experienceEntries, atoutEntries, removeE
 // ═══════════════════════════════════════════════════════════════════
 // 9. SÉRÉNITÉ — Photo removed. Contacts bug fixed.
 // ═══════════════════════════════════════════════════════════════════
-export const SereniteTemplate = ({ profile, experienceEntries, atoutEntries, removeEntry, colors, bulletStyle, bulletShape, gradient, gradientTarget, textColors, titleColor, fontFamily, competencyDomains, competencyBulletShape, professionalExperiences, removeProfessionalExperience, formations, removeFormation, formationTitle, getCompanyLogoUrl }: TemplateProps) => {
+export const SereniteTemplate = ({ profile, experienceEntries, atoutEntries, removeEntry, colors, bulletStyle, bulletShape, gradient, gradientTarget, textColors, titleColor, fontFamily, competencyDomains, competencyBulletShape, professionalExperiences, removeProfessionalExperience, formations, removeFormation, formationTitle, getCompanyLogoUrl, interests, removeInterest, interestDisplayMode }: TemplateProps) => {
   const fondStyle = useGradientBg(gradient, gradientTarget);
   const headerTc = sectionTextColor("header", textColors, TEXT_WHITE);
   const compTc = sectionTextColor("competences", textColors, colors.primary);
