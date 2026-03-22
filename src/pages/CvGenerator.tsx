@@ -364,6 +364,19 @@ const CvGenerator = () => {
   };
   const removeFormation = (id: number) => setFormations(prev => prev.filter(f => f.id !== id));
 
+  // Interests CRUD
+  const addInterest = (text: string, icon: string, category: InterestEntry["category"]) => {
+    if (!text.trim()) return;
+    setInterests(prev => [...prev, { id: Date.now(), text: text.trim(), icon, category }]);
+  };
+  const addCustomInterest = () => {
+    if (!newInterestText.trim()) return;
+    const icon = INTEREST_ICONS[newInterestText.trim()] || "✦";
+    addInterest(newInterestText.trim(), icon, "autre");
+    setNewInterestText("");
+  };
+  const removeInterest = (id: number) => setInterests(prev => prev.filter(i => i.id !== id));
+
   // Company logo URL helper (Google S2 Favicon service - free, no API key)
   const getCompanyLogoUrl = (company: string): string | null => {
     if (!company || company.trim().length < 2) return null;
