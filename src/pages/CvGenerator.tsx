@@ -159,6 +159,10 @@ const CvGenerator = () => {
   const [activeGradient, setActiveGradient] = useState<SectorGradient | null>(null);
   const [gradientTarget, setGradientTarget] = useState<"fond" | "rubriques">("fond");
   const [activeBulletShape, setActiveBulletShape] = useState<BulletShapeId | null>(null);
+  const [bgCircleColor, setBgCircleColor] = useState<string>("");
+
+  // White palette option (always available)
+  const whitePalette: SectorPalette = { id: "blanc", label: "Blanc", primary: "#333333", accent: "#666666", swatch: "#ffffff" };
 
   const a4Ref = useRef<HTMLDivElement>(null);
 
@@ -199,7 +203,7 @@ const CvGenerator = () => {
   const updateProfile = (field: keyof CvProfile, value: string) => setProfile(p => ({ ...p, [field]: value }));
 
   const Template = templateRegistry[activeLayout];
-  const templateProps: TemplateProps = { profile, experienceEntries, atoutEntries, entries, removeEntry, colors, sidebarPos, bulletStyle, bulletShape: activeBulletShape || undefined, gradient: activeGradient || undefined, gradientTarget };
+  const templateProps: TemplateProps = { profile, experienceEntries, atoutEntries, entries, removeEntry, colors, sidebarPos, bulletStyle, bulletShape: activeBulletShape || undefined, gradient: activeGradient || undefined, gradientTarget, bgCircleColor: bgCircleColor || undefined };
 
   return (
     <div className="min-h-screen bg-background">
@@ -291,10 +295,10 @@ const CvGenerator = () => {
               <div className="flex flex-wrap gap-4">
                 <div className="flex items-center gap-2 rounded-xl bg-card border border-border px-4 py-2">
                   <Palette className="w-4 h-4 text-muted-foreground" />
-                  {sectorCfg.palettes.map(p => (
+                  {[...sectorCfg.palettes, whitePalette].map(p => (
                     <button key={p.id} onClick={() => { setActivePalette(p); setActiveGradient(null); }} title={p.label}
                       className={`w-7 h-7 rounded-full transition-all active:scale-[0.95] ${activePalette.id === p.id && !activeGradient ? "ring-2 ring-offset-2 ring-ring scale-110" : "hover:scale-105"}`}
-                      style={{ background: p.swatch }} />
+                      style={{ background: p.swatch, border: p.id === "blanc" ? "2px solid hsl(0,0%,85%)" : "none" }} />
                   ))}
                 </div>
                 <div className="flex items-center gap-1.5 rounded-xl bg-card border border-border px-3 py-2">
@@ -332,6 +336,20 @@ const CvGenerator = () => {
                   ))}
                 </div>
               </div>
+
+              {/* Row 2.5: Background circle color (Artisan/Créatif) */}
+              {(activeLayout === "artisan" || activeLayout === "creatif") && (
+                <div className="rounded-xl bg-card border border-border px-4 py-3">
+                  <span className="text-xs font-semibold text-muted-foreground mb-2 block">🎨 Couleur des cercles d'arrière-plan</span>
+                  <div className="flex flex-wrap gap-2">
+                    {["", "#1a1a1a", colors.primary, colors.accent, "hsl(24,85%,52%)", "hsl(213,65%,38%)", "hsl(150,40%,35%)", "hsl(350,60%,40%)", "#ffffff"].map((c, i) => (
+                      <button key={i} onClick={() => setBgCircleColor(c)} title={c || "Auto"}
+                        className={`w-7 h-7 rounded-full transition-all active:scale-[0.95] ${bgCircleColor === c ? "ring-2 ring-offset-2 ring-ring scale-110" : "hover:scale-105"}`}
+                        style={{ background: c || colors.accent, border: c === "#ffffff" ? "2px solid hsl(0,0%,85%)" : "none" }} />
+                    ))}
+                  </div>
+                </div>
+              )}
 
               {/* Row 3: 15 bullet shapes */}
               <div className="rounded-xl bg-card border border-border px-4 py-3">
