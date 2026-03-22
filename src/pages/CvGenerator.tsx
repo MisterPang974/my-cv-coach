@@ -2,7 +2,7 @@ import { useState, useRef, useEffect, useMemo } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import {
-  Wand2, Copy, Check, Plus, Trash2, User, Briefcase, Palette, Star, Settings2, ChevronRight, Type, AlertTriangle, ToggleLeft, ToggleRight, Gauge, Layers, Send, FolderPlus
+  Wand2, Copy, Check, Plus, Trash2, User, Briefcase, Palette, Star, Settings2, ChevronRight, Type, AlertTriangle, ToggleLeft, ToggleRight, Gauge, Layers, Send, FolderPlus, GraduationCap, Building2, Eye, EyeOff
 } from "lucide-react";
 import { detectSector, sectorConfigs, layoutMeta, gradientLibrary, bulletShapes, type SectorId, type LayoutId, type SidebarPosition, type BulletStyle, type SectorPalette, type SectorGradient, type BulletShapeId } from "@/lib/cv-sectors";
 import { templateRegistry, ModernBullet, ShapeBullet, fontOptions, type TemplateProps, type TextColorSection, type FontId } from "@/components/cv-templates";
@@ -23,6 +23,17 @@ export interface ExperienceEntry {
   entreprise: string;
   ville: string;
   missions: string[];
+  showLogo: boolean;
+}
+
+// ─── Formation ────────────────────────────────────────────────────
+export interface FormationEntry {
+  id: number;
+  dateDebut: string;
+  dateFin: string;
+  intitule: string;
+  etablissement: string;
+  ville: string;
 }
 
 // ─── Competencies Domain System ────────────────────────────────────
@@ -252,8 +263,13 @@ const CvGenerator = () => {
 
   // Professional experiences state
   const [experiences, setExperiences] = useState<ExperienceEntry[]>([]);
-  const [editingExp, setEditingExp] = useState<ExperienceEntry>({ id: 0, dateDebut: "", dateFin: "", aujourdhui: false, poste: "", entreprise: "", ville: "", missions: [] });
+  const [editingExp, setEditingExp] = useState<ExperienceEntry>({ id: 0, dateDebut: "", dateFin: "", aujourdhui: false, poste: "", entreprise: "", ville: "", missions: [], showLogo: true });
   const [newMission, setNewMission] = useState("");
+
+  // Formation state
+  const [formations, setFormations] = useState<FormationEntry[]>([]);
+  const [editingFormation, setEditingFormation] = useState<FormationEntry>({ id: 0, dateDebut: "", dateFin: "", intitule: "", etablissement: "", ville: "" });
+  const [formationMode, setFormationMode] = useState<"diplomes" | "parcours">("diplomes");
 
   // White palette option (always available)
   const whitePalette: SectorPalette = { id: "blanc", label: "Blanc pur", primary: "#2d2d2d", accent: "#555555", swatch: "#ffffff", bg: "#ffffff" };
@@ -264,9 +280,9 @@ const CvGenerator = () => {
   }, [domains]);
 
   const maxCompetencies = LAYOUT_MAX_COMPETENCIES[activeLayout] || 12;
-  const totalContentItems = activeCompetencyCount + entries.length + atouts.filter((_, i) => entries.some(e => e.input === "Atout" && e.selected === atouts[i])).length;
+  const totalContentItems = activeCompetencyCount + entries.length + formations.length + experiences.length;
   const isOverloaded = activeCompetencyCount > maxCompetencies;
-  const usagePercent = Math.min(100, Math.round((activeCompetencyCount / maxCompetencies) * 100));
+  const usagePercent = Math.min(100, Math.round((totalContentItems / (maxCompetencies + 8)) * 100));
 
   const toggleDomain = (domainId: string) => {
     setDomains(prev => prev.map(d => d.id === domainId ? { ...d, enabled: !d.enabled } : d));
@@ -295,9 +311,10 @@ const CvGenerator = () => {
   const addExperience = () => {
     if (!editingExp.poste.trim()) return;
     setExperiences(prev => [...prev, { ...editingExp, id: Date.now(), missions: editingExp.missions.filter(m => m.trim()) }]);
-    setEditingExp({ id: 0, dateDebut: "", dateFin: "", aujourdhui: false, poste: "", entreprise: "", ville: "", missions: [] });
+    setEditingExp({ id: 0, dateDebut: "", dateFin: "", aujourdhui: false, poste: "", entreprise: "", ville: "", missions: [], showLogo: true });
   };
   const removeExperience = (id: number) => setExperiences(prev => prev.filter(e => e.id !== id));
+  const toggleExpLogo = (id: number) => setExperiences(prev => prev.map(e => e.id === id ? { ...e, showLogo: !e.showLogo } : e));
   const addMissionToEditing = () => {
     if (!newMission.trim()) return;
     setEditingExp(prev => ({ ...prev, missions: [...prev.missions, newMission.trim()] }));
@@ -307,6 +324,21 @@ const CvGenerator = () => {
     setEditingExp(prev => ({ ...prev, missions: prev.missions.filter((_, i) => i !== idx) }));
   };
   const MAX_EXPERIENCES = 5;
+
+  // Formation CRUD
+  const addFormation = () => {
+    if (!editingFormation.intitule.trim()) return;
+    setFormations(prev => [...prev, { ...editingFormation, id: Date.now() }]);
+    setEditingFormation({ id: 0, dateDebut: "", dateFin: "", intitule: "", etablissement: "", ville: "" });
+  };
+  const removeFormation = (id: number) => setFormations(prev => prev.filter(f => f.id !== id));
+
+  // Company logo URL helper (Google S2 Favicon service - free, no API key)
+  const getCompanyLogoUrl = (company: string): string | null => {
+    if (!company || company.trim().length < 2) return null;
+    const domain = company.toLowerCase().replace(/\s+/g, "").replace(/[^a-z0-9]/g, "") + ".com";
+    return `https://www.google.com/s2/favicons?domain=${domain}&sz=32`;
+  };
 
   const a4Ref = useRef<HTMLDivElement>(null);
 
@@ -391,7 +423,8 @@ const CvGenerator = () => {
   const currentFont = fontOptions.find(f => f.id === selectedFont)?.family;
   const Template = templateRegistry[activeLayout];
   const activeDomains = domains.filter(d => d.enabled).map(d => ({ ...d, items: d.items.filter(i => i.enabled) })).filter(d => d.items.length > 0);
-  const templateProps: TemplateProps = { profile, experienceEntries, atoutEntries, entries, removeEntry, colors, sidebarPos, bulletStyle, bulletShape: activeBulletShape || undefined, competencyBulletShape: competencyBulletShape || undefined, gradient: activeGradient || undefined, gradientTarget, bgCircleColor: bgCircleColor || undefined, textColors, titleColor: titleColor || undefined, fontFamily: currentFont, competencyDomains: activeDomains, professionalExperiences: experiences, removeProfessionalExperience: removeExperience };
+  const formationTitle = formationMode === "parcours" ? "Parcours de formation" : "Formation & Diplômes";
+  const templateProps: TemplateProps = { profile, experienceEntries, atoutEntries, entries, removeEntry, colors, sidebarPos, bulletStyle, bulletShape: activeBulletShape || undefined, competencyBulletShape: competencyBulletShape || undefined, gradient: activeGradient || undefined, gradientTarget, bgCircleColor: bgCircleColor || undefined, textColors, titleColor: titleColor || undefined, fontFamily: currentFont, competencyDomains: activeDomains, professionalExperiences: experiences, removeProfessionalExperience: removeExperience, formations, removeFormation, formationTitle, getCompanyLogoUrl };
 
   return (
     <div className="min-h-screen bg-background">
@@ -753,12 +786,22 @@ const CvGenerator = () => {
                     {experiences.map(exp => (
                       <div key={exp.id} className="rounded-xl border border-border bg-background p-3.5 space-y-1.5">
                         <div className="flex items-start justify-between">
-                          <div>
-                            <p className="text-sm font-bold text-foreground">{exp.poste}</p>
-                            <p className="text-xs text-muted-foreground">{exp.entreprise}{exp.ville ? `, ${exp.ville}` : ""}</p>
-                            <p className="text-[10px] text-muted-foreground">{exp.dateDebut}{exp.aujourdhui ? " — Aujourd'hui" : exp.dateFin ? ` — ${exp.dateFin}` : ""}</p>
+                          <div className="flex items-start gap-2.5">
+                            {exp.showLogo && exp.entreprise && (
+                              <img src={getCompanyLogoUrl(exp.entreprise)!} alt="" className="w-6 h-6 rounded mt-0.5 object-contain" onError={e => { (e.target as HTMLImageElement).style.display = 'none'; }} />
+                            )}
+                            <div>
+                              <p className="text-sm font-bold text-foreground">{exp.poste}</p>
+                              <p className="text-xs text-muted-foreground">{exp.entreprise}{exp.ville ? `, ${exp.ville}` : ""}</p>
+                              <p className="text-[10px] text-muted-foreground">{exp.dateDebut}{exp.aujourdhui ? " — Aujourd'hui" : exp.dateFin ? ` — ${exp.dateFin}` : ""}</p>
+                            </div>
                           </div>
-                          <button onClick={() => removeExperience(exp.id)} className="text-muted-foreground hover:text-destructive transition-colors"><Trash2 className="w-4 h-4" /></button>
+                          <div className="flex items-center gap-1.5">
+                            <button onClick={() => toggleExpLogo(exp.id)} className="text-muted-foreground hover:text-primary transition-colors" title={exp.showLogo ? "Masquer le logo" : "Afficher le logo"}>
+                              {exp.showLogo ? <Eye className="w-3.5 h-3.5" /> : <EyeOff className="w-3.5 h-3.5" />}
+                            </button>
+                            <button onClick={() => removeExperience(exp.id)} className="text-muted-foreground hover:text-destructive transition-colors"><Trash2 className="w-4 h-4" /></button>
+                          </div>
                         </div>
                         {exp.missions.length > 0 && (
                           <ul className="space-y-0.5">
@@ -829,6 +872,65 @@ const CvGenerator = () => {
                     </div>
                   </div>
 
+                  {/* ═══ Formation & Diplômes Panel ═══ */}
+                  <div className="rounded-2xl bg-card p-5 shadow-sm border border-border/50 space-y-4">
+                    <div className="flex items-center justify-between">
+                      <h3 className="font-semibold text-sm flex items-center gap-2"><GraduationCap className="w-4 h-4 text-primary" /> {formationTitle}</h3>
+                      <div className="flex items-center gap-1 rounded-lg bg-secondary p-0.5">
+                        {(["diplomes", "parcours"] as const).map(m => (
+                          <button key={m} onClick={() => setFormationMode(m)}
+                            className={`px-2.5 py-1 rounded-md text-[10px] font-medium transition-all ${formationMode === m ? "bg-primary text-primary-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"}`}>
+                            {m === "diplomes" ? "Diplômes" : "Parcours"}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Existing formations */}
+                    {formations.map(f => (
+                      <div key={f.id} className="rounded-xl border border-border bg-background p-3.5 space-y-0.5">
+                        <div className="flex items-start justify-between">
+                          <div>
+                            <p className="text-sm font-bold text-foreground">{f.intitule}</p>
+                            <p className="text-xs text-muted-foreground">{f.etablissement}{f.ville ? `, ${f.ville}` : ""}</p>
+                            <p className="text-[10px] text-muted-foreground">{f.dateDebut}{f.dateFin ? ` — ${f.dateFin}` : ""}</p>
+                          </div>
+                          <button onClick={() => removeFormation(f.id)} className="text-muted-foreground hover:text-destructive transition-colors"><Trash2 className="w-4 h-4" /></button>
+                        </div>
+                      </div>
+                    ))}
+
+                    {/* New formation form */}
+                    <div className="rounded-xl border border-dashed border-primary/30 bg-primary/[0.02] p-4 space-y-3">
+                      <p className="text-xs font-semibold text-primary">+ {formationMode === "parcours" ? "Nouvelle formation" : "Nouveau diplôme"}</p>
+                      <div className="grid sm:grid-cols-2 gap-2">
+                        <input value={editingFormation.dateDebut} onChange={e => setEditingFormation(p => ({ ...p, dateDebut: e.target.value }))}
+                          placeholder="Date début (ex: 2018)" className="rounded-lg border border-input bg-background px-3 py-2 text-xs placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring" />
+                        <input value={editingFormation.dateFin} onChange={e => setEditingFormation(p => ({ ...p, dateFin: e.target.value }))}
+                          placeholder="Date fin (ex: 2020)" className="rounded-lg border border-input bg-background px-3 py-2 text-xs placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring" />
+                      </div>
+                      <input value={editingFormation.intitule} onChange={e => setEditingFormation(p => ({ ...p, intitule: e.target.value }))}
+                        placeholder={formationMode === "parcours" ? "Intitulé de la formation / VAE *" : "Intitulé du diplôme *"}
+                        className="w-full rounded-lg border border-input bg-background px-3 py-2.5 text-sm font-semibold placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring" />
+                      <div className="grid sm:grid-cols-2 gap-2">
+                        <input value={editingFormation.etablissement} onChange={e => setEditingFormation(p => ({ ...p, etablissement: e.target.value }))}
+                          placeholder="Nom de l'école / organisme" className="rounded-lg border border-input bg-background px-3 py-2 text-xs placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring" />
+                        <input value={editingFormation.ville} onChange={e => setEditingFormation(p => ({ ...p, ville: e.target.value }))}
+                          placeholder="Ville" className="rounded-lg border border-input bg-background px-3 py-2 text-xs placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring" />
+                      </div>
+                      <button onClick={addFormation} disabled={!editingFormation.intitule.trim()}
+                        className="w-full rounded-xl bg-primary px-4 py-2.5 text-primary-foreground text-sm font-medium shadow-sm hover:shadow-md transition-all disabled:opacity-40 active:scale-[0.97]">
+                        Ajouter
+                      </button>
+                    </div>
+
+                    {formations.length > 3 && (
+                      <div className="flex items-start gap-2 rounded-xl bg-amber-50 border border-amber-200 px-4 py-3 text-[11px] text-amber-700">
+                        <AlertTriangle className="w-4 h-4 mt-0.5 flex-shrink-0 text-amber-500" />
+                        <p>Pour tenir sur une page A4, limitez-vous à <strong>2-3 formations</strong> maximum ou passez en mise en page deux colonnes.</p>
+                      </div>
+                    )}
+                  </div>
 
                   <div className="rounded-2xl bg-card p-5 shadow-sm border border-border/50 space-y-4">
                     <div className="flex items-center justify-between">
